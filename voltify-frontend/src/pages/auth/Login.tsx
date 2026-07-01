@@ -61,7 +61,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background grid-bg flex items-center justify-center p-4 font-headline">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 font-headline">
       {/* Background glow */}
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary-container/5 rounded-full blur-3xl pointer-events-none" />
       
@@ -72,9 +72,9 @@ export default function Login() {
             <div className="w-10 h-10 rounded-lg bg-primary-container/20 border border-primary/30 flex items-center justify-center">
               <Zap className="w-5 h-5 text-primary-container" />
             </div>
-            <span className="font-display text-2xl font-bold text-neon-cyan tracking-tighter">VOLTIFY</span>
+            <span className="font-display text-2xl font-bold text-sky-400 tracking-tighter">VOLTIFY</span>
           </Link>
-          <p className="text-on-surface-variant mt-2 text-sm">Sign in to your energy intelligence core</p>
+          <p className="text-on-surface-variant mt-2 text-sm">Sign in to your clean energy dashboard</p>
         </div>
 
         {/* Card */}
@@ -92,7 +92,7 @@ export default function Login() {
                   className="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface placeholder-outline/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-sm font-sans"
                 />
               </div>
-              {errors.email && <p className="text-volt-pink text-xs mt-1 font-sans">{errors.email.message}</p>}
+              {errors.email && <p className="text-rose-400 text-xs mt-1 font-sans">{errors.email.message}</p>}
             </div>
 
             {/* Password */}
@@ -114,14 +114,14 @@ export default function Login() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {errors.password && <p className="text-volt-pink text-xs mt-1 font-sans">{errors.password.message}</p>}
+              {errors.password && <p className="text-rose-400 text-xs mt-1 font-sans">{errors.password.message}</p>}
             </div>
 
             {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-primary-container text-on-primary-container font-semibold font-display rounded-lg hover:bg-primary-container/90 transition-all shadow-[0_0_15px_rgba(0,229,255,0.3)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase text-xs tracking-wider"
+              className="w-full py-3 bg-primary-container text-on-primary-container font-semibold font-display rounded-lg hover:bg-primary-container/90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase text-xs tracking-wider"
             >
               {loading ? (
                 <><span className="w-4 h-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Signing in...</>
