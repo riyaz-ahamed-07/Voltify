@@ -216,35 +216,35 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-background grid-bg flex flex-col justify-center py-10 px-4 md:px-10 font-headline">
+    <div className="min-h-screen bg-[#090e1a] flex flex-col justify-center py-10 px-4 md:px-10 font-headline text-on-surface">
       <div className="max-w-3xl w-full mx-auto">
         {/* Progress header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded bg-primary-container/20 border border-primary/30 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-primary-container" />
+            <div className="w-8 h-8 rounded bg-slate-800 border border-white/10 flex items-center justify-center">
+              <Zap className="w-4 h-4 text-primary" />
             </div>
-            <span className="font-display text-xl font-bold tracking-tighter text-neon-cyan">VOLTIFY</span>
+            <span className="font-display text-xl font-bold tracking-tighter text-white">VOLTIFY</span>
           </Link>
 
-          <div className="flex items-center justify-between max-w-md mx-auto relative mb-2">
-            <div className="absolute left-0 right-0 h-0.5 bg-outline-variant/30 top-1/2 -translate-y-1/2 -z-10" />
+          <div className="flex items-center justify-between max-w-md mx-auto relative mb-3">
+            <div className="absolute left-0 right-0 h-0.5 bg-white/5 top-1/2 -translate-y-1/2 -z-10" />
             {[1, 2, 3, 4].map((s) => (
               <div
                 key={s}
                 className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold font-mono transition-all duration-300 relative z-10 ${
                   s === step
-                    ? 'bg-primary-container text-on-primary-container border-primary shadow-[0_0_15px_rgba(0,229,255,0.4)]'
+                    ? 'bg-primary text-slate-900 border-primary'
                     : s < step
-                    ? 'bg-tertiary-container text-on-tertiary border-tertiary shadow-[0_0_10px_rgba(35,235,184,0.3)]'
-                    : 'bg-surface border-outline-variant/50 text-on-surface-variant'
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : 'bg-slate-900 border-white/5 text-gray-500'
                 }`}
               >
                 {s < step ? <Check className="w-4 h-4" /> : s}
               </div>
             ))}
           </div>
-          <div className="flex justify-between max-w-md mx-auto text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">
+          <div className="flex justify-between max-w-md mx-auto text-[10px] uppercase font-bold text-gray-400 tracking-wider">
             <span>Profile</span>
             <span>Billing</span>
             <span>Appliances</span>
@@ -253,7 +253,7 @@ export default function Onboarding() {
         </div>
 
         {/* Content Box */}
-        <div className="glass rounded-2xl p-8 border border-outline-variant/30 shadow-2xl relative">
+        <div className="glass-card rounded-2xl p-8 border border-white/5 shadow-2xl relative bg-slate-900/60 backdrop-blur-md">
           <AnimatePresence mode="wait">
             {step === 1 && (
               <motion.div
@@ -262,17 +262,17 @@ export default function Onboarding() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <h3 className="font-display font-bold text-xl text-on-surface mb-2">Step 1: Core Household Profile</h3>
-                <p className="text-on-surface-variant text-xs mb-6">Calibrate estimated base loads by describing your home type and region.</p>
+                <h3 className="font-display font-bold text-lg text-white mb-1">Step 1: Household Profile</h3>
+                <p className="text-gray-400 text-xs mb-6">Describe your home setup to help customize your baseline estimates.</p>
 
                 <form onSubmit={handleProfileSubmit(onProfileNext)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Home Type */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Dwelling Type</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Dwelling Type</label>
                       <select
                         {...regProfile('home_type')}
-                        className="w-full px-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary-container"
+                        className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
                       >
                         <option value="apartment">Apartment / Flat</option>
                         <option value="house">Independent House</option>
@@ -282,12 +282,12 @@ export default function Onboarding() {
 
                     {/* Household Type */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Household Size</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Household Size</label>
                       <select
                         {...regProfile('household_type')}
-                        className="w-full px-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary-container"
+                        className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
                       >
-                        <option value="bachelor">Bachelor / Single Person</option>
+                        <option value="bachelor">Single Person</option>
                         <option value="family">Small Family (2–4 Persons)</option>
                         <option value="large_family">Large Family (5+ Persons)</option>
                         <option value="organization">Office / Institution</option>
@@ -296,10 +296,10 @@ export default function Onboarding() {
 
                     {/* Region */}
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Electricity DISCOM Region</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Electricity Provider (DISCOM) Region</label>
                       <select
                         {...regProfile('location')}
-                        className="w-full px-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary-container"
+                        className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
                       >
                         <option value="Chennai">Tamil Nadu (TANGEDCO - Chennai)</option>
                         <option value="Mumbai">Maharashtra (MSEDCL/Adani - Mumbai)</option>
@@ -313,7 +313,7 @@ export default function Onboarding() {
                   <div className="flex justify-end pt-4">
                     <button
                       type="submit"
-                      className="bg-primary-container text-on-primary-container px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary-container/90 transition-all flex items-center justify-center gap-2"
+                      className="bg-primary hover:bg-primary-hover text-slate-950 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 font-display"
                     >
                       Next Step <ArrowRightIcon />
                     </button>
@@ -329,50 +329,54 @@ export default function Onboarding() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <h3 className="font-display font-bold text-xl text-on-surface mb-2">Step 2: Utility Bill Calibration</h3>
-                <p className="text-on-surface-variant text-xs mb-6">Drop a PDF copy of your recent DISCOM bill or enter parameters manually for optimal calculation.</p>
+                <h3 className="font-display font-bold text-lg text-white mb-1">Step 2: Utility Bill Details</h3>
+                <p className="text-gray-400 text-xs mb-6">Upload a simulated electricity bill or enter your last billing figures manually.</p>
 
                 {/* Dropzone */}
                 <div
                   {...getRootProps()}
-                  className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 mb-6 flex flex-col items-center ${
+                  className={`border border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 mb-6 flex flex-col items-center ${
                     isDragActive
-                      ? 'border-primary bg-primary/5 shadow-cyan'
-                      : 'border-outline-variant/50 bg-surface/50 hover:border-primary/50'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-white/10 bg-slate-900/40 hover:border-primary/50'
                   }`}
                 >
                   <input {...getInputProps()} />
-                  <Upload className="w-10 h-10 text-outline mb-3 group-hover:text-primary" />
-                  <p className="text-sm font-bold text-on-surface">Drag & Drop simulated DISCOM bill PDF here</p>
-                  <p className="text-[10px] text-on-surface-variant uppercase mt-1">Accepts simulated files to automatically decode units</p>
+                  <Upload className="w-8 h-8 text-gray-500 mb-3 group-hover:text-primary transition-colors" />
+                  <p className="text-sm font-bold text-white">Drag & Drop simulated bill PDF here</p>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wide mt-1">Accepts simulated files to instantly decode details</p>
                 </div>
 
-                <div className="text-center font-bold text-xs text-outline mb-6">-- OR MANUAL INPUT --</div>
+                <div className="relative flex py-2 items-center">
+                  <div className="flex-grow border-t border-white/5"></div>
+                  <span className="flex-shrink mx-4 text-gray-500 text-[10px] uppercase font-bold tracking-wider">OR ENTER MANUALLY</span>
+                  <div className="flex-grow border-t border-white/5"></div>
+                </div>
 
-                <form onSubmit={handleBillSubmit(onBillNext)} className="space-y-6">
+                <form onSubmit={handleBillSubmit(onBillNext)} className="space-y-6 mt-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Bill amount */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Bill Amount (₹)</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Recent Bill Amount (₹)</label>
                       <input
                         {...regBill('bill_amount', { valueAsNumber: true })}
                         type="number"
                         placeholder="e.g. 3500"
-                        className="w-full px-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary-container"
+                        className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
                       />
-                      {billErrors.bill_amount && <p className="text-volt-pink text-xs mt-1">{billErrors.bill_amount.message}</p>}
+                      {billErrors.bill_amount && <p className="text-rose-500 text-xs mt-1">{billErrors.bill_amount.message}</p>}
                     </div>
 
                     {/* Units consumed */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Units Consumed (kWh)</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Units Consumed (kWh)</label>
                       <input
                         {...regBill('units', { valueAsNumber: true })}
                         type="number"
                         placeholder="e.g. 420"
-                        className="w-full px-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary-container"
+                        className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
                       />
-                      {billErrors.units && <p className="text-volt-pink text-xs mt-1">{billErrors.units.message}</p>}
+                      {billErrors.units && <p className="text-rose-500 text-xs mt-1">{billErrors.units.message}</p>}
                     </div>
                   </div>
 
@@ -380,13 +384,13 @@ export default function Onboarding() {
                     <button
                       type="button"
                       onClick={() => setStep(1)}
-                      className="border border-outline-variant text-on-surface px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-surface-container-high transition-all"
+                      className="border border-white/10 text-gray-300 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all"
                     >
                       Back
                     </button>
                     <button
                       type="submit"
-                      className="bg-primary-container text-on-primary-container px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary-container/90 transition-all flex items-center justify-center gap-2"
+                      className="bg-primary hover:bg-primary-hover text-slate-950 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 font-display font-bold"
                     >
                       Next Step <ArrowRightIcon />
                     </button>
@@ -402,8 +406,8 @@ export default function Onboarding() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <h3 className="font-display font-bold text-xl text-on-surface mb-2">Step 3: Appliance Telemetry Adjustments</h3>
-                <p className="text-on-surface-variant text-xs mb-6">Toggle the appliances in use and slide to configure their approximate average daily run-time.</p>
+                <h3 className="font-display font-bold text-lg text-white mb-1">Step 3: Home Appliance Calibration</h3>
+                <p className="text-gray-400 text-xs mb-6">Select key household appliances and adjust their estimated daily active hours.</p>
 
                 <div className="space-y-4 max-h-[380px] overflow-y-auto pr-2">
                   {Object.keys(DEFAULT_APPLIANCES).map((key) => {
@@ -412,35 +416,35 @@ export default function Onboarding() {
                     return (
                       <div
                         key={key}
-                        className={`p-4 rounded-xl border transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                        className={`p-4 rounded-2xl border transition-all duration-350 flex flex-col md:flex-row md:items-center justify-between gap-4 ${
                           isSelected
-                            ? 'bg-primary/5 border-primary/30 shadow-[0_0_10px_rgba(0,229,255,0.05)]'
-                            : 'bg-surface border-outline-variant/30 opacity-70 hover:opacity-90'
+                            ? 'bg-primary/5 border-primary/20 shadow-[0_4px_20px_rgba(195,245,255,0.02)]'
+                            : 'bg-slate-900/30 border-white/5 opacity-70 hover:opacity-90'
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <button
                             type="button"
                             onClick={() => toggleAppliance(key)}
-                            className={`w-6 h-6 rounded border flex items-center justify-center transition-all ${
+                            className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
                               isSelected
-                                ? 'bg-primary-container border-primary text-on-primary-container'
-                                : 'border-outline-variant hover:border-primary/50'
+                                ? 'bg-primary border-primary text-slate-950'
+                                : 'border-white/10 hover:border-primary/50'
                             }`}
                           >
-                            {isSelected && <Check className="w-4 h-4" />}
+                            {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                           </button>
                           <div>
                             <span className="text-lg mr-1.5">{app.icon}</span>
-                            <span className="text-sm font-bold text-on-surface">{app.name}</span>
-                            <p className="text-[10px] text-on-surface-variant font-mono uppercase mt-0.5">Rating: {app.power_kw} kW</p>
+                            <span className="text-sm font-bold text-white">{app.name}</span>
+                            <p className="text-[10px] text-gray-500 font-mono uppercase mt-0.5">Power Rating: {app.power_kw} kW</p>
                           </div>
                         </div>
 
                         {isSelected && (
                           <div className="flex-1 max-w-xs md:ml-auto space-y-1.5">
-                            <div className="flex justify-between text-xs font-mono font-bold text-on-surface-variant">
-                              <span>Daily run-time:</span>
+                            <div className="flex justify-between text-xs font-mono font-bold text-gray-400">
+                              <span>Daily active hours:</span>
                               <span className="text-primary">{applianceHours[key]} hours</span>
                             </div>
                             <input
@@ -450,7 +454,7 @@ export default function Onboarding() {
                               step={0.1}
                               value={applianceHours[key]}
                               onChange={(e) => handleHourChange(key, parseFloat(e.target.value))}
-                              className="w-full accent-primary-container h-1 bg-surface-container-high rounded-full outline-none"
+                              className="w-full accent-primary h-1 bg-white/10 rounded-full outline-none cursor-pointer"
                             />
                           </div>
                         )}
@@ -463,14 +467,14 @@ export default function Onboarding() {
                   <button
                     type="button"
                     onClick={() => setStep(2)}
-                    className="border border-outline-variant text-on-surface px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-surface-container-high transition-all"
+                    className="border border-white/10 text-gray-300 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all"
                   >
                     Back
                   </button>
                   <button
                     type="button"
                     onClick={onAppliancesNext}
-                    className="bg-primary-container text-on-primary-container px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary-container/90 transition-all flex items-center justify-center gap-2"
+                    className="bg-primary hover:bg-primary-hover text-slate-950 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 font-display font-bold"
                   >
                     Next Step <ArrowRightIcon />
                   </button>
@@ -487,39 +491,39 @@ export default function Onboarding() {
                 className="space-y-6"
               >
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-tertiary-container/20 rounded-full border border-tertiary/30 flex items-center justify-center mx-auto mb-3 animate-pulse-glow">
-                    <ShieldCheck className="w-6 h-6 text-tertiary" />
+                  <div className="w-12 h-12 bg-emerald-500/10 rounded-full border border-emerald-500/30 flex items-center justify-center mx-auto mb-3">
+                    <ShieldCheck className="w-6 h-6 text-emerald-400" />
                   </div>
-                  <h3 className="font-display font-bold text-xl text-on-surface">Telemetry Calibration Ready</h3>
-                  <p className="text-on-surface-variant text-xs">Mathematical models have disaggregated your appliances and match your real DISCOM parameters.</p>
+                  <h3 className="font-display font-bold text-lg text-white">Calibration Complete</h3>
+                  <p className="text-gray-400 text-xs">Our estimates successfully match your utility provider bill details.</p>
                 </div>
 
                 {/* Score Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-surface border border-outline-variant/30 p-4 rounded-xl text-center">
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Uploaded Utility Bill</span>
-                    <span className="font-mono font-bold text-xl text-on-surface">{formatUnits(billData.units)}</span>
-                    <span className="block text-[10px] text-outline font-sans mt-0.5">({formatCurrency(billData.bill_amount)})</span>
+                  <div className="bg-slate-900 border border-white/5 p-4 rounded-xl text-center">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Utility Bill Load</span>
+                    <span className="font-mono font-bold text-lg text-white">{formatUnits(billData.units)}</span>
+                    <span className="block text-[10px] text-gray-500 font-sans mt-0.5">({formatCurrency(billData.bill_amount)})</span>
                   </div>
 
-                  <div className="bg-surface border border-outline-variant/30 p-4 rounded-xl text-center relative overflow-hidden">
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Voltify AI Estimate</span>
-                    <span className="font-mono font-bold text-xl text-primary">{formatUnits(currentCalc.estKwh)}</span>
-                    <span className="block text-[10px] text-outline font-sans mt-0.5">({formatCurrency(Math.round(currentCalc.estKwh * currentCalc.rate))})</span>
+                  <div className="bg-slate-900 border border-white/5 p-4 rounded-xl text-center relative overflow-hidden">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Estimated Baseline</span>
+                    <span className="font-mono font-bold text-lg text-primary">{formatUnits(currentCalc.estKwh)}</span>
+                    <span className="block text-[10px] text-gray-500 font-sans mt-0.5">({formatCurrency(Math.round(currentCalc.estKwh * currentCalc.rate))})</span>
                   </div>
 
-                  <div className="bg-surface border border-outline-variant/30 p-4 rounded-xl text-center">
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Disaggregation Accuracy</span>
-                    <span className={`font-mono font-bold text-xl ${
-                      currentCalc.accuracy >= 80 ? 'text-tertiary' : 'text-volt-amber'
+                  <div className="bg-slate-900 border border-white/5 p-4 rounded-xl text-center">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Calibration Accuracy</span>
+                    <span className={`font-mono font-bold text-lg ${
+                      currentCalc.accuracy >= 80 ? 'text-emerald-400' : 'text-volt-amber'
                     }`}>{currentCalc.accuracy}%</span>
-                    <span className="block text-[10px] text-outline font-sans mt-0.5">Calibration Complete</span>
+                    <span className="block text-[10px] text-gray-500 font-sans mt-0.5">Ready for Analysis</span>
                   </div>
                 </div>
 
                 {/* Math Disaggregation breakdown text list */}
-                <div className="bg-surface-container-high/40 border border-outline-variant/20 p-5 rounded-xl space-y-3">
-                  <h4 className="font-bold text-[10px] uppercase tracking-wider text-on-surface mb-2">Estimated Appliance Breakdown Preview</h4>
+                <div className="bg-slate-900 border border-white/5 p-5 rounded-xl space-y-3">
+                  <h4 className="font-bold text-[10px] uppercase tracking-wider text-white mb-2">Estimated Appliance Share</h4>
                   <div className="space-y-2">
                     {currentCalc.appliances.slice(0, 4).map((app) => {
                       const sharePct = Math.round(
@@ -527,18 +531,18 @@ export default function Onboarding() {
                       );
                       return (
                         <div key={app.id} className="flex justify-between items-center text-xs">
-                          <span className="text-on-surface-variant flex items-center gap-1.5">
+                          <span className="text-gray-400 flex items-center gap-1.5">
                             <span>{app.icon}</span> {app.name}
                           </span>
                           <div className="flex items-center gap-3">
-                            <span className="font-mono text-outline">{applianceHours[app.id]} hrs/day</span>
-                            <span className="font-mono font-bold text-on-surface">{sharePct}% share</span>
+                            <span className="font-mono text-gray-500">{applianceHours[app.id]} hrs/day</span>
+                            <span className="font-mono font-bold text-white">{sharePct}% share</span>
                           </div>
                         </div>
                       );
                     })}
                     {currentCalc.appliances.length > 4 && (
-                      <p className="text-center text-[10px] text-outline italic font-sans">+ {currentCalc.appliances.length - 4} more appliances</p>
+                      <p className="text-center text-[10px] text-gray-500 italic font-sans">+ {currentCalc.appliances.length - 4} more appliances</p>
                     )}
                   </div>
                 </div>
@@ -547,16 +551,16 @@ export default function Onboarding() {
                   <button
                     type="button"
                     onClick={() => setStep(3)}
-                    className="border border-outline-variant text-on-surface px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-surface-container-high transition-all"
+                    className="border border-white/10 text-gray-300 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all"
                   >
                     Back
                   </button>
                   <button
                     type="button"
                     onClick={finishOnboarding}
-                    className="bg-primary-container text-on-primary-container px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary-container/90 transition-all flex items-center justify-center gap-2 animate-pulse-glow font-display"
+                    className="bg-primary hover:bg-primary-hover text-slate-950 px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 font-display font-bold shadow-lg"
                   >
-                    Acknowledge & Calibrate <Play className="w-4 h-4" />
+                    Complete Onboarding <Play className="w-4 h-4 fill-current text-slate-950" />
                   </button>
                 </div>
               </motion.div>
