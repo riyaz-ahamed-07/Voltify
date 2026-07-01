@@ -63,8 +63,8 @@ export default function Signup() {
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-primary-container/20 border border-primary/30 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-primary-container" />
+            <div className="size-10 rounded-lg bg-primary-container/20 border border-primary/30 flex items-center justify-center">
+              <Zap className="size-5 text-primary-container" />
             </div>
             <span className="font-display text-2xl font-bold text-sky-400 tracking-tighter">VOLTIFY</span>
           </Link>
@@ -75,11 +75,12 @@ export default function Signup() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Full Name</label>
+              <label htmlFor="name" className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Full Name</label>
               <div className="relative">
-                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
+                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-outline" />
                 <input
                   {...register('name')}
+                  id="name"
                   type="text"
                   placeholder="Ravi Kumar"
                   className="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface placeholder-outline/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-sm font-sans"
@@ -90,11 +91,12 @@ export default function Signup() {
 
             {/* Email */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Email Address</label>
+              <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Email Address</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-outline" />
                 <input
                   {...register('email')}
+                  id="email"
                   type="email"
                   placeholder="ravi@example.com"
                   className="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface placeholder-outline/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-sm font-sans"
@@ -105,18 +107,19 @@ export default function Signup() {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Password</label>
+              <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-outline" />
                 <input
                   {...register('password')}
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   className="w-full pl-10 pr-12 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface placeholder-outline/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-sm font-sans"
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant transition-colors">
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
               {errors.password && <p className="text-rose-400 text-xs mt-1 font-sans">{errors.password.message}</p>}
@@ -124,11 +127,12 @@ export default function Signup() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Confirm Password</label>
+              <label htmlFor="confirmPassword" className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Confirm Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-outline" />
                 <input
                   {...register('confirmPassword')}
+                  id="confirmPassword"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   className="w-full pl-10 pr-12 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface placeholder-outline/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-sm font-sans"
@@ -144,8 +148,8 @@ export default function Signup() {
               className="w-full py-3 bg-primary-container text-on-primary-container font-semibold font-display rounded-lg hover:bg-primary-container/90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 uppercase text-xs tracking-wider"
             >
               {loading
-                ? <><span className="w-4 h-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Creating Account...</>
-                : <>Create Account <Zap className="w-4 h-4" /></>}
+                ? <><span className="size-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Creating Account...</>
+                : <>Create Account <Zap className="size-4" /></>}
             </button>
           </form>
 

@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify';
 import { useDropzone } from 'react-dropzone';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
 import { Zap, Upload, ShieldCheck, Home, Check, Play, User as UserIcon, Settings } from 'lucide-react';
 import { DEFAULT_APPLIANCES } from '../../types/appliance';
 import { useAuthStore } from '../../store/authStore';
@@ -106,16 +106,19 @@ export default function Onboarding() {
     if (!profileData || !billData) return null;
     
     // Construct appliance array from selections
-    const appliances = Object.keys(DEFAULT_APPLIANCES)
-      .filter((key) => selectedAppliances[key])
-      .map((key) => ({
-        id: key,
-        name: DEFAULT_APPLIANCES[key].name,
-        icon: DEFAULT_APPLIANCES[key].icon,
-        power_kw: DEFAULT_APPLIANCES[key].power_kw,
-        avg_hours_day: applianceHours[key],
-        seasonality: DEFAULT_APPLIANCES[key].seasonality,
-      }));
+    const appliances = Object.keys(DEFAULT_APPLIANCES).reduce<any[]>((acc, key) => {
+      if (selectedAppliances[key]) {
+        acc.push({
+          id: key,
+          name: DEFAULT_APPLIANCES[key].name,
+          icon: DEFAULT_APPLIANCES[key].icon,
+          power_kw: DEFAULT_APPLIANCES[key].power_kw,
+          avg_hours_day: applianceHours[key],
+          seasonality: DEFAULT_APPLIANCES[key].seasonality,
+        });
+      }
+      return acc;
+    }, []);
 
     const estKwh = estimateMonthlyKwh(appliances);
     const rate = getTariffRate(profileData.location);
@@ -216,23 +219,24 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090e1a] flex flex-col justify-center py-10 px-4 md:px-10 font-headline text-on-surface">
-      <div className="max-w-3xl w-full mx-auto">
-        {/* Progress header */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded bg-slate-800 border border-white/10 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-primary" />
-            </div>
-            <span className="font-display text-xl font-bold tracking-tighter text-white">VOLTIFY</span>
-          </Link>
+    <LazyMotion features={domAnimation}>
+      <div className="min-h-screen bg-[#090e1a] flex flex-col justify-center py-10 px-4 md:px-10 font-headline text-on-surface">
+        <div className="max-w-3xl w-full mx-auto">
+          {/* Progress header */}
+          <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center gap-2 mb-4">
+              <div className="size-8 rounded bg-slate-800 border border-white/10 flex items-center justify-center">
+                <Zap className="size-4 text-primary" />
+              </div>
+              <span className="font-display text-xl font-bold tracking-tighter text-white">VOLTIFY</span>
+            </Link>
 
           <div className="flex items-center justify-between max-w-md mx-auto relative mb-3">
             <div className="absolute left-0 right-0 h-0.5 bg-white/5 top-1/2 -translate-y-1/2 -z-10" />
             {[1, 2, 3, 4].map((s) => (
               <div
                 key={s}
-                className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold font-mono transition-all duration-300 relative z-10 ${
+                className={`size-8 rounded-full border flex items-center justify-center text-xs font-bold font-mono transition-all duration-300 relative z-10 ${
                   s === step
                     ? 'bg-primary text-slate-900 border-primary'
                     : s < step
@@ -240,7 +244,7 @@ export default function Onboarding() {
                     : 'bg-slate-900 border-white/5 text-gray-500'
                 }`}
               >
-                {s < step ? <Check className="w-4 h-4" /> : s}
+                {s < step ? <Check className="size-4" /> : s}
               </div>
             ))}
           </div>
@@ -256,7 +260,7 @@ export default function Onboarding() {
         <div className="glass-card rounded-2xl p-8 border border-white/5 shadow-2xl relative bg-slate-900/60 backdrop-blur-md">
           <AnimatePresence mode="wait">
             {step === 1 && (
-              <motion.div
+              <m.div
                 key="step1"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -269,9 +273,10 @@ export default function Onboarding() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Home Type */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Dwelling Type</label>
+                      <label htmlFor="home_type" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Dwelling Type</label>
                       <select
                         {...regProfile('home_type')}
+                        id="home_type"
                         className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
                       >
                         <option value="apartment">Apartment / Flat</option>
@@ -282,9 +287,10 @@ export default function Onboarding() {
 
                     {/* Household Type */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Household Size</label>
+                      <label htmlFor="household_type" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Household Size</label>
                       <select
                         {...regProfile('household_type')}
+                        id="household_type"
                         className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
                       >
                         <option value="bachelor">Single Person</option>
@@ -296,9 +302,10 @@ export default function Onboarding() {
 
                     {/* Region */}
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Electricity Provider (DISCOM) Region</label>
+                      <label htmlFor="location" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Electricity Provider (DISCOM) Region</label>
                       <select
                         {...regProfile('location')}
+                        id="location"
                         className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
                       >
                         <option value="Chennai">Tamil Nadu (TANGEDCO - Chennai)</option>
@@ -319,11 +326,11 @@ export default function Onboarding() {
                     </button>
                   </div>
                 </form>
-              </motion.div>
+              </m.div>
             )}
 
             {step === 2 && (
-              <motion.div
+              <m.div
                 key="step2"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -342,7 +349,7 @@ export default function Onboarding() {
                   }`}
                 >
                   <input {...getInputProps()} />
-                  <Upload className="w-8 h-8 text-gray-500 mb-3 group-hover:text-primary transition-colors" />
+                  <Upload className="size-8 text-gray-500 mb-3 group-hover:text-primary transition-colors" />
                   <p className="text-sm font-bold text-white">Drag & Drop simulated bill PDF here</p>
                   <p className="text-[10px] text-gray-400 uppercase tracking-wide mt-1">Accepts simulated files to instantly decode details</p>
                 </div>
@@ -357,9 +364,10 @@ export default function Onboarding() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Bill amount */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Recent Bill Amount (₹)</label>
+                      <label htmlFor="bill_amount" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Recent Bill Amount (₹)</label>
                       <input
                         {...regBill('bill_amount', { valueAsNumber: true })}
+                        id="bill_amount"
                         type="number"
                         placeholder="e.g. 3500"
                         className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
@@ -369,9 +377,10 @@ export default function Onboarding() {
 
                     {/* Units consumed */}
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Units Consumed (kWh)</label>
+                      <label htmlFor="units" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Units Consumed (kWh)</label>
                       <input
                         {...regBill('units', { valueAsNumber: true })}
+                        id="units"
                         type="number"
                         placeholder="e.g. 420"
                         className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all font-sans"
@@ -396,11 +405,11 @@ export default function Onboarding() {
                     </button>
                   </div>
                 </form>
-              </motion.div>
+              </m.div>
             )}
 
             {step === 3 && (
-              <motion.div
+              <m.div
                 key="step3"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -426,13 +435,13 @@ export default function Onboarding() {
                           <button
                             type="button"
                             onClick={() => toggleAppliance(key)}
-                            className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
+                            className={`size-5 rounded-md border flex items-center justify-center transition-all ${
                               isSelected
                                 ? 'bg-primary border-primary text-slate-950'
                                 : 'border-white/10 hover:border-primary/50'
                             }`}
                           >
-                            {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                            {isSelected && <Check className="size-3.5 stroke-[3]" />}
                           </button>
                           <div>
                             <span className="text-lg mr-1.5">{app.icon}</span>
@@ -479,11 +488,11 @@ export default function Onboarding() {
                     Next Step <ArrowRightIcon />
                   </button>
                 </div>
-              </motion.div>
+              </m.div>
             )}
 
             {step === 4 && currentCalc && billData && profileData && (
-              <motion.div
+              <m.div
                 key="step4"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -491,8 +500,8 @@ export default function Onboarding() {
                 className="space-y-6"
               >
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-emerald-500/10 rounded-full border border-emerald-500/30 flex items-center justify-center mx-auto mb-3">
-                    <ShieldCheck className="w-6 h-6 text-emerald-400" />
+                  <div className="size-12 bg-emerald-500/10 rounded-full border border-emerald-500/30 flex items-center justify-center mx-auto mb-3">
+                    <ShieldCheck className="size-6 text-emerald-400" />
                   </div>
                   <h3 className="font-display font-bold text-lg text-white">Calibration Complete</h3>
                   <p className="text-gray-400 text-xs">Our estimates successfully match your utility provider bill details.</p>
@@ -560,22 +569,23 @@ export default function Onboarding() {
                     onClick={finishOnboarding}
                     className="bg-primary hover:bg-primary-hover text-slate-950 px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 font-display font-bold shadow-lg"
                   >
-                    Complete Onboarding <Play className="w-4 h-4 fill-current text-slate-950" />
+                    Complete Onboarding <Play className="size-4 fill-current text-slate-950" />
                   </button>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>
       </div>
     </div>
+  </LazyMotion>
   );
 }
 
 // Arrow icon
 function ArrowRightIcon() {
   return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
     </svg>
   );

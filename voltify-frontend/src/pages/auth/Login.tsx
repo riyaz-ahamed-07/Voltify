@@ -69,8 +69,8 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-primary-container/20 border border-primary/30 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-primary-container" />
+            <div className="size-10 rounded-lg bg-primary-container/20 border border-primary/30 flex items-center justify-center">
+              <Zap className="size-5 text-primary-container" />
             </div>
             <span className="font-display text-2xl font-bold text-sky-400 tracking-tighter">VOLTIFY</span>
           </Link>
@@ -82,11 +82,12 @@ export default function Login() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Email */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Email</label>
+              <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-outline" />
                 <input
                   {...register('email')}
+                  id="email"
                   type="email"
                   placeholder="ravi@example.com"
                   className="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface placeholder-outline/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-sm font-sans"
@@ -97,11 +98,12 @@ export default function Login() {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Password</label>
+              <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-outline" />
                 <input
                   {...register('password')}
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   className="w-full pl-10 pr-12 py-3 bg-surface border border-outline-variant/50 rounded-lg text-on-surface placeholder-outline/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-sm font-sans"
@@ -111,7 +113,7 @@ export default function Login() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
               {errors.password && <p className="text-rose-400 text-xs mt-1 font-sans">{errors.password.message}</p>}
@@ -124,9 +126,9 @@ export default function Login() {
               className="w-full py-3 bg-primary-container text-on-primary-container font-semibold font-display rounded-lg hover:bg-primary-container/90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase text-xs tracking-wider"
             >
               {loading ? (
-                <><span className="w-4 h-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Signing in...</>
+                <><span className="size-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Signing in...</>
               ) : (
-                <>Sign In <Zap className="w-4 h-4" /></>
+                <>Sign In <Zap className="size-4" /></>
               )}
             </button>
           </form>
