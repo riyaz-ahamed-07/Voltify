@@ -1,0 +1,142 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  
+  html { scroll-behavior: smooth; }
+  
+  body {
+    background-color: #0f1419;
+    color: #dee3ea;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0f13; }
+  ::-webkit-scrollbar-thumb { background: #00e5ff40; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #00e5ff80; }
+}
+
+@layer utilities {
+  /* Glass card effect from both styling standards */
+  .glass {
+    background: rgba(36, 43, 51, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(195, 245, 255, 0.1);
+  }
+  
+  .glass-hover {
+    transition: all 0.2s ease;
+  }
+  .glass-hover:hover {
+    border-color: rgba(0, 229, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+  }
+
+  .glass-card {
+    background: rgba(36, 43, 51, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(195, 245, 255, 0.1);
+    border-top: 1px solid rgba(195, 245, 255, 0.3);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.5s;
+  }
+  .glass-card:hover::before {
+    left: 150%;
+  }
+  
+  /* Neon text */
+  .text-neon-cyan {
+    color: #00e5ff;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+  }
+  .text-neon-pink {
+    color: #ec4899;
+    text-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+  }
+  
+  /* Gradient text */
+  .text-gradient {
+    background: linear-gradient(to right, #c3f5ff, #a1ffdc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #00e5ff, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-hover {
+    transition: all 0.3s ease;
+  }
+  .glow-hover:hover {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+    border-color: rgba(0, 229, 255, 0.4);
+  }
+  
+  /* Grid background pattern */
+  .grid-bg {
+    background-image: 
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  
+  /* Estimated data label */
+  .estimated-label {
+    font-size: 0.65rem;
+    color: #f59e0b;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Recharts custom styling to match dark premium cards */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(0, 229, 255, 0.08) !important;
+}
+.recharts-tooltip-wrapper { outline: none !important; }
+
+/* Custom animations for premium interactions */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-float-delayed {
+    animation: float 6s ease-in-out 3s infinite;
+  }
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+}
