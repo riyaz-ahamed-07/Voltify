@@ -26,35 +26,35 @@ export default function Topbar() {
   };
 
   return (
-    <header className="bg-surface/85 backdrop-blur-xl border-b border-white/5 py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-40 shadow-[0_2px_20px_rgba(0,0,0,0.3)]">
+    <header className="bg-slate-950/80 backdrop-blur-xl border-b border-white/[0.06] py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-40">
       {/* Title */}
       <div className="min-w-0">
-        <h2 className="font-display font-bold text-sm md:text-base tracking-tight text-white flex items-center gap-2">
-          SYSTEM STATUS: <span className="text-neon-cyan">ONLINE</span>
+        <h2 className="font-display font-semibold text-sm md:text-base tracking-tight text-white flex items-center gap-2">
+          Voltify Energy Insights
         </h2>
         <p className="text-[10px] md:text-xs text-gray-400 truncate">
-          Welcome back, <span className="font-semibold text-gray-200">Agent {user?.name || 'Voltifyer'}</span>
+          Welcome back, <span className="font-semibold text-gray-200">{user?.name || 'User'}</span>
         </p>
       </div>
 
       {/* Action panel */}
       <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {/* Streak indicator */}
-        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-volt-pink/55 transition-colors cursor-help group relative shrink-0">
-          <Flame className="w-3.5 h-3.5 text-volt-pink animate-pulse" />
-          <span className="font-mono text-[10px] md:text-xs font-bold text-volt-pink tracking-wider">
+        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-volt-pink/30 transition-colors cursor-help group relative shrink-0">
+          <Flame className="w-3.5 h-3.5 text-volt-pink" />
+          <span className="font-mono text-[10px] md:text-xs font-semibold text-volt-pink tracking-wider">
             {streak_days} DAY STREAK
           </span>
           
-          <div className="absolute top-10 right-0 w-48 bg-surface-container border border-white/10 p-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-gray-300 z-50">
+          <div className="absolute top-10 right-0 w-48 bg-slate-900 border border-white/10 p-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-gray-300 z-50">
             Keep saving daily energy to increase your streak multiplier! Currently: <span className="text-volt-pink font-bold">1.15x</span>
           </div>
         </div>
 
         {/* Coins indicator */}
-        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-primary/55 transition-colors cursor-help group relative shrink-0">
-          <Coins className="w-3.5 h-3.5 text-primary animate-bounce" />
-          <span className="font-mono text-[10px] md:text-xs font-bold text-primary tracking-wider">
+        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-primary/30 transition-colors cursor-help group relative shrink-0">
+          <Coins className="w-3.5 h-3.5 text-primary" />
+          <span className="font-mono text-[10px] md:text-xs font-semibold text-primary tracking-wider">
             {coins} COINS
           </span>
           
@@ -78,7 +78,7 @@ export default function Topbar() {
           {showDropdown && (
             <div className="absolute right-0 top-11 w-80 bg-surface-container-low border border-white/10 rounded-xl shadow-2xl p-4 z-50 animate-slide-up">
               <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
-                <span className="font-headline font-bold text-sm text-white">Telemetry Logs</span>
+                <span className="font-semibold text-sm text-white">Notifications</span>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
