@@ -12,10 +12,10 @@ interface GlassCardProps {
 
 export function GlassCard({ children, className, hover = false, glow = 'none', onClick }: GlassCardProps) {
   const glowClass = {
-    cyan:  'hover:shadow-cyan hover:border-volt-cyan/30',
-    pink:  'hover:shadow-pink hover:border-volt-pink/30',
-    green: 'hover:shadow-green hover:border-volt-green/30',
-    none:  'hover:border-primary/20 hover:shadow-cyan',
+    cyan:  'hover:border-volt-cyan/40 hover:bg-slate-900/80',
+    pink:  'hover:border-volt-pink/40 hover:bg-slate-900/80',
+    green: 'hover:border-volt-green/40 hover:bg-slate-900/80',
+    none:  'hover:border-white/12 hover:bg-slate-900/80',
   }[glow];
 
   return (
