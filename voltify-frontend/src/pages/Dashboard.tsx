@@ -119,11 +119,11 @@ export default function Dashboard() {
       {/* Upper overview section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">
-            ENERGY TELEMETRY CONSOLE
+          <h1 className="font-display font-black text-3xl tracking-tight text-gradient">
+            Energy Consumption Dashboard
           </h1>
-          <p className="text-sm text-on-surface-variant">
-            Telemetry Region: <span className="font-mono font-bold text-primary">{onboarding?.location || 'Chennai'}</span> | Model Rate: <span className="font-mono text-primary">₹{tariff}/kWh</span>
+          <p className="text-xs text-gray-400">
+            Region: <span className="font-mono font-bold text-primary">{onboarding?.location || 'Chennai'}</span> | Utility Rate: <span className="font-mono text-primary">₹{tariff}/kWh</span>
           </p>
         </div>
         <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs backdrop-blur-md shadow-md">
@@ -164,10 +164,10 @@ export default function Dashboard() {
           <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
             <Flame className="w-10 h-10 text-volt-pink" />
           </div>
-          <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Active Streak</span>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Active Streak</span>
           <h3 className="font-mono font-extrabold text-2xl text-volt-pink">{streak_days} Days</h3>
-          <p className="text-xs text-on-surface-variant mt-1.5">
-            Active Multiplier: <span className="font-bold text-volt-pink">1.15x</span> Telemetry Bonus
+          <p className="text-xs text-gray-400 mt-1.5">
+            Multiplier active: <span className="font-bold text-volt-pink">1.15x</span> rate boost
           </p>
         </GlassCard>
 
@@ -190,8 +190,8 @@ export default function Dashboard() {
         <GlassCard className="col-span-1 lg:col-span-2 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="font-display font-bold text-lg text-on-surface">DAILY ENERGY CONSUMPTION INDEX</h3>
-              <p className="text-xs text-on-surface-variant">Showing estimated smart-calibrated telemetry log for the last 30 days</p>
+              <h3 className="font-display font-bold text-lg text-white">Daily Energy Consumption Index</h3>
+              <p className="text-xs text-gray-450">Estimated smart consumption statistics over the last 30 days</p>
             </div>
             <div className="flex gap-2">
               <span className="flex items-center gap-1.5 text-xs text-on-surface-variant">
@@ -239,8 +239,8 @@ export default function Dashboard() {
         {/* Recharts Appliance breakdown Pie chart */}
         <GlassCard className="flex flex-col justify-between">
           <div>
-            <h3 className="font-display font-bold text-lg text-on-surface">APPLIANCE CALIBRATION INDEX</h3>
-            <p className="text-xs text-on-surface-variant mb-6">Visual distribution breakdown based on your active usage profile</p>
+            <h3 className="font-display font-bold text-lg text-white">Appliance Allocation Index</h3>
+            <p className="text-xs text-gray-450 mb-6">Estimated load distribution based on your billing parameters</p>
           </div>
 
           <div className="h-44 w-full relative flex items-center justify-center">
@@ -292,11 +292,11 @@ export default function Dashboard() {
         {/* BEE Sliders panel */}
         <GlassCard className="col-span-1 lg:col-span-2 space-y-6">
           <div>
-            <h3 className="font-display font-bold text-lg text-on-surface">
-              ⚡ COMFORT-SAFE SAVINGS (CSS) MANAGER
+            <h3 className="font-display font-bold text-lg text-white">
+              ⚡ Appliance Targets & Guidelines
             </h3>
-            <p className="text-xs text-on-surface-variant">
-              Interact with optimal temperature values to reduce your bill instantly without sacrificing comfort.
+            <p className="text-xs text-gray-405">
+              Set standard thresholds recommended by public bodies to lower your monthly statement expenses.
             </p>
           </div>
 
@@ -446,7 +446,7 @@ export default function Dashboard() {
       {/* Grid: Alerts & Smart notifications */}
       {activeAlerts.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-display font-bold text-sm text-on-surface">ACTIVE TELEMETRY ALERTS</h3>
+          <h3 className="font-display font-bold text-sm text-white">ACTIVE UTILITY INSIGHTS</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activeAlerts.map((alert, i) => (
               <div
