@@ -44,14 +44,14 @@ export default function Settings() {
       });
     }
 
-    toast.success('Grid connections successfully calibrated!');
+    toast.success('Settings saved successfully!');
   };
 
   const handleResetCalibration = () => {
-    if (window.confirm('WARNING: This will wipe out all calibrated telemetry details, neural networks, and prompt you to run Onboarding calibration again. Proceed?')) {
+    if (window.confirm('WARNING: This will wipe out all custom estimation settings, user history, and prompt you to run Onboarding calibration again. Proceed?')) {
       resetDashboard();
       resetGamification();
-      toast.info('Grid calibration profile cleared.');
+      toast.info('Estimation settings cleared.');
       navigate('/onboarding');
     }
   };
@@ -61,7 +61,7 @@ export default function Settings() {
       resetDashboard();
       resetGamification();
       logout();
-      toast.error('All agent records purged.');
+      toast.error('All account data cleared successfully.');
       navigate('/');
     }
   };
@@ -70,8 +70,8 @@ export default function Settings() {
     <div className="space-y-8 font-headline">
       {/* Title Header */}
       <div>
-        <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">⚙️ SYSTEM PARAMETERS</h1>
-        <p className="text-sm text-on-surface-variant">Calibrate Grid API connectors, price tiers, and energy algorithms</p>
+        <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">⚙️ SETTINGS & CONFIGURATIONS</h1>
+        <p className="text-sm text-on-surface-variant">Configure energy providers, utility tariffs, and savings preferences</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -81,10 +81,10 @@ export default function Settings() {
           {/* DISCOM & GRID CALIBRATION */}
           <GlassCard className="p-6">
             <h2 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-4">
-              <Server className="w-5 h-5 text-neon-cyan" /> DISCOM API Grid Connector
+              <Server className="w-5 h-5 text-sky-400" /> Electricity Provider Connection
             </h2>
             <p className="text-xs text-on-surface-variant mb-6 leading-relaxed">
-              Link your live digital smart meter via national DISCOM servers. Voltify maps loads in real time using local tariff slabs.
+              Link your live digital smart meter via national DISCOM servers. Voltify tracks loads and estimates bills based on your utility's tariff slabs.
             </p>
 
             <form onSubmit={handleSaveConfig} className="space-y-4 text-xs">
@@ -131,7 +131,7 @@ export default function Settings() {
                   type="submit"
                   className="bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim px-4 py-2 rounded-lg transition-colors font-semibold flex items-center gap-1.5 text-xs font-headline"
                 >
-                  <Check className="w-3.5 h-3.5" /> Save Grid Parameters
+                  <Check className="w-3.5 h-3.5" /> Save Provider Settings
                 </button>
               </div>
             </form>
@@ -140,10 +140,10 @@ export default function Settings() {
           {/* COMFORT-SAFE SYSTEM (CSS) SETTINGS */}
           <GlassCard className="p-6">
             <h2 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-4">
-              <Sliders className="w-5 h-5 text-volt-pink" /> Comfort-Safe System (CSS) Thresholds
+              <Sliders className="w-5 h-5 text-rose-400" /> Comfort-Safe Efficiency Thresholds
             </h2>
             <p className="text-xs text-on-surface-variant mb-6 leading-relaxed">
-              Fine-tune automated triggers that adjust cooling devices to state-regulated energy efficient bands when grid demand spikes.
+              Fine-tune smart target preferences for cooling devices to keep usage in highly-efficient tariff bands.
             </p>
 
             <div className="space-y-6 text-xs">
@@ -151,13 +151,13 @@ export default function Settings() {
               <div className="space-y-2">
                 <div className="flex justify-between font-mono">
                   <span className="text-on-surface font-semibold">AC Safe Mode Target Temp</span>
-                  <span className="text-volt-pink font-bold">{acTempThreshold}°C</span>
+                  <span className="text-rose-400 font-bold">{acTempThreshold}°C</span>
                 </div>
                 <input
                   type="range"
                   min="21"
                   max="28"
-                  className="w-full h-1 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-volt-pink"
+                  className="w-full h-1 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-rose-500"
                   value={acTempThreshold}
                   onChange={(e) => setAcTempThreshold(Number(e.target.value))}
                 />
@@ -175,10 +175,10 @@ export default function Settings() {
                     type="checkbox"
                     checked={autoSnooze}
                     onChange={(e) => setAutoSnooze(e.target.checked)}
-                    className="rounded bg-surface-container-high border-outline-variant/50 text-volt-pink focus:ring-volt-pink w-4 h-4"
+                    className="rounded bg-surface-container-high border-outline-variant/50 text-rose-500 focus:ring-rose-500 w-4 h-4"
                   />
                   <div>
-                    <p className="text-on-surface font-semibold group-hover:text-volt-pink transition-colors">Enable Autonomous Eco-Snooze</p>
+                    <p className="text-on-surface font-semibold group-hover:text-rose-400 transition-colors">Enable Autonomous Eco-Snooze</p>
                     <p className="text-[10px] text-on-surface-variant/60">Automatically shifts standby devices to sleep during midnight peak pricing.</p>
                   </div>
                 </label>
@@ -208,24 +208,24 @@ export default function Settings() {
           <GlassCard className="p-6 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-volt-green/5 rounded-full blur-xl" />
             <h3 className="font-bold text-sm text-on-surface mb-3 flex items-center gap-1.5">
-              <Cpu className="w-4 h-4 text-volt-green animate-pulse" /> Neural Disaggregator
+              <Cpu className="w-4 h-4 text-emerald-400" /> Savings Estimation Model
             </h3>
             <div className="space-y-3 text-xs">
               <div className="flex justify-between font-mono border-b border-outline-variant/20 pb-2">
                 <span className="text-on-surface-variant">Calibrated Model</span>
-                <span className="text-volt-green font-semibold">Trained-Slab v2.4</span>
+                <span className="text-emerald-400 font-semibold">Trained-Slab v2.4</span>
               </div>
               <div className="flex justify-between font-mono border-b border-outline-variant/20 pb-2">
-                <span className="text-on-surface-variant">Disaggregation confidence</span>
-                <span className="text-volt-green font-semibold">{onboarding?.accuracy_pct || 94}%</span>
+                <span className="text-on-surface-variant">Estimation Confidence</span>
+                <span className="text-emerald-400 font-semibold">{onboarding?.accuracy_pct || 94}%</span>
               </div>
               <div className="flex justify-between font-mono border-b border-outline-variant/20 pb-2">
                 <span className="text-on-surface-variant">Estimated Appliances</span>
-                <span className="text-volt-green font-semibold">{onboarding?.appliances.length || user?.appliance_count || 0} Connected</span>
+                <span className="text-emerald-400 font-semibold">{onboarding?.appliances.length || user?.appliance_count || 0} Connected</span>
               </div>
               <div className="flex justify-between font-mono">
                 <span className="text-on-surface-variant">Calibration Status</span>
-                <span className={`font-semibold ${isOnboarded ? 'text-volt-green' : 'text-volt-amber animate-pulse'}`}>
+                <span className={`font-semibold ${isOnboarded ? 'text-emerald-400' : 'text-volt-amber animate-pulse'}`}>
                   {isOnboarded ? 'VERIFIED' : 'PENDING'}
                 </span>
               </div>
@@ -233,8 +233,8 @@ export default function Settings() {
           </GlassCard>
 
           {/* Maintenance & Purge */}
-          <GlassCard className="p-6 border-volt-pink/20 bg-volt-pink/5">
-            <h3 className="font-bold text-sm text-volt-pink mb-3 flex items-center gap-1.5">
+          <GlassCard className="p-6 border-rose-500/20 bg-rose-500/5">
+            <h3 className="font-bold text-sm text-rose-400 mb-3 flex items-center gap-1.5">
               <Trash2 className="w-4 h-4" /> System Maintenance
             </h3>
             <p className="text-[11px] text-on-surface-variant mb-6 leading-relaxed">
@@ -244,16 +244,16 @@ export default function Settings() {
             <div className="space-y-3">
               <button
                 onClick={handleResetCalibration}
-                className="w-full border border-volt-pink/30 hover:bg-volt-pink/15 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
+                className="w-full border border-rose-500/30 hover:bg-rose-500/15 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
               >
                 <RefreshCw className="w-3.5 h-3.5" /> Recalibrate Estimators
               </button>
 
               <button
                 onClick={handleFactoryReset}
-                className="w-full bg-volt-pink/20 hover:bg-volt-pink/40 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
+                className="w-full bg-rose-500/20 hover:bg-rose-500/30 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
               >
-                <Trash2 className="w-3.5 h-3.5 text-volt-pink" /> Full Database Purge
+                <Trash2 className="w-3.5 h-3.5 text-rose-400" /> Full Database Purge
               </button>
             </div>
           </GlassCard>
@@ -261,11 +261,11 @@ export default function Settings() {
           {/* FAQs */}
           <GlassCard className="p-6">
             <h3 className="font-bold text-sm text-on-surface mb-3 flex items-center gap-1.5">
-              <HelpCircle className="w-4 h-4 text-primary-container" /> Slab Calibration Help
+              <HelpCircle className="w-4 h-4 text-primary-container" /> Energy Estimation Help
             </h3>
             <div className="space-y-2 text-[11px] text-on-surface-variant">
-              <p className="font-semibold text-on-surface">How is energy disaggregated?</p>
-              <p className="leading-relaxed">Using smart meter active harmonics and typical device waveforms. No physical appliance sensors needed!</p>
+              <p className="font-semibold text-on-surface">How is energy usage estimated?</p>
+              <p className="leading-relaxed">Estimated based on seasonal factors, average usage parameters, and standard appliances. No physical sensors needed!</p>
               <p className="font-semibold text-on-surface pt-2">What is Auto-Snooze?</p>
               <p className="leading-relaxed">It triggers mild power shifts when regional electrical frequencies drop to secure high multiplier coins.</p>
             </div>
