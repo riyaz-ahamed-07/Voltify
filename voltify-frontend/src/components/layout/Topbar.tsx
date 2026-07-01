@@ -26,66 +26,72 @@ export default function Topbar() {
   };
 
   return (
-    <header className="bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 py-4 px-8 flex items-center justify-between sticky top-0 z-40">
+    <header className="bg-surface/85 backdrop-blur-xl border-b border-white/5 py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-40 shadow-[0_2px_20px_rgba(0,0,0,0.3)]">
       {/* Title */}
-      <div>
-        <h2 className="font-display font-bold text-lg tracking-tight text-on-surface">
+      <div className="min-w-0">
+        <h2 className="font-display font-bold text-sm md:text-base tracking-tight text-white flex items-center gap-2">
           SYSTEM STATUS: <span className="text-neon-cyan">ONLINE</span>
         </h2>
-        <p className="text-xs text-on-surface-variant">Welcome back, Agent {user?.name || 'Voltifyer'}</p>
+        <p className="text-[10px] md:text-xs text-gray-400 truncate">
+          Welcome back, <span className="font-semibold text-gray-200">Agent {user?.name || 'Voltifyer'}</span>
+        </p>
       </div>
 
       {/* Action panel */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {/* Streak indicator */}
-        <div className="flex items-center gap-1.5 bg-surface-container-high px-3 py-1.5 rounded-full border border-outline-variant/30 hover:border-volt-pink/50 transition-colors cursor-help group relative">
-          <Flame className="w-4 h-4 text-volt-pink animate-pulse" />
-          <span className="font-mono text-sm font-semibold text-volt-pink">{streak_days} DAY STREAK</span>
+        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-volt-pink/55 transition-colors cursor-help group relative shrink-0">
+          <Flame className="w-3.5 h-3.5 text-volt-pink animate-pulse" />
+          <span className="font-mono text-[10px] md:text-xs font-bold text-volt-pink tracking-wider">
+            {streak_days} DAY STREAK
+          </span>
           
-          <div className="absolute top-10 right-0 w-48 bg-surface border border-outline-variant p-2.5 rounded shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-on-surface-variant z-50">
+          <div className="absolute top-10 right-0 w-48 bg-surface-container border border-white/10 p-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-gray-300 z-50">
             Keep saving daily energy to increase your streak multiplier! Currently: <span className="text-volt-pink font-bold">1.15x</span>
           </div>
         </div>
 
         {/* Coins indicator */}
-        <div className="flex items-center gap-1.5 bg-surface-container-high px-3 py-1.5 rounded-full border border-outline-variant/30 hover:border-primary-container/50 transition-colors cursor-help group relative">
-          <Coins className="w-4 h-4 text-primary-container animate-bounce" />
-          <span className="font-mono text-sm font-semibold text-primary-container">{coins} COINS</span>
+        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-primary/55 transition-colors cursor-help group relative shrink-0">
+          <Coins className="w-3.5 h-3.5 text-primary animate-bounce" />
+          <span className="font-mono text-[10px] md:text-xs font-bold text-primary tracking-wider">
+            {coins} COINS
+          </span>
           
-          <div className="absolute top-10 right-0 w-48 bg-surface border border-outline-variant p-2.5 rounded shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-on-surface-variant z-50">
+          <div className="absolute top-10 right-0 w-48 bg-surface-container border border-white/10 p-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-gray-300 z-50">
             Earn coins by beating your energy estimate. Redeem for credits & vouchers!
           </div>
         </div>
 
         {/* Notifications */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="p-2 bg-surface-container-high rounded-full border border-outline-variant/30 text-on-surface-variant hover:text-primary hover:border-primary/50 transition-all relative"
+            className="p-2 bg-white/5 rounded-full border border-white/5 text-gray-400 hover:text-primary hover:border-primary/50 transition-all relative"
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-volt-pink rounded-full border border-surface animate-ping" />
+              <span className="absolute top-0 right-0 w-2 h-2 bg-volt-pink rounded-full border border-surface animate-ping" />
             )}
           </button>
 
           {showDropdown && (
-            <div className="absolute right-0 top-11 w-80 bg-surface-container-low border border-outline-variant rounded-xl shadow-2xl p-4 z-50 animate-slide-up">
-              <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2 mb-2">
-                <span className="font-headline font-bold text-sm text-on-surface">Telemetry Notifications</span>
+            <div className="absolute right-0 top-11 w-80 bg-surface-container-low border border-white/10 rounded-xl shadow-2xl p-4 z-50 animate-slide-up">
+              <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
+                <span className="font-headline font-bold text-sm text-white">Telemetry Logs</span>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
-                    className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                    className="text-[11px] text-primary hover:underline flex items-center gap-1 font-semibold"
                   >
                     <Check className="w-3 h-3" /> Mark all read
                   </button>
                 )}
               </div>
 
-              <div className="space-y-2 max-h-60 overflow-y-auto">
+              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                 {notifications.length === 0 ? (
-                  <p className="text-center text-xs text-on-surface-variant py-4">No recent logs</p>
+                  <p className="text-center text-xs text-gray-400 py-4">No recent logs</p>
                 ) : (
                   notifications.map((n) => (
                     <div
@@ -93,15 +99,15 @@ export default function Topbar() {
                       onClick={() => markAsRead(n.id)}
                       className={`p-2.5 rounded-lg border text-xs transition-colors cursor-pointer ${
                         n.read
-                          ? 'bg-transparent border-transparent text-on-surface-variant'
-                          : 'bg-primary/5 border-primary/20 text-on-surface hover:bg-primary/10'
+                          ? 'bg-transparent border-transparent text-gray-400'
+                          : 'bg-primary/5 border-primary/20 text-white hover:bg-primary/10'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-1 mb-1">
                         <span className="font-bold">{n.title}</span>
-                        {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-volt-pink mt-1" />}
+                        {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-volt-pink mt-1 shrink-0" />}
                       </div>
-                      <p className="text-on-surface-variant text-[11px]">{n.message}</p>
+                      <p className="text-gray-400 text-[11px] leading-relaxed">{n.message}</p>
                     </div>
                   ))
                 )}

@@ -126,10 +126,10 @@ export default function Dashboard() {
             Telemetry Region: <span className="font-mono font-bold text-primary">{onboarding?.location || 'Chennai'}</span> | Model Rate: <span className="font-mono text-primary">₹{tariff}/kWh</span>
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-surface-container-high/60 border border-outline-variant/30 px-4 py-2 rounded-xl text-xs">
-          <BadgeAlert className="w-4 h-4 text-tertiary" />
-          <span className="text-on-surface-variant">Estimated Disaggregation Accuracy:</span>
-          <span className="font-mono font-bold text-tertiary">{onboarding?.accuracy_pct || 94}%</span>
+        <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs backdrop-blur-md shadow-md">
+          <BadgeAlert className="w-4 h-4 text-primary" />
+          <span className="text-gray-400">Estimated Disaggregation Accuracy:</span>
+          <span className="font-mono font-bold text-primary">{onboarding?.accuracy_pct || 94}%</span>
         </div>
       </div>
 
@@ -302,13 +302,13 @@ export default function Dashboard() {
 
           <div className="space-y-6">
             {/* AC Temp Slider */}
-            <div className="bg-surface/50 border border-outline-variant/30 p-5 rounded-xl space-y-4">
+            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl space-y-4 backdrop-blur-md">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <span className="text-lg">❄️</span>
                   <div>
-                    <h4 className="text-sm font-bold text-on-surface">Air Conditioner Temp settings</h4>
-                    <p className="text-[10px] text-on-surface-variant">BEE Optimal Standard: <span className="text-primary font-bold">24°C</span></p>
+                    <h4 className="text-sm font-bold text-white">Air Conditioner Temp Settings</h4>
+                    <p className="text-[10px] text-gray-400 font-medium">BEE Optimal Standard: <span className="text-primary font-bold font-mono">24°C</span></p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -317,7 +317,7 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-4 items-center">
-                <span className="text-xs text-outline font-mono">18°C</span>
+                <span className="text-xs text-gray-500 font-mono">18°C</span>
                 <input
                   type="range"
                   min={18}
@@ -325,31 +325,31 @@ export default function Dashboard() {
                   step={1}
                   value={acTemp}
                   onChange={(e) => handleAcSlide(parseInt(e.target.value))}
-                  className="flex-1 accent-primary-container h-1 bg-surface-container-high rounded-full outline-none"
+                  className="flex-1 accent-primary h-1.5 bg-white/10 rounded-lg cursor-pointer outline-none"
                 />
-                <span className="text-xs text-outline font-mono">26°C</span>
+                <span className="text-xs text-gray-500 font-mono">26°C</span>
               </div>
 
               {acTemp >= 24 ? (
-                <div className="bg-primary/10 border border-primary/20 p-2.5 rounded-lg text-xs text-primary flex gap-2 items-center">
+                <div className="bg-primary/15 border border-primary/20 p-3 rounded-xl text-xs text-primary flex gap-2.5 items-center">
                   <CheckCircle className="w-4 h-4 flex-shrink-0" />
                   <p>BEE standard active! Saving <span className="font-bold">~36% AC energy</span> with zero healthy comfort loss.</p>
                 </div>
               ) : (
-                <p className="text-[11px] text-on-surface-variant italic">
+                <p className="text-[11px] text-gray-400 italic">
                   Tip: Raising temperature from 18°C to 24°C will immediately save you <span className="text-primary font-bold">₹900/month</span>!
                 </p>
               )}
             </div>
 
             {/* Refrigerator Temp Slider */}
-            <div className="bg-surface/50 border border-outline-variant/30 p-5 rounded-xl space-y-4">
+            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl space-y-4 backdrop-blur-md">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <span className="text-lg">🧊</span>
                   <div>
-                    <h4 className="text-sm font-bold text-on-surface">Refrigerator Temp settings</h4>
-                    <p className="text-[10px] text-on-surface-variant">WHO Safety Standard: <span className="text-primary font-bold">4°C</span></p>
+                    <h4 className="text-sm font-bold text-white">Refrigerator Temp Settings</h4>
+                    <p className="text-[10px] text-gray-400 font-medium">WHO Safety Standard: <span className="text-primary font-bold font-mono">4°C</span></p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -358,7 +358,7 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-4 items-center">
-                <span className="text-xs text-outline font-mono">1°C</span>
+                <span className="text-xs text-gray-500 font-mono">1°C</span>
                 <input
                   type="range"
                   min={1}
@@ -366,18 +366,18 @@ export default function Dashboard() {
                   step={1}
                   value={fridgeTemp}
                   onChange={(e) => handleFridgeSlide(parseInt(e.target.value))}
-                  className="flex-1 accent-primary-container h-1 bg-surface-container-high rounded-full outline-none"
+                  className="flex-1 accent-primary h-1.5 bg-white/10 rounded-lg cursor-pointer outline-none"
                 />
-                <span className="text-xs text-outline font-mono">6°C</span>
+                <span className="text-xs text-gray-500 font-mono">6°C</span>
               </div>
 
               {fridgeTemp >= 4 ? (
-                <div className="bg-primary/10 border border-primary/20 p-2.5 rounded-lg text-xs text-primary flex gap-2 items-center">
+                <div className="bg-primary/15 border border-primary/20 p-3 rounded-xl text-xs text-primary flex gap-2.5 items-center">
                   <CheckCircle className="w-4 h-4 flex-shrink-0" />
                   <p>Optimal compressor cycle active! Reduced consumption by <span className="font-bold">~8%</span>.</p>
                 </div>
               ) : (
-                <p className="text-[11px] text-on-surface-variant italic">
+                <p className="text-[11px] text-gray-400 italic">
                   Tip: Raising from 2°C to 4°C reduces motor cycles with absolute food safety.
                 </p>
               )}
@@ -390,50 +390,50 @@ export default function Dashboard() {
           {/* Active challenges */}
           <GlassCard className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-display font-bold text-sm text-on-surface">ACTIVE SAVINGS QUEST</h3>
-              <Sparkles className="w-4 h-4 text-primary-container animate-pulse" />
+              <h3 className="font-display font-bold text-sm text-white">ACTIVE SAVINGS QUEST</h3>
+              <Sparkles className="w-4 h-4 text-primary animate-pulse" />
             </div>
 
-            <div className="bg-surface/50 border border-outline-variant/30 p-4 rounded-xl space-y-3">
-              <span className="text-[10px] font-bold text-volt-pink uppercase tracking-widest block">WEEKLY QUEST</span>
-              <h4 className="text-sm font-bold text-on-surface">Use under 100 kWh this week</h4>
+            <div className="bg-white/5 border border-white/10 p-4 rounded-xl space-y-3">
+              <span className="text-[9px] font-mono font-bold text-volt-pink uppercase tracking-widest block">WEEKLY QUEST</span>
+              <h4 className="text-sm font-bold text-white">Use under 100 kWh this week</h4>
               
               <div className="space-y-1">
-                <div className="flex justify-between text-xs font-mono">
-                  <span className="text-on-surface-variant">Progress: 67 / 100 units</span>
-                  <span className="text-primary">67%</span>
+                <div className="flex justify-between text-[11px] font-mono">
+                  <span className="text-gray-400 font-medium">Progress: 67 / 100 units</span>
+                  <span className="text-primary font-bold">67%</span>
                 </div>
-                <div className="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <div className="bg-primary h-full rounded-full" style={{ width: '67%' }} />
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-[10px] text-on-surface-variant pt-2 border-t border-outline-variant/15">
-                <span>Reward: <span className="font-bold text-primary-container font-mono">150 Coins</span></span>
-                <span className="font-mono uppercase text-volt-pink">3 Days left</span>
+              <div className="flex justify-between items-center text-[10px] text-gray-400 pt-2 border-t border-white/5">
+                <span>Reward: <span className="font-bold text-primary font-mono">150 Coins</span></span>
+                <span className="font-mono uppercase text-volt-pink font-semibold">3 Days left</span>
               </div>
             </div>
           </GlassCard>
 
           {/* Leaders board rankings */}
           <GlassCard className="space-y-4">
-            <h3 className="font-display font-bold text-sm text-on-surface">DISCOM LEADERBOARD PREVIEW</h3>
-            <div className="space-y-2">
+            <h3 className="font-display font-bold text-sm text-white">DISCOM LEADERBOARD PREVIEW</h3>
+            <div className="space-y-1.5">
               {leaderboard.slice(0, 5).map((e) => (
                 <div
                   key={e.name}
-                  className={`flex justify-between items-center p-2 rounded text-xs transition-colors ${
+                  className={`flex justify-between items-center p-2 rounded-xl text-xs transition-colors ${
                     e.is_current_user
-                      ? 'bg-primary-container/10 border border-primary/20 text-primary font-bold'
-                      : 'hover:bg-surface-container-high/40 text-on-surface-variant'
+                      ? 'bg-primary/10 border border-primary/20 text-primary font-bold shadow-cyan'
+                      : 'hover:bg-white/5 text-gray-400 hover:text-white'
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <span className="w-4 text-center font-mono font-bold text-[10px] text-outline">#{e.rank}</span>
+                    <span className="w-4 text-center font-mono font-bold text-[10px] text-gray-500">#{e.rank}</span>
                     <span>{e.name}</span>
                   </span>
-                  <div className="flex items-center gap-3 font-mono font-bold text-on-surface">
-                    <span className="text-volt-pink">{e.streak}d</span>
+                  <div className="flex items-center gap-3 font-mono font-bold text-white">
+                    <span className="text-volt-pink font-semibold">{e.streak}d</span>
                     <span>{e.coins} c</span>
                   </div>
                 </div>

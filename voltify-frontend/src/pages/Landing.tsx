@@ -1,7 +1,7 @@
 // src/pages/Landing.tsx
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, ArrowRight, Play, Check, Globe, Share2, Eye, EyeOff, LayoutGrid } from 'lucide-react';
+import { Zap, ArrowRight, Play, Check, Globe, Share2, Award, Cpu, ShieldCheck, HelpCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 export default function Landing() {
@@ -10,7 +10,7 @@ export default function Landing() {
   const [glowStyle, setGlowStyle] = useState({ left: '0px', top: '0px', opacity: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
 
-  // Mouse tracking radial glow for cyberpunk effect
+  // Mouse tracking radial glow for premium cyberpunk backdrop
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!heroRef.current) return;
     const rect = heroRef.current.getBoundingClientRect();
@@ -36,28 +36,28 @@ export default function Landing() {
   };
 
   return (
-    <div className="antialiased min-h-screen flex flex-col font-headline text-body-md text-on-surface bg-background">
-      {/* TopNavBar */}
-      <nav className="bg-surface/80 backdrop-blur-xl sticky top-0 z-50 border-b border-outline-variant/30 shadow-sm">
+    <div className="antialiased min-h-screen flex flex-col text-on-surface bg-background font-headline selection:bg-primary/30 selection:text-white">
+      {/* Premium Header/Navigation */}
+      <nav className="bg-surface/60 backdrop-blur-xl sticky top-0 z-50 border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.4)]">
         <div className="flex justify-between items-center w-full px-6 md:px-10 py-4 max-w-7xl mx-auto">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded bg-primary-container/20 border border-primary/30 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-primary-container" />
+          <Link to="/" className="flex items-center gap-3 transition-transform duration-300 hover:scale-105">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center shadow-cyan">
+              <Zap className="w-5 h-5 text-primary animate-pulse" />
             </div>
-            <span className="font-display font-bold text-xl tracking-tighter text-primary">Voltify</span>
+            <span className="font-display font-extrabold text-2xl tracking-tighter text-neon-cyan">Voltify</span>
           </Link>
           
-          <div className="hidden md:flex space-x-8 items-center">
-            <a className="text-primary font-bold border-b-2 border-primary pb-1 hover:bg-primary-container/10 transition-all duration-300 px-2 rounded" href="#features">Features</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors hover:bg-primary-container/10 transition-all duration-300 px-2 py-1 rounded" href="#how-it-works">How it Works</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors hover:bg-primary-container/10 transition-all duration-300 px-2 py-1 rounded" href="#intelligence">Intelligence</a>
+          <div className="hidden md:flex items-center space-x-1">
+            <a className="text-gray-300 hover:text-primary hover:bg-white/5 transition-all duration-200 px-4 py-2 rounded-xl text-sm font-medium" href="#features">Features</a>
+            <a className="text-gray-300 hover:text-primary hover:bg-white/5 transition-all duration-200 px-4 py-2 rounded-xl text-sm font-medium" href="#how-it-works">How it Works</a>
+            <a className="text-gray-300 hover:text-primary hover:bg-white/5 transition-all duration-200 px-4 py-2 rounded-xl text-sm font-medium" href="#preview">System Preview</a>
           </div>
           
           <div className="flex items-center space-x-4">
-            <Link className="hidden md:block text-on-surface-variant hover:text-primary transition-colors text-xs font-bold uppercase tracking-wider" to="/login">Sign In</Link>
+            <Link className="hidden md:inline-block text-gray-400 hover:text-white transition-colors text-sm font-semibold tracking-wide uppercase px-4 py-2" to="/login">Sign In</Link>
             <button 
               onClick={handleGetStarted}
-              className="bg-primary-container text-on-primary-container px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-primary-container/90 transition-colors shadow-[0_0_15px_rgba(0,229,255,0.3)] animate-pulse-glow"
+              className="bg-primary text-slate-950 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-cyan-300 transition-all shadow-cyan animate-pulse-glow"
             >
               Get Started
             </button>
@@ -71,12 +71,12 @@ export default function Landing() {
           ref={heroRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="relative pt-12 pb-24 overflow-hidden" 
+          className="relative pt-16 pb-28 overflow-hidden grid-bg" 
           id="hero-section"
         >
-          {/* Radial Glow Container */}
+          {/* Mouse-tracking Radial Glow */}
           <div 
-            className="w-[450px] h-[450px] bg-primary-container/15 rounded-full blur-[100px] absolute pointer-events-none -z-10 transition-opacity duration-300"
+            className="w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] absolute pointer-events-none -z-10 transition-opacity duration-300"
             style={{
               left: glowStyle.left,
               top: glowStyle.top,
@@ -85,121 +85,185 @@ export default function Landing() {
             }}
           />
 
-          {/* Background Static Glows */}
-          <div className="absolute top-0 left-1/4 w-[450px] h-[450px] bg-primary-container/10 rounded-full blur-[100px] -z-10 animate-float-slow" />
-          <div className="absolute bottom-0 right-1/4 w-[350px] h-[350px] bg-tertiary-container/10 rounded-full blur-[120px] -z-10 animate-float" />
+          {/* Atmospheric ambient highlights */}
+          <div className="absolute top-1/4 left-1/3 w-[350px] h-[350px] bg-primary/5 rounded-full blur-[140px] -z-20 animate-float-slow" />
+          <div className="absolute bottom-1/4 right-1/3 w-[450px] h-[450px] bg-purple-500/5 rounded-full blur-[160px] -z-20 animate-float" />
 
-          <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center relative z-10">
-            <div className="space-y-6">
-              <div className="inline-flex items-center space-x-2 bg-surface-container-high rounded-full px-4 py-1 border border-outline-variant/30 hover:border-primary/50 transition-colors cursor-default">
-                <Zap className="w-4 h-4 text-tertiary animate-pulse" />
-                <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Next-Gen Energy AI</span>
+          <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 space-y-8">
+              <div className="inline-flex items-center space-x-2.5 bg-white/5 backdrop-blur-md rounded-full px-4.5 py-1.5 border border-white/10 hover:border-primary/45 transition-colors duration-300">
+                <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-ping" />
+                <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest font-mono">Next-Gen Energy AI</span>
               </div>
               
-              <h1 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl text-on-surface leading-tight tracking-tight">
+              <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight">
                 Master Your <br/>
-                <span className="text-gradient">Energy Intelligence.</span>
+                <span className="text-gradient">Energy Intelligence</span>
               </h1>
               
-              <p className="font-headline text-on-surface-variant max-w-lg text-base md:text-lg leading-relaxed">
-                No smart meter? No problem. Transform your bills into actionable insights and save up to 30% on electricity with our predictive AI models.
+              <p className="text-gray-400 max-w-xl text-base md:text-lg leading-relaxed font-light">
+                No smart meter installed? No hardware trackers needed. Transform raw monthly electricity bills into highly detailed, appliance-level telemetry insights and slash up to 30% of wastage.
               </p>
               
-              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-5">
                 <button 
                   onClick={handleGetStarted}
-                  className="bg-primary-container text-on-primary-container px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary-container/90 transition-all animate-pulse-glow flex items-center justify-center space-x-2"
+                  className="bg-primary text-slate-950 px-8 py-4 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-cyan-300 transition-all shadow-cyan flex items-center justify-center space-x-2.5 hover:scale-[1.02] transform duration-200"
                 >
                   <span>Analyze My Bill</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
+                
                 <Link 
                   to="/login"
-                  className="border border-outline-variant text-on-surface px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-surface-container-high hover:text-primary transition-all flex items-center justify-center space-x-2"
+                  className="border border-white/10 text-white bg-white/5 backdrop-blur-md px-8 py-4 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/10 hover:border-primary/40 transition-all flex items-center justify-center space-x-2.5 hover:scale-[1.02] transform duration-200"
                 >
                   <Play className="w-4 h-4 text-primary" />
-                  <span>See Demo Dashboard</span>
+                  <span>See Live Demo</span>
                 </Link>
               </div>
             </div>
 
-            <div className="relative z-10 mt-6 lg:mt-0">
-              <div className="glass-card rounded-2xl p-1 animate-float-slow border-primary/20 max-w-xl mx-auto shadow-2xl relative">
-                <img 
-                  alt="Voltify Artificial Intelligence Telemetry Dashboard Mockup" 
-                  className="w-full h-auto rounded-xl object-cover relative z-0" 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsXQElOg2AjZfMmIOMQIDi4xziWYlKOSGcgJrN01SSMkB9blOvEUdBBEozz0-gT5Ki_23uvx0X_zK03O_2YRfLqjxCBKqL3FuXruRL33J07GaYezPkytlEAi92dpGDL5SGcpU5sBd91xSQRoO8_Gk-cSQP9TIBLzTmwiVdfJnhiHbnlsZ-wtylqqnWeLqtTmN92Js3uVWEUiQJAoXyR_W13yZxQLuUhm-t29gTNoVlzaR1XX1Jj2YU1uQEJHpg7Kbea0dFd3YF1Xh-"
-                />
+            {/* Right Graphics/Component-Rendered Mock Dashboard Column */}
+            <div className="lg:col-span-5 relative z-10" id="preview">
+              <div className="relative group">
+                {/* Glow outline wrapper */}
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-45 transition duration-1000 group-hover:duration-200" />
+                
+                {/* Visual interface console */}
+                <div className="relative glass-card rounded-2xl p-6 border border-white/10 shadow-2xl bg-surface-container-low/95">
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                      <span className="text-[10px] font-mono tracking-widest text-emerald-400 font-bold uppercase">Active Telemetry Engine: On</span>
+                    </div>
+                    <div className="text-[9px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase font-semibold">LIVE REPORT</div>
+                  </div>
+                  
+                  {/* Grid layout parameters */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-surface-container-lowest p-4 rounded-xl border border-white/5">
+                      <span className="text-[9px] text-gray-400 uppercase tracking-wider block mb-1 font-mono">Calibrated Load</span>
+                      <div className="text-xl font-bold font-mono text-primary">17.4 kWh</div>
+                      <div className="text-[9px] text-emerald-400 font-medium mt-1 font-mono">↓ 12% vs last month</div>
+                    </div>
+                    <div className="bg-surface-container-lowest p-4 rounded-xl border border-white/5">
+                      <span className="text-[9px] text-gray-400 uppercase tracking-wider block mb-1 font-mono">Estimated Savings</span>
+                      <div className="text-xl font-bold font-mono text-volt-pink">₹134.40</div>
+                      <div className="text-[9px] text-volt-pink font-medium mt-1 font-mono">Active Streak: 7 Days</div>
+                    </div>
+                  </div>
+                  
+                  {/* Appliance runtimes list */}
+                  <div className="bg-surface-container-lowest/80 rounded-xl p-4.5 border border-white/5 space-y-4">
+                    <h4 className="text-[10px] font-mono text-gray-300 font-bold tracking-wider uppercase">APPLIANCE TELEMETRY BREAKDOWN</h4>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-gray-300 flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-cyan" />
+                          Air Conditioner (BEE 24°C)
+                        </span>
+                        <span className="font-mono text-gray-400 text-xs">32%</span>
+                      </div>
+                      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-cyan-400 rounded-full" style={{ width: '32%' }} />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-gray-300 flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-purple-400" />
+                          Refrigerator (WHO 4°C)
+                        </span>
+                        <span className="font-mono text-gray-400 text-xs">18%</span>
+                      </div>
+                      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-purple-400 rounded-full" style={{ width: '18%' }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Value Prop Section */}
-        <section className="py-20 bg-surface-container-lowest relative" id="features">
+        <section className="py-24 bg-surface-container-lowest/40 relative border-t border-white/5" id="features">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="text-center mb-14 space-y-4">
-              <h2 className="font-display font-bold text-3xl md:text-4xl text-on-surface">Your Bill, <span className="text-gradient">Decoded.</span></h2>
-              <p className="font-headline text-on-surface-variant max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
-                We use advanced machine learning algorithms to disaggregate your monthly utility bill, providing appliance-level estimates without the need for expensive hardware monitors.
+            <div className="text-center mb-16 space-y-4">
+              <h2 className="font-display font-extrabold text-3xl md:text-4xl text-white">
+                Your Monthly Bill, <span className="text-gradient font-black">Decoded</span>
+              </h2>
+              <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base font-light leading-relaxed">
+                Advanced machine learning models perform disaggregation mathematical modeling on basic monthly power statistics to give you hardware-free appliance level telemetry.
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Feature 1 */}
-              <div className="glass-card rounded-2xl p-8 glow-hover transition-all duration-300 group animate-float-slow">
-                <div className="w-12 h-12 rounded-lg bg-surface-container-highest border border-outline-variant flex items-center justify-center mb-6 group-hover:border-primary/50 transition-colors">
-                  <Zap className="w-5 h-5 text-primary" />
+              <div className="glass-card rounded-2xl p-8 glow-hover transition-all duration-300 group flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-primary/40 transition-colors duration-300">
+                    <Cpu className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="font-display font-bold text-xl text-white mb-3">AI Estimation Engine</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-light">
+                    Highly optimized calculations mapping monthly parameters to hourly appliance disaggregation weights.
+                  </p>
                 </div>
-                <h3 className="font-display font-bold text-xl text-on-surface mb-3">AI Monitoring</h3>
-                <p className="font-headline text-sm text-on-surface-variant mb-6 leading-relaxed">
-                  Visualize your energy distribution over time. Understand when you peak and what drives your costs.
-                </p>
-                {/* Abstract Bar Chart Graphics */}
-                <div className="h-24 w-full flex items-end space-x-2 border-b border-outline-variant/30 pb-2">
-                  <div className="w-1/5 bg-primary/20 hover:bg-primary/40 rounded-t-md h-1/3 transition-all duration-300" />
-                  <div className="w-1/5 bg-primary/40 hover:bg-primary/60 rounded-t-md h-2/3 transition-all duration-300" />
-                  <div className="w-1/5 bg-primary rounded-t-md h-full shadow-[0_0_10px_rgba(195,245,255,0.5)] transition-all duration-300 transform hover:-translate-y-1" />
-                  <div className="w-1/5 bg-primary/60 hover:bg-primary/80 rounded-t-md h-4/5 transition-all duration-300" />
-                  <div className="w-1/5 bg-primary/30 hover:bg-primary/50 rounded-t-md h-1/2 transition-all duration-300" />
+                {/* High tech load index bar visual */}
+                <div className="h-20 w-full flex items-end space-x-2 border-b border-white/5 pb-2">
+                  <div className="w-1/5 bg-primary/20 hover:bg-primary/40 rounded-t-md h-[30%] transition-all duration-300" />
+                  <div className="w-1/5 bg-primary/30 hover:bg-primary/50 rounded-t-md h-[55%] transition-all duration-300" />
+                  <div className="w-1/5 bg-primary rounded-t-md h-[95%] shadow-cyan transition-all duration-300" />
+                  <div className="w-1/5 bg-primary/55 hover:bg-primary/75 rounded-t-md h-[75%] transition-all duration-300" />
+                  <div className="w-1/5 bg-primary/25 hover:bg-primary/45 rounded-t-md h-[45%] transition-all duration-300" />
                 </div>
               </div>
               
               {/* Feature 2 */}
-              <div className="glass-card rounded-2xl p-8 glow-hover transition-all duration-300 group animate-float">
-                <div className="w-12 h-12 rounded-lg bg-surface-container-highest border border-outline-variant flex items-center justify-center mb-6 group-hover:border-tertiary/50 transition-colors">
-                  <Zap className="w-5 h-5 text-tertiary" />
-                </div>
-                <h3 className="font-display font-bold text-xl text-on-surface mb-3">Prediction & Forecasting</h3>
-                <p className="font-headline text-sm text-on-surface-variant mb-6 leading-relaxed">
-                  Anticipate future bills based on weather forecasts, historical usage, and current rates.
-                </p>
-                <div className="bg-surface-container-highest rounded-lg p-4 border border-outline-variant/30 flex items-center justify-between hover:border-tertiary/30 transition-colors cursor-default">
-                  <div>
-                    <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Next Month Est.</div>
-                    <div className="font-display font-bold text-2xl text-on-surface">₹4,250</div>
+              <div className="glass-card rounded-2xl p-8 glow-hover transition-all duration-300 group flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-volt-pink/40 transition-colors duration-300">
+                    <Award className="w-5 h-5 text-volt-pink" />
                   </div>
-                  <span className="text-[10px] font-bold text-tertiary bg-tertiary/10 px-2 py-1 rounded-full uppercase">15% SAVED</span>
+                  <h3 className="font-display font-bold text-xl text-white mb-3">Streak & Coins Rewards</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-light">
+                    Gamify your household energy consumption. Stay regular, achieve goals, and earn coins redeemable for premium rewards.
+                  </p>
+                </div>
+                <div className="bg-surface/50 rounded-xl p-4 border border-white/5 flex items-center justify-between">
+                  <div>
+                    <div className="text-[9px] font-mono text-gray-400 uppercase tracking-wider">PROJECTED MULTIPLIER</div>
+                    <div className="font-mono font-bold text-lg text-white">1.15x Telemetry</div>
+                  </div>
+                  <span className="text-[10px] font-bold text-volt-pink bg-volt-pink/15 px-2.5 py-1 rounded-full uppercase">Active</span>
                 </div>
               </div>
               
               {/* Feature 3 */}
-              <div className="glass-card rounded-2xl p-8 glow-hover transition-all duration-300 group animate-float-delayed">
-                <div className="w-12 h-12 rounded-lg bg-surface-container-highest border border-outline-variant flex items-center justify-center mb-6 group-hover:border-primary-fixed-dim/50 transition-colors">
-                  <Zap className="w-5 h-5 text-volt-pink animate-pulse" />
-                </div>
-                <h3 className="font-display font-bold text-xl text-on-surface mb-3">Actionable Recommendations</h3>
-                <p className="font-headline text-sm text-on-surface-variant mb-6 leading-relaxed">
-                  Get personalized advice on how to shift usage away from peak times and lower your carbon footprint.
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-3 bg-surface-container/50 p-2 rounded border border-outline-variant/20 hover:bg-surface-container transition-colors cursor-default">
-                    <span className="w-2 h-2 rounded-full bg-tertiary animate-ping" />
-                    <span className="font-mono text-xs text-on-surface-variant">Run geyser off-peak (6–9 AM)</span>
+              <div className="glass-card rounded-2xl p-8 glow-hover transition-all duration-300 group flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-tertiary-fixed-dim/40 transition-colors duration-300">
+                    <ShieldCheck className="w-5 h-5 text-tertiary-fixed-dim" />
                   </div>
-                  <div className="flex items-center space-x-3 bg-surface-container/50 p-2 rounded border border-outline-variant/20 hover:bg-surface-container transition-colors cursor-default">
-                    <span className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="font-mono text-xs text-on-surface-variant">Set AC to optimal 24°C</span>
+                  <h3 className="font-display font-bold text-xl text-white mb-3">Comfort-Safe Target Calibration</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-light">
+                    Configure thresholds recommended by organizations like BEE and WHO to maximize savings while protecting home safety.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2.5 bg-surface/50 p-2 rounded-lg border border-white/5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                    <span className="font-mono text-[11px] text-gray-300">AC standard calibrated to 24°C</span>
+                  </div>
+                  <div className="flex items-center space-x-2.5 bg-surface/50 p-2 rounded-lg border border-white/5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="font-mono text-[11px] text-gray-300">WHO safe cold temp: 4°C active</span>
                   </div>
                 </div>
               </div>
@@ -208,107 +272,130 @@ export default function Landing() {
         </section>
 
         {/* How it Works Section */}
-        <section className="py-20 relative" id="how-it-works">
+        <section className="py-24 relative border-t border-white/5" id="how-it-works">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="text-center mb-16">
-              <h2 className="font-display font-bold text-3xl md:text-4xl text-on-surface">Intelligence in <span className="text-gradient">3 Steps</span></h2>
+            <div className="text-center mb-20">
+              <h2 className="font-display font-extrabold text-3xl md:text-4xl text-white">
+                Savings Process in <span className="text-gradient font-black">3 Steps</span>
+              </h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-              {/* Connecting Line (Desktop) */}
-              <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-outline-variant/30 z-0" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
+              {/* Central connection timeline path (desktop) */}
+              <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 bg-white/5 z-0" />
               
               {/* Step 1 */}
               <div className="relative z-10 flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-6 border-2 border-outline-variant group-hover:border-primary group-hover:scale-105 transition-all duration-300">
-                  <Zap className="w-8 h-8 text-on-surface group-hover:text-primary transition-colors" />
+                <div className="w-20 h-20 rounded-2xl glass-card flex items-center justify-center mb-6 border border-white/10 group-hover:border-primary/50 group-hover:scale-[1.04] transition-all duration-300 shadow-md">
+                  <Cpu className="w-8 h-8 text-gray-300 group-hover:text-primary transition-colors duration-300" />
                 </div>
-                <div className="bg-primary/20 text-primary font-bold text-[10px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest">Step 01</div>
-                <h3 className="font-display font-bold text-lg text-on-surface mb-2">Create Account</h3>
-                <p className="font-headline text-xs text-on-surface-variant max-w-xs leading-relaxed">Securely sign up and connect your profile settings to DISCOM guidelines.</p>
+                <div className="bg-primary/10 text-primary font-bold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono border border-primary/20">
+                  Step 01
+                </div>
+                <h3 className="font-display font-bold text-lg text-white mb-2">Create Account</h3>
+                <p className="text-gray-400 text-xs max-w-xs leading-relaxed font-light">
+                  Instantly set up your dashboard profile. Customize basic configurations based on your active state and energy provider rules.
+                </p>
               </div>
               
               {/* Step 2 */}
               <div className="relative z-10 flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-6 border-2 border-outline-variant group-hover:border-primary group-hover:scale-105 transition-all duration-300">
-                  <LayoutGrid className="w-8 h-8 text-on-surface group-hover:text-primary transition-colors" />
+                <div className="w-20 h-20 rounded-2xl glass-card flex items-center justify-center mb-6 border border-white/10 group-hover:border-primary/50 group-hover:scale-[1.04] transition-all duration-300 shadow-md">
+                  <Cpu className="w-8 h-8 text-gray-300 group-hover:text-primary transition-colors duration-300" />
                 </div>
-                <div className="bg-primary/20 text-primary font-bold text-[10px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest">Step 02</div>
-                <h3 className="font-display font-bold text-lg text-on-surface mb-2">Upload Data</h3>
-                <p className="font-headline text-xs text-on-surface-variant max-w-xs leading-relaxed">Simply upload a PDF of your electricity bill or enter your basic billing parameters manually.</p>
+                <div className="bg-primary/10 text-primary font-bold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono border border-primary/20">
+                  Step 02
+                </div>
+                <h3 className="font-display font-bold text-lg text-white mb-2">Calibrate Billing parameters</h3>
+                <p className="text-gray-400 text-xs max-w-xs leading-relaxed font-light">
+                  Input basic telemetry limits or feed manually from your last electricity statement to boot calculations.
+                </p>
               </div>
               
               {/* Step 3 */}
               <div className="relative z-10 flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-6 border-2 border-outline-variant group-hover:border-primary group-hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(0,229,255,0.2)] animate-pulse-glow">
-                  <Zap className="w-8 h-8 text-primary" />
+                <div className="w-20 h-20 rounded-2xl glass-card flex items-center justify-center mb-6 border border-white/10 group-hover:border-primary/50 group-hover:scale-[1.04] transition-all duration-300 shadow-lg shadow-cyan/10">
+                  <Zap className="w-8 h-8 text-primary animate-pulse" />
                 </div>
-                <div className="bg-primary-container text-on-primary-container font-bold text-[10px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest">Step 03</div>
-                <h3 className="font-display font-bold text-lg text-on-surface mb-2">Get Insights</h3>
-                <p className="font-headline text-xs text-on-surface-variant max-w-xs leading-relaxed">Instantly view your detailed electrical appliance breakdown and active saving advice.</p>
+                <div className="bg-primary text-slate-950 font-bold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono">
+                  Step 03
+                </div>
+                <h3 className="font-display font-bold text-lg text-white mb-2">Optimize & Accumulate</h3>
+                <p className="text-gray-400 text-xs max-w-xs leading-relaxed font-light">
+                  Explore active disaggregation metrics, tune sliders to achieve comfort objectives, and harvest daily coin benefits.
+                </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 relative overflow-hidden border-t border-outline-variant/30">
-          <div className="absolute inset-0 bg-primary-container/5 pointer-events-none" />
-          <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-on-surface mb-6">Ready to take control?</h2>
-            <p className="font-headline text-on-surface-variant mb-8 text-base">Join thousands of users who are already optimizing their energy consumption.</p>
-            <button 
-              onClick={handleGetStarted}
-              className="bg-primary-container text-on-primary-container px-10 py-4.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-primary-container/90 transition-all shadow-[0_0_30px_rgba(0,229,255,0.4)] hover:scale-105 transform duration-300 animate-pulse-glow"
-            >
-              Start Saving Today
-            </button>
+        {/* Premium CTA Section */}
+        <section className="py-24 relative overflow-hidden border-t border-white/5">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+          <div className="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
+            <h2 className="font-display font-extrabold text-3xl md:text-5xl text-white">
+              Ready to take control?
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto text-sm md:text-base font-light">
+              Join thousands of smart households optimizing runtime indexes, saving on utility bills, and competing on global DISCOM ranks.
+            </p>
+            <div className="pt-4">
+              <button 
+                onClick={handleGetStarted}
+                className="bg-primary text-slate-950 px-10 py-4.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-cyan-300 transition-all shadow-cyan hover:scale-[1.04] transform duration-300 animate-pulse-glow"
+              >
+                Start Saving Today
+              </button>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-surface-container-lowest text-primary pt-16 pb-10 border-t border-outline-variant/20 opacity-90 hover:opacity-100 transition-opacity">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 px-6 md:px-10 max-w-7xl mx-auto">
-          <div className="col-span-1 mb-8 md:mb-0">
-            <div className="font-display font-bold text-2xl text-primary mb-4">Voltify</div>
-            <p className="text-on-surface-variant text-sm leading-relaxed">Empowering homes with intelligent energy insights.</p>
+      {/* Modern Organized Footer */}
+      <footer className="bg-surface-container-lowest text-gray-500 pt-16 pb-10 border-t border-white/5">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 px-6 md:px-10 max-w-7xl mx-auto">
+          <div className="col-span-1 space-y-4">
+            <div className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-primary" />
+              <span className="font-display font-bold text-xl text-white tracking-tight">Voltify</span>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed font-light">
+              Supercharging homes with hardware-free, disaggregated electrical power estimations and rewarding conservation efforts.
+            </p>
           </div>
           
           <div className="col-span-1 md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="flex flex-col space-y-3">
-              <h4 className="font-bold text-[10px] uppercase tracking-wider text-on-surface mb-2">Product</h4>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#features">Features</a>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">Pricing</a>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">API Docs</a>
+              <h4 className="font-bold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Product</h4>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#features">Features</a>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#how-it-works">How it Works</a>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#preview">System Preview</a>
             </div>
             <div className="flex flex-col space-y-3">
-              <h4 className="font-bold text-[10px] uppercase tracking-wider text-on-surface mb-2">Company</h4>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">About</a>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">Blog</a>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">Careers</a>
+              <h4 className="font-bold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Telemetry</h4>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">DISCOM Rates</a>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">BEE Standards</a>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">WHO Comfort</a>
             </div>
             <div className="flex flex-col space-y-3">
-              <h4 className="font-bold text-[10px] uppercase tracking-wider text-on-surface mb-2">Legal</h4>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">Privacy Policy</a>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">Terms of Service</a>
+              <h4 className="font-bold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Company</h4>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">About Us</a>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">Blog Log</a>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">Security Specs</a>
             </div>
             <div className="flex flex-col space-y-3">
-              <h4 className="font-bold text-[10px] uppercase tracking-wider text-on-surface mb-2">Support</h4>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">Contact Support</a>
-              <a className="text-on-surface-variant hover:text-tertiary transition-colors text-xs" href="#">Help Center</a>
+              <h4 className="font-bold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Support</h4>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">User Support</a>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">API Telemetry</a>
+              <a className="text-gray-400 hover:text-primary transition-colors text-xs font-light" href="#">Contact Team</a>
             </div>
           </div>
           
-          <div className="col-span-1 md:col-span-4 mt-12 pt-8 border-t border-outline-variant/10 text-center md:text-left text-on-surface-variant text-xs flex flex-col md:flex-row justify-between items-center">
-            <span>© 2026 Voltify Energy Intelligence. All rights reserved.</span>
-            <div className="flex space-x-4 mt-4 md:mt-0 text-on-surface-variant">
-              <a className="hover:text-primary transition-all duration-300 hover:-translate-y-0.5" href="#">
-                <Globe className="w-4 h-4" />
-              </a>
-              <a className="hover:text-primary transition-all duration-300 hover:-translate-y-0.5" href="#">
-                <Share2 className="w-4 h-4" />
-              </a>
+          <div className="col-span-1 md:col-span-4 mt-12 pt-8 border-t border-white/5 text-center md:text-left text-gray-500 text-xs flex flex-col md:flex-row justify-between items-center gap-4">
+            <span className="font-light">© 2026 Voltify Energy Intelligence Systems. All rights reserved.</span>
+            <div className="flex space-x-6 text-gray-400">
+              <a className="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+              <a className="hover:text-primary transition-colors" href="#">Terms of Use</a>
             </div>
           </div>
         </div>
