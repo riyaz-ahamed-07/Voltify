@@ -28,11 +28,11 @@ export default function Leaderboard() {
     <div className="space-y-8 font-headline">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">🏆 REGIONAL DISCOM LEADERBOARD</h1>
-          <p className="text-sm text-on-surface-variant">Compare savings parameters against neighboring homes in your active DISCOM sector</p>
+          <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">🏆 REGIONAL LEADERBOARD</h1>
+          <p className="text-sm text-on-surface-variant">Compare savings parameters against neighboring homes in your active district</p>
         </div>
         <div className="flex items-center gap-1 bg-surface-container-high/60 border border-outline-variant/30 px-4 py-2 rounded-xl text-xs">
-          <Trophy className="w-4 h-4 text-tertiary animate-pulse" />
+          <Trophy className="w-4 h-4 text-tertiary" />
           <span className="text-on-surface-variant">Rank:</span>
           <span className="font-mono font-bold text-tertiary">#{rank} in sector</span>
         </div>
@@ -43,7 +43,7 @@ export default function Leaderboard() {
         <GlassCard className="col-span-1 lg:col-span-2 overflow-x-auto">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-display font-bold text-base text-on-surface">Regional Sector Rankings</h3>
-            <span className="text-[10px] text-outline font-mono uppercase">DISCOM: Chennai North</span>
+            <span className="text-[10px] text-outline font-mono uppercase">Sector: Chennai North</span>
           </div>
 
           <table className="w-full text-left text-xs border-collapse">
@@ -75,7 +75,7 @@ export default function Leaderboard() {
                   </td>
                   <td className="py-3 text-center font-mono font-semibold">
                     <span className="inline-flex items-center gap-1">
-                      <Flame className="w-3.5 h-3.5 text-volt-pink" />
+                      <Flame className="w-3.5 h-3.5 text-rose-400" />
                       {row.streak}d
                     </span>
                   </td>
@@ -102,7 +102,7 @@ export default function Leaderboard() {
               <div className="border border-outline-variant/30 p-3 rounded-lg flex justify-between items-center">
                 <div>
                   <h4 className="font-bold text-on-surface">7-Day Saver</h4>
-                  <p className="text-[10px] text-on-surface-variant">Unlock 1.15x Telemetry Multiplier</p>
+                  <p className="text-[10px] text-on-surface-variant">Unlock 1.15x Saving Multiplier</p>
                 </div>
                 <span className="text-[10px] bg-primary/20 text-primary font-mono px-2 py-0.5 rounded uppercase font-bold">Active</span>
               </div>
@@ -110,15 +110,15 @@ export default function Leaderboard() {
               <div className="border border-outline-variant/30 p-3 rounded-lg flex justify-between items-center opacity-60">
                 <div>
                   <h4 className="font-bold text-on-surface">30-Day Sovereign</h4>
-                  <p className="text-[10px] text-on-surface-variant">Unlock 1.35x Telemetry Multiplier</p>
+                  <p className="text-[10px] text-on-surface-variant">Unlock 1.35x Saving Multiplier</p>
                 </div>
                 <span className="text-[10px] bg-outline-variant/30 text-outline font-mono px-2 py-0.5 rounded uppercase font-bold">Locked</span>
               </div>
 
               <div className="border border-outline-variant/30 p-3 rounded-lg flex justify-between items-center opacity-60">
                 <div>
-                  <h4 className="font-bold text-on-surface">90-Day Cyber Grid</h4>
-                  <p className="text-[10px] text-on-surface-variant">Unlock 1.6x Telemetry Multiplier</p>
+                  <h4 className="font-bold text-on-surface">90-Day Grid Master</h4>
+                  <p className="text-[10px] text-on-surface-variant">Unlock 1.6x Saving Multiplier</p>
                 </div>
                 <span className="text-[10px] bg-outline-variant/30 text-outline font-mono px-2 py-0.5 rounded uppercase font-bold">Locked</span>
               </div>

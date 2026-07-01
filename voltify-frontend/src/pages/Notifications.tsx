@@ -15,14 +15,14 @@ export default function Notifications() {
     <div className="space-y-8 font-headline">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">🚨 SYSTEM TELEMETRY LOGS</h1>
-          <p className="text-sm text-on-surface-variant">Review historical warnings and active saving multipliers</p>
+          <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">🔔 NOTIFICATIONS & ALERTS</h1>
+          <p className="text-sm text-on-surface-variant">Review historical savings warnings and active saving milestones</p>
         </div>
         <button
           onClick={markAllRead}
           className="border border-outline-variant text-on-surface hover:text-primary px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all"
         >
-          Acknowledge All Logs
+          Mark All as Read
         </button>
       </div>
 
@@ -32,15 +32,15 @@ export default function Notifications() {
             <GlassCard
               key={n.id}
               className={`p-5 transition-all duration-300 ${
-                n.read ? 'opacity-70 hover:opacity-90' : 'border-primary/30 shadow-[0_0_15px_rgba(0,229,255,0.05)]'
+                n.read ? 'opacity-70 hover:opacity-90' : 'border-primary/30 shadow-md'
               }`}
             >
               <div className="flex gap-4 items-start text-xs">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                   n.type === 'bill_alert'
-                    ? 'bg-volt-pink/15 text-volt-pink'
+                    ? 'bg-rose-500/10 text-rose-400'
                     : n.type === 'streak'
-                    ? 'bg-volt-pink/10 text-volt-pink'
+                    ? 'bg-rose-500/10 text-rose-400'
                     : 'bg-primary-container/20 text-primary-container'
                 }`}>
                   <Zap className="w-4 h-4" />
