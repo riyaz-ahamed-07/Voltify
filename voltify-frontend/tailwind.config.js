@@ -69,16 +69,16 @@ export default {
         "background": "#0f1419"
       },
       fontFamily: {
-        display: ['"Orbitron"', 'sans-serif'],
-        body:    ['"Rajdhani"', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'sans-serif'],
+        body:    ['"Inter"', 'sans-serif'],
         mono:    ['"JetBrains Mono"', 'monospace'],
         headline: ['"Inter"', 'sans-serif'],
       },
       boxShadow: {
-        cyan:   '0 0 20px rgba(34,211,238,0.3)',
-        pink:   '0 0 20px rgba(236,72,153,0.3)',
-        green:  '0 0 20px rgba(16,185,129,0.3)',
-        card:   '0 4px 24px rgba(0,0,0,0.4)',
+        cyan:   '0 4px 20px rgba(34,211,238,0.04)',
+        pink:   '0 4px 20px rgba(236,72,153,0.04)',
+        green:  '0 4px 20px rgba(16,185,129,0.04)',
+        card:   '0 10px 30px rgba(0, 0, 0, 0.2)',
       },
       backdropBlur: {
         xs: '2px',
@@ -93,12 +93,12 @@ export default {
       },
       keyframes: {
         'pulse-cyan': {
-          '0%,100%': { boxShadow: '0 0 10px rgba(34,211,238,0.2)' },
-          '50%':     { boxShadow: '0 0 30px rgba(34,211,238,0.6)' },
+          '0%,100%': { opacity: 0.8 },
+          '50%':     { opacity: 1 },
         },
         'pulse-glow': {
-          '0%, 100%': { opacity: 1, transform: 'scale(1)', boxShadow: '0 0 20px rgba(0, 229, 255, 0.4)' },
-          '50%': { opacity: .8, transform: 'scale(1.02)', boxShadow: '0 0 30px rgba(0, 229, 255, 0.6)' },
+          '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+          '50%': { opacity: .92, transform: 'scale(1.005)' },
         },
         'float': {
           '0%,100%': { transform: 'translateY(0px)' },
