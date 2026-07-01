@@ -1,9 +1,5 @@
 // src/pages/Dashboard.tsx
-import { useState, useEffect } from 'react';
-import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
-} from 'recharts';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Zap, Flame, Coins, Trophy, Sparkles, TrendingUp, AlertTriangle, CheckCircle,
   Info, Thermometer, ShieldAlert, BadgeAlert, ArrowUpRight
@@ -16,6 +12,9 @@ import { formatCurrency, formatUnits, getTariffRate } from '../lib/utils';
 import { CSS_RECOMMENDATIONS, generateLeaderboard } from '../lib/mockData';
 import { toast } from 'react-toastify';
 import GlassCard from '../components/ui/GlassCard';
+
+const DailyEnergyChart = lazy(() => import('../components/dashboard/DailyEnergyChart'));
+const ApplianceAllocationChart = lazy(() => import('../components/dashboard/ApplianceAllocationChart'));
 
 export default function Dashboard() {
   const { user } = useAuthStore();
@@ -127,7 +126,7 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs backdrop-blur-md shadow-md">
-          <BadgeAlert className="w-4 h-4 text-primary" />
+          <BadgeAlert className="size-4 text-primary" />
           <span className="text-gray-400">Estimated Disaggregation Accuracy:</span>
           <span className="font-mono font-bold text-primary">{onboarding?.accuracy_pct || 94}%</span>
         </div>
@@ -138,10 +137,10 @@ export default function Dashboard() {
         {/* Card 1 */}
         <GlassCard className="relative overflow-hidden group hover:border-primary/50 transition-all duration-300">
           <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <Zap className="w-10 h-10 text-primary" />
+            <Zap className="size-10 text-primary" />
           </div>
           <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Avg Daily Load</span>
-          <h3 className="font-mono font-extrabold text-2xl text-on-surface">{avgDailyUnits} kWh</h3>
+          <h3 className="font-mono font-semibold text-2xl text-on-surface">{avgDailyUnits} kWh</h3>
           <p className="text-xs text-on-surface-variant mt-1.5 flex items-center gap-1">
             Approx. <span className="font-bold text-primary">₹{avgDailyCost}</span> per day
           </p>
@@ -150,10 +149,10 @@ export default function Dashboard() {
         {/* Card 2 */}
         <GlassCard className="relative overflow-hidden group hover:border-tertiary/50 transition-all duration-300">
           <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <TrendingUp className="w-10 h-10 text-tertiary" />
+            <TrendingUp className="size-10 text-tertiary" />
           </div>
           <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Projected {currentMonth}</span>
-          <h3 className="font-mono font-extrabold text-2xl text-tertiary">{formatCurrency(dynamicProjectedBill)}</h3>
+          <h3 className="font-mono font-semibold text-2xl text-tertiary">{formatCurrency(dynamicProjectedBill)}</h3>
           <p className="text-xs text-on-surface-variant mt-1.5">
             Target: <span className="font-bold text-tertiary">-{cssSavings.percentage}%</span> (Saved ₹{cssSavings.money})
           </p>
@@ -162,10 +161,10 @@ export default function Dashboard() {
         {/* Card 3 */}
         <GlassCard className="relative overflow-hidden group hover:border-volt-pink/50 transition-all duration-300">
           <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <Flame className="w-10 h-10 text-volt-pink" />
+            <Flame className="size-10 text-volt-pink" />
           </div>
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Active Streak</span>
-          <h3 className="font-mono font-extrabold text-2xl text-volt-pink">{streak_days} Days</h3>
+          <h3 className="font-mono font-semibold text-2xl text-volt-pink">{streak_days} Days</h3>
           <p className="text-xs text-gray-400 mt-1.5">
             Multiplier active: <span className="font-bold text-volt-pink">1.15x</span> rate boost
           </p>
@@ -174,10 +173,10 @@ export default function Dashboard() {
         {/* Card 4 */}
         <GlassCard className="relative overflow-hidden group hover:border-primary-container/50 transition-all duration-300">
           <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <Coins className="w-10 h-10 text-primary-container" />
+            <Coins className="size-10 text-primary-container" />
           </div>
           <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Earned Coins</span>
-          <h3 className="font-mono font-extrabold text-2xl text-primary-container">{coins} COINS</h3>
+          <h3 className="font-mono font-semibold text-2xl text-primary-container">{coins} COINS</h3>
           <p className="text-xs text-on-surface-variant mt-1.5">
             Redeemable in <span className="font-bold text-primary-container">Shop Console</span>
           </p>
@@ -201,38 +200,9 @@ export default function Dashboard() {
           </div>
 
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dailyHistory}>
-                <defs>
-                  <linearGradient id="colorUnits" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00e5ff" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#00e5ff" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="date" 
-                  tickFormatter={(str) => {
-                    const parts = str.split('-');
-                    return `${parts[2]}`; // day only
-                  }}
-                  tick={{ fill: '#475569', fontSize: 10 }}
-                  axisLine={false}
-                />
-                <YAxis 
-                  tick={{ fill: '#475569', fontSize: 10 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip 
-                  contentStyle={{ background: '#171c21', borderColor: 'rgba(195,245,255,0.15)', borderRadius: '8px' }}
-                  labelStyle={{ color: '#bac9cc', fontWeight: 'bold', fontSize: 11 }}
-                  itemStyle={{ color: '#00e5ff', fontSize: 12 }}
-                  formatter={(value: any) => [`${value} kWh`, 'Estimated Load']}
-                />
-                <Area type="monotone" dataKey="units" stroke="#00e5ff" strokeWidth={2} fillOpacity={1} fill="url(#colorUnits)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-slate-500">Loading daily metrics...</div>}>
+              <DailyEnergyChart dailyHistory={dailyHistory} />
+            </Suspense>
           </div>
         </GlassCard>
 
@@ -247,28 +217,9 @@ export default function Dashboard() {
             {applianceBreakdown.length === 0 ? (
               <p className="text-center text-xs text-outline">Configure appliances in Settings</p>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={applianceBreakdown}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={75}
-                    paddingAngle={3}
-                    dataKey="units"
-                  >
-                    {applianceBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ background: '#171c21', borderColor: 'rgba(195,245,255,0.15)', borderRadius: '8px', fontSize: 11 }}
-                    itemStyle={{ color: '#f1f5f9' }}
-                    formatter={(value: any, name: any) => [`${value} units`, name]}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-slate-500">Loading breakdown...</div>}>
+                <ApplianceAllocationChart applianceBreakdown={applianceBreakdown} />
+              </Suspense>
             )}
           </div>
 
@@ -391,7 +342,7 @@ export default function Dashboard() {
           <GlassCard className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="font-display font-bold text-sm text-white">ACTIVE SAVINGS QUEST</h3>
-              <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+              <Sparkles className="size-4 text-primary animate-pulse" />
             </div>
 
             <div className="bg-white/5 border border-white/10 p-4 rounded-xl space-y-3">
@@ -448,9 +399,9 @@ export default function Dashboard() {
         <div className="space-y-3">
           <h3 className="font-display font-bold text-sm text-white">ACTIVE UTILITY INSIGHTS</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {activeAlerts.map((alert, i) => (
+            {activeAlerts.map((alert) => (
               <div
-                key={i}
+                key={alert.title}
                 className={`p-4 rounded-xl border flex gap-3 items-start text-xs ${
                   alert.type === 'warning'
                     ? 'bg-volt-pink/5 border-volt-pink/20 text-on-surface'
@@ -458,9 +409,9 @@ export default function Dashboard() {
                 }`}
               >
                 {alert.type === 'warning' ? (
-                  <ShieldAlert className="w-5 h-5 text-volt-pink flex-shrink-0 mt-0.5" />
+                  <ShieldAlert className="size-5 text-volt-pink flex-shrink-0 mt-0.5" />
                 ) : (
-                  <CheckCircle className="w-5 h-5 text-tertiary flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="size-5 text-tertiary flex-shrink-0 mt-0.5" />
                 )}
                 <div>
                   <h4 className="font-bold text-sm leading-tight mb-1">{alert.title}</h4>
