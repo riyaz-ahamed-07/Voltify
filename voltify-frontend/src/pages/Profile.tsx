@@ -22,7 +22,7 @@ export default function Profile() {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] font-headline text-center">
-        <AlertCircle className="w-12 h-12 text-rose-400 mb-4 animate-pulse" />
+        <AlertCircle className="size-12 text-rose-400 mb-4 animate-pulse" />
         <h2 className="text-xl font-bold text-on-surface mb-2">Unauthorized Access</h2>
         <p className="text-sm text-on-surface-variant max-w-sm">Please log in to view your energy savings profile.</p>
       </div>
@@ -65,7 +65,7 @@ export default function Profile() {
     <div className="space-y-8 font-headline">
       {/* Title Header */}
       <div>
-        <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">👤 USER PROFILE</h1>
+        <h1 className="font-display font-semibold text-3xl tracking-tight text-gradient">👤 USER PROFILE</h1>
         <p className="text-sm text-on-surface-variant">Calibrate household parameters & view savings performance stats</p>
       </div>
 
@@ -73,11 +73,11 @@ export default function Profile() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Profile Card */}
         <GlassCard className="p-6 col-span-1 md:col-span-2 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-500" />
+          <div className="absolute top-0 right-0 size-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-500" />
           
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary-container text-2xl font-display font-bold">
+              <div className="size-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary-container text-2xl font-display font-bold">
                 {user.name.charAt(0).toUpperCase()}
               </div>
               <div>
@@ -98,19 +98,19 @@ export default function Profile() {
             {!isEditing ? (
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="space-y-1">
-                  <span className="text-on-surface-variant flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-sky-400" /> Location / Region</span>
+                  <span className="text-on-surface-variant flex items-center gap-1.5"><MapPin className="size-3.5 text-sky-400" /> Location / Region</span>
                   <p className="font-bold text-on-surface">{user.location || 'Not Specified'}</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-on-surface-variant flex items-center gap-1.5"><Home className="w-3.5 h-3.5 text-sky-400" /> Household Layout</span>
+                  <span className="text-on-surface-variant flex items-center gap-1.5"><Home className="size-3.5 text-sky-400" /> Household Layout</span>
                   <p className="font-bold text-on-surface capitalize">{user.home_type}</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-on-surface-variant flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-sky-400" /> Household Size</span>
+                  <span className="text-on-surface-variant flex items-center gap-1.5"><Users className="size-3.5 text-sky-400" /> Household Size</span>
                   <p className="font-bold text-on-surface capitalize">{user.household_type.replace('_', ' ')}</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-on-surface-variant flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-sky-400" /> Connected Appliances</span>
+                  <span className="text-on-surface-variant flex items-center gap-1.5"><Zap className="size-3.5 text-sky-400" /> Connected Appliances</span>
                   <p className="font-bold text-on-surface">{user.appliance_count} active</p>
                 </div>
               </div>
@@ -123,7 +123,7 @@ export default function Profile() {
                       type="text"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -132,7 +132,7 @@ export default function Profile() {
                       type="email"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -140,7 +140,7 @@ export default function Profile() {
                     <select
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.home_type}
-                      onChange={(e) => setFormData({ ...formData, home_type: e.target.value as any })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, home_type: e.target.value as any }))}
                     >
                       <option value="apartment">Apartment</option>
                       <option value="house">Detached House</option>
@@ -152,7 +152,7 @@ export default function Profile() {
                     <select
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.household_type}
-                      onChange={(e) => setFormData({ ...formData, household_type: e.target.value as any })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, household_type: e.target.value as any }))}
                     >
                       <option value="bachelor">Bachelor (1 Person)</option>
                       <option value="family">Small Family (2-4 People)</option>
@@ -166,7 +166,7 @@ export default function Profile() {
                       type="text"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                       placeholder="e.g. Bengaluru, Karnataka"
                     />
                   </div>
@@ -184,7 +184,7 @@ export default function Profile() {
                     type="submit"
                     className="bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim px-4 py-2 rounded-lg transition-colors font-semibold flex items-center gap-1.5"
                   >
-                    <Check className="w-3.5 h-3.5" /> Save Changes
+                    <Check className="size-3.5" /> Save Changes
                   </button>
                 </div>
               </form>
@@ -205,7 +205,7 @@ export default function Profile() {
         <div className="space-y-6">
           {/* Energy Rank Card */}
           <GlassCard className="p-6 relative overflow-hidden group">
-            <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-rose-500/5 rounded-full blur-2xl group-hover:bg-rose-500/10 transition-all duration-500" />
+            <div className="absolute -bottom-8 -right-8 size-24 bg-rose-500/5 rounded-full blur-2xl group-hover:bg-rose-500/10 transition-all duration-500" />
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="font-mono text-xs text-on-surface-variant uppercase tracking-wider">Level Progress</span>
@@ -213,7 +213,7 @@ export default function Profile() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-2xl font-bold font-display text-on-surface flex items-center gap-1.5">
-                  <Shield className="w-5 h-5 text-rose-400" /> Grid Guardian
+                  <Shield className="size-5 text-rose-400" /> Grid Guardian
                 </h3>
                 <p className="text-xs text-on-surface-variant">Calibrate smart saving settings to gain more points.</p>
               </div>
@@ -235,12 +235,12 @@ export default function Profile() {
 
           {/* Wallet Balance Info */}
           <GlassCard className="p-6 relative overflow-hidden group">
-            <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-sky-500/5 rounded-full blur-2xl group-hover:bg-sky-500/10 transition-all duration-500" />
+            <div className="absolute -bottom-8 -right-8 size-24 bg-sky-500/5 rounded-full blur-2xl group-hover:bg-sky-500/10 transition-all duration-500" />
             <div className="space-y-4">
               <span className="font-mono text-xs text-on-surface-variant uppercase tracking-wider block">Wallet Balance</span>
               <div className="flex gap-4 items-center">
-                <div className="w-10 h-10 rounded-full bg-primary-container/15 flex items-center justify-center text-primary-container">
-                  <Coins className="w-5 h-5" />
+                <div className="size-10 rounded-full bg-primary-container/15 flex items-center justify-center text-primary-container">
+                  <Coins className="size-5" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold font-mono text-primary-container">{user.coins || 0} COINS</p>
@@ -248,8 +248,8 @@ export default function Profile() {
                 </div>
               </div>
               <div className="flex gap-4 items-center">
-                <div className="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400">
-                  <Flame className="w-5 h-5" />
+                <div className="size-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400">
+                  <Flame className="size-5" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold font-mono text-rose-400">{user.streak_days || 0} DAYS</p>
@@ -267,7 +267,7 @@ export default function Profile() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <h3 className="font-bold text-lg text-on-surface flex items-center gap-2">
-                <Zap className="w-5 h-5 text-primary-container" /> Energy Savings Estimation Profile
+                <Zap className="size-5 text-primary-container" /> Energy Savings Estimation Profile
               </h3>
               <p className="text-xs text-on-surface-variant max-w-2xl leading-relaxed">
                 Your energy estimation parameters have been optimized using your uploaded DISCOM history (monthly target of <span className="text-on-surface font-semibold">₹{onboarding.bill_amount}</span> for ~<span className="text-on-surface font-semibold">{onboarding.units_per_month} kWh</span>). Accuracy confidence is verified at <span className="text-emerald-400 font-bold">{onboarding.accuracy_pct}%</span>.

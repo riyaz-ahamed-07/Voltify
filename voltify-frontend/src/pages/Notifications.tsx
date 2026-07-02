@@ -15,7 +15,7 @@ export default function Notifications() {
     <div className="space-y-8 font-headline">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">🔔 NOTIFICATIONS & ALERTS</h1>
+          <h1 className="font-display font-semibold text-3xl tracking-tight text-gradient">🔔 NOTIFICATIONS & ALERTS</h1>
           <p className="text-sm text-on-surface-variant">Review historical savings warnings and active saving milestones</p>
         </div>
         <button
@@ -36,19 +36,19 @@ export default function Notifications() {
               }`}
             >
               <div className="flex gap-4 items-start text-xs">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                <div className={`size-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                   n.type === 'bill_alert'
                     ? 'bg-rose-500/10 text-rose-400'
                     : n.type === 'streak'
                     ? 'bg-rose-500/10 text-rose-400'
                     : 'bg-primary-container/20 text-primary-container'
                 }`}>
-                  <Zap className="w-4 h-4" />
+                  <Zap className="size-4" />
                 </div>
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-sm text-on-surface">{n.title}</h3>
-                    <span className="text-[10px] font-mono text-outline">{new Date(n.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span suppressHydrationWarning className="text-[10px] font-mono text-outline">{new Date(n.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                   <p className="text-on-surface-variant text-xs font-sans leading-relaxed">{n.message}</p>
                 </div>
