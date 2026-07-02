@@ -1,5 +1,5 @@
 // src/pages/Settings.tsx
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { Settings as SettingsIcon, Shield, Server, RefreshCw, Sliders, DollarSign, Cpu, Trash2, Check, HelpCircle } from 'lucide-react';
 import { useDashboardStore } from '../store/dashboardStore';
 import { useAuthStore } from '../store/authStore';
@@ -8,18 +8,59 @@ import GlassCard from '../components/ui/GlassCard';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
+interface SettingsState {
+  selectedDiscom: string;
+  flatRate: string;
+  acTempThreshold: number;
+  autoSnooze: boolean;
+  telemetryResolution: string;
+}
+
+type SettingsAction =
+  | { type: 'SET_DISCOM'; payload: { code: string; rate: string } }
+  | { type: 'SET_FLAT_RATE'; payload: string }
+  | { type: 'SET_AC_TEMP'; payload: number }
+  | { type: 'SET_AUTO_SNOOZE'; payload: boolean }
+  | { type: 'SET_TELEMETRY'; payload: string };
+
+function settingsReducer(state: SettingsState, action: SettingsAction): SettingsState {
+  switch (action.type) {
+    case 'SET_DISCOM':
+      return {
+        ...state,
+        selectedDiscom: action.payload.code,
+        flatRate: action.payload.rate,
+      };
+    case 'SET_FLAT_RATE':
+      return {
+        ...state,
+        flatRate: action.payload,
+      };
+    case 'SET_AC_TEMP':
+      return {
+        ...state,
+        acTempThreshold: action.payload,
+      };
+    case 'SET_AUTO_SNOOZE':
+      return {
+        ...state,
+        autoSnooze: action.payload,
+      };
+    case 'SET_TELEMETRY':
+      return {
+        ...state,
+        telemetryResolution: action.payload,
+      };
+    default:
+      return state;
+  }
+}
+
 export default function Settings() {
   const { onboarding, resetDashboard, isOnboarded } = useDashboardStore();
   const { user, updateUser, logout } = useAuthStore();
   const { resetGamification } = useGamificationStore();
   const navigate = useNavigate();
-
-  // Local config states initialized from onboarding metadata or standard assumptions
-  const [selectedDiscom, setSelectedDiscom] = useState(onboarding?.location ? 'BESCOM' : 'MSEDCL');
-  const [flatRate, setFlatRate] = useState('6.50');
-  const [acTempThreshold, setAcTempThreshold] = useState(24);
-  const [autoSnooze, setAutoSnooze] = useState(true);
-  const [telemetryResolution, setTelemetryResolution] = useState('5s');
 
   const discoms = [
     { code: 'BESCOM', name: 'Bangalore Electricity Supply (BESCOM)', rate: '₹7.00/kWh' },
@@ -29,15 +70,24 @@ export default function Settings() {
     { code: 'PGVCL', name: 'Paschim Gujarat Vij (PGVCL)', rate: '₹5.50/kWh' },
   ];
 
+  // Local config states grouped under a unified state reducer
+  const [state, dispatch] = useReducer(settingsReducer, {
+    selectedDiscom: onboarding?.location ? 'BESCOM' : 'MSEDCL',
+    flatRate: '6.50',
+    acTempThreshold: 24,
+    autoSnooze: true,
+    telemetryResolution: '5s',
+  });
+
   const handleSaveConfig = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isNaN(Number(flatRate)) || Number(flatRate) <= 0) {
+    if (isNaN(Number(state.flatRate)) || Number(state.flatRate) <= 0) {
       toast.error('Please enter a valid flat tariff rate.');
       return;
     }
 
     // Save location to user profile
-    const discom = discoms.find((d) => d.code === selectedDiscom);
+    const discom = discoms.find((d) => d.code === state.selectedDiscom);
     if (discom && user) {
       updateUser({
         location: discom.name.split(' (')[0],
@@ -80,7 +130,7 @@ export default function Settings() {
           
           {/* DISCOM & GRID CALIBRATION */}
           <GlassCard className="p-6">
-            <h2 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-semibold text-on-surface flex items-center gap-2 mb-4">
               <Server className="size-5 text-sky-400" /> Electricity Provider Connection
             </h2>
             <p className="text-xs text-on-surface-variant mb-6 leading-relaxed">
@@ -90,15 +140,15 @@ export default function Settings() {
             <form onSubmit={handleSaveConfig} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-on-surface-variant font-semibold">Active DISCOM Utility</label>
+                  <label htmlFor="discom-select" className="text-on-surface-variant font-semibold">Active DISCOM Utility</label>
                   <select
+                    id="discom-select"
                     className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
-                    value={selectedDiscom}
+                    value={state.selectedDiscom}
                     onChange={(e) => {
                       const code = e.target.value;
-                      setSelectedDiscom(code);
                       const rate = discoms.find(d => d.code === code)?.rate.replace('₹', '').split('/')[0] || '6.00';
-                      setFlatRate(rate);
+                      dispatch({ type: 'SET_DISCOM', payload: { code, rate } });
                     }}
                   >
                     {discoms.map((d) => (
@@ -110,17 +160,18 @@ export default function Settings() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-on-surface-variant font-semibold flex items-center gap-1">
+                  <label htmlFor="flat-rate-input" className="text-on-surface-variant font-semibold flex items-center gap-1">
                     Custom Tariff Flat Rate <span className="text-on-surface-variant/50">(₹ per kWh)</span>
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-2.5 text-on-surface-variant/50 font-bold">₹</span>
                     <input
+                      id="flat-rate-input"
                       type="number"
                       step="0.01"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg pl-7 pr-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs font-mono"
-                      value={flatRate}
-                      onChange={(e) => setFlatRate(e.target.value)}
+                      value={state.flatRate}
+                      onChange={(e) => dispatch({ type: 'SET_FLAT_RATE', payload: e.target.value })}
                     />
                   </div>
                 </div>
@@ -139,7 +190,7 @@ export default function Settings() {
 
           {/* COMFORT-SAFE SYSTEM (CSS) SETTINGS */}
           <GlassCard className="p-6">
-            <h2 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-semibold text-on-surface flex items-center gap-2 mb-4">
               <Sliders className="size-5 text-rose-400" /> Comfort-Safe Efficiency Thresholds
             </h2>
             <p className="text-xs text-on-surface-variant mb-6 leading-relaxed">
@@ -150,16 +201,17 @@ export default function Settings() {
               {/* AC slider */}
               <div className="space-y-2">
                 <div className="flex justify-between font-mono">
-                  <span className="text-on-surface font-semibold">AC Safe Mode Target Temp</span>
-                  <span className="text-rose-400 font-bold">{acTempThreshold}°C</span>
+                  <label htmlFor="ac-temp-slider" className="text-on-surface font-semibold cursor-pointer">AC Safe Mode Target Temp</label>
+                  <span className="text-rose-400 font-bold">{state.acTempThreshold}°C</span>
                 </div>
                 <input
+                  id="ac-temp-slider"
                   type="range"
                   min="21"
                   max="28"
                   className="w-full h-1 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-rose-500"
-                  value={acTempThreshold}
-                  onChange={(e) => setAcTempThreshold(Number(e.target.value))}
+                  value={state.acTempThreshold}
+                  onChange={(e) => dispatch({ type: 'SET_AC_TEMP', payload: Number(e.target.value) })}
                 />
                 <div className="flex justify-between text-[10px] text-on-surface-variant/50 font-mono">
                   <span>21°C (Max Performance)</span>
@@ -170,11 +222,12 @@ export default function Settings() {
 
               {/* Toggles */}
               <div className="space-y-3">
-                <label className="flex items-center gap-3 cursor-pointer group">
+                <label htmlFor="auto-snooze-checkbox" aria-label="Enable Autonomous Eco-Snooze" className="flex items-center gap-3 cursor-pointer group">
                   <input
+                    id="auto-snooze-checkbox"
                     type="checkbox"
-                    checked={autoSnooze}
-                    onChange={(e) => setAutoSnooze(e.target.checked)}
+                    checked={state.autoSnooze}
+                    onChange={(e) => dispatch({ type: 'SET_AUTO_SNOOZE', payload: e.target.checked })}
                     className="rounded bg-surface-container-high border-outline-variant/50 text-rose-500 focus:ring-rose-500 size-4"
                   />
                   <div>
@@ -184,11 +237,12 @@ export default function Settings() {
                 </label>
 
                 <div className="space-y-1.5 pt-2">
-                  <label className="text-on-surface-variant font-semibold">Smart Telemetry Poll Frequency</label>
+                  <label htmlFor="telemetry-resolution-select" className="text-on-surface-variant font-semibold">Smart Telemetry Poll Frequency</label>
                   <select
+                    id="telemetry-resolution-select"
                     className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs font-mono"
-                    value={telemetryResolution}
-                    onChange={(e) => setTelemetryResolution(e.target.value)}
+                    value={state.telemetryResolution}
+                    onChange={(e) => dispatch({ type: 'SET_TELEMETRY', payload: e.target.value })}
                   >
                     <option value="1s">1 second (Realtime - High Bandwidth)</option>
                     <option value="5s">5 seconds (Standard Live Monitoring)</option>
@@ -207,7 +261,7 @@ export default function Settings() {
           {/* Active Status Info */}
           <GlassCard className="p-6 relative overflow-hidden group">
             <div className="absolute top-0 right-0 size-20 bg-volt-green/5 rounded-full blur-xl" />
-            <h3 className="font-bold text-sm text-on-surface mb-3 flex items-center gap-1.5">
+            <h3 className="font-semibold text-sm text-on-surface mb-3 flex items-center gap-1.5">
               <Cpu className="size-4 text-emerald-400" /> Savings Estimation Model
             </h3>
             <div className="space-y-3 text-xs">
@@ -234,7 +288,7 @@ export default function Settings() {
 
           {/* Maintenance & Purge */}
           <GlassCard className="p-6 border-rose-500/20 bg-rose-500/5">
-            <h3 className="font-bold text-sm text-rose-400 mb-3 flex items-center gap-1.5">
+            <h3 className="font-semibold text-sm text-rose-400 mb-3 flex items-center gap-1.5">
               <Trash2 className="size-4" /> System Maintenance
             </h3>
             <p className="text-[11px] text-on-surface-variant mb-6 leading-relaxed">
@@ -260,7 +314,7 @@ export default function Settings() {
 
           {/* FAQs */}
           <GlassCard className="p-6">
-            <h3 className="font-bold text-sm text-on-surface mb-3 flex items-center gap-1.5">
+            <h3 className="font-semibold text-sm text-on-surface mb-3 flex items-center gap-1.5">
               <HelpCircle className="size-4 text-primary-container" /> Energy Estimation Help
             </h3>
             <div className="space-y-2 text-[11px] text-on-surface-variant">
