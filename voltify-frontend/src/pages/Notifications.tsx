@@ -1,8 +1,22 @@
-// src/pages/Notifications.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, Flame, Coins, ShieldAlert, CheckCircle, Info, Zap } from 'lucide-react';
 import { MOCK_NOTIFICATIONS } from '../lib/mockData';
 import GlassCard from '../components/ui/GlassCard';
+
+function ClientTime({ dateStr }: { dateStr: string }) {
+  const [timeString, setTimeString] = useState<string>('');
+
+  useEffect(() => {
+    setTimeString(
+      new Date(dateStr).toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    );
+  }, [dateStr]);
+
+  return <span className="text-[10px] font-mono text-outline">{timeString}</span>;
+}
 
 export default function Notifications() {
   const [list, setList] = useState(MOCK_NOTIFICATIONS);
@@ -47,8 +61,8 @@ export default function Notifications() {
                 </div>
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-sm text-on-surface">{n.title}</h3>
-                    <span suppressHydrationWarning className="text-[10px] font-mono text-outline">{new Date(n.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <h3 className="font-semibold text-sm text-on-surface">{n.title}</h3>
+                    <ClientTime dateStr={n.created_at} />
                   </div>
                   <p className="text-on-surface-variant text-xs font-sans leading-relaxed">{n.message}</p>
                 </div>

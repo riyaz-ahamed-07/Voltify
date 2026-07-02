@@ -23,7 +23,7 @@ export default function Profile() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] font-headline text-center">
         <AlertCircle className="size-12 text-rose-400 mb-4 animate-pulse" />
-        <h2 className="text-xl font-bold text-on-surface mb-2">Unauthorized Access</h2>
+        <h2 className="text-xl font-semibold text-on-surface mb-2">Unauthorized Access</h2>
         <p className="text-sm text-on-surface-variant max-w-sm">Please log in to view your energy savings profile.</p>
       </div>
     );
@@ -82,7 +82,7 @@ export default function Profile() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                   <h2 className="text-xl font-bold text-on-surface">{user.name}</h2>
+                   <h2 className="text-xl font-semibold text-on-surface">{user.name}</h2>
                   <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${tierInfo.color}`}>
                     {tierInfo.label}
                   </span>
@@ -118,8 +118,9 @@ export default function Profile() {
               <form onSubmit={handleSave} className="space-y-4 text-xs">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-on-surface-variant font-semibold">Full Name</label>
+                    <label htmlFor="name-input" className="text-on-surface-variant font-semibold">Full Name</label>
                     <input
+                      id="name-input"
                       type="text"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.name}
@@ -127,8 +128,9 @@ export default function Profile() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-on-surface-variant font-semibold">Email Address</label>
+                    <label htmlFor="email-input" className="text-on-surface-variant font-semibold">Email Address</label>
                     <input
+                      id="email-input"
                       type="email"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.email}
@@ -136,8 +138,9 @@ export default function Profile() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-on-surface-variant font-semibold">Home Classification</label>
+                    <label htmlFor="home-classification-select" className="text-on-surface-variant font-semibold">Home Classification</label>
                     <select
+                      id="home-classification-select"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.home_type}
                       onChange={(e) => setFormData(prev => ({ ...prev, home_type: e.target.value as any }))}
@@ -148,8 +151,9 @@ export default function Profile() {
                     </select>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-on-surface-variant font-semibold">Household Cohort</label>
+                    <label htmlFor="household-cohort-select" className="text-on-surface-variant font-semibold">Household Cohort</label>
                     <select
+                      id="household-cohort-select"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.household_type}
                       onChange={(e) => setFormData(prev => ({ ...prev, household_type: e.target.value as any }))}
@@ -161,8 +165,9 @@ export default function Profile() {
                     </select>
                   </div>
                   <div className="space-y-1.5 md:col-span-2">
-                    <label className="text-on-surface-variant font-semibold">Location / Regional Tariff Area</label>
+                    <label htmlFor="location-input" className="text-on-surface-variant font-semibold">Location / Regional Tariff Area</label>
                     <input
+                      id="location-input"
                       type="text"
                       className="w-full bg-surface-container-high border border-outline-variant/50 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary transition-colors text-xs"
                       value={formData.location}
@@ -212,7 +217,7 @@ export default function Profile() {
                 <span className="font-mono text-xs text-rose-400 font-bold">LVL {user.tier === 3 ? '42' : user.tier === 2 ? '24' : '8'}</span>
               </div>
               <div className="space-y-1">
-                <h3 className="text-2xl font-bold font-display text-on-surface flex items-center gap-1.5">
+                <h3 className="text-2xl font-semibold font-display text-on-surface flex items-center gap-1.5">
                   <Shield className="size-5 text-rose-400" /> Grid Guardian
                 </h3>
                 <p className="text-xs text-on-surface-variant">Calibrate smart saving settings to gain more points.</p>
@@ -266,7 +271,7 @@ export default function Profile() {
         <GlassCard className="p-6 border-primary/20 bg-primary/5">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <h3 className="font-bold text-lg text-on-surface flex items-center gap-2">
+              <h3 className="font-semibold text-lg text-on-surface flex items-center gap-2">
                 <Zap className="size-5 text-primary-container" /> Energy Savings Estimation Profile
               </h3>
               <p className="text-xs text-on-surface-variant max-w-2xl leading-relaxed">
