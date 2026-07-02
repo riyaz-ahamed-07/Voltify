@@ -1,5 +1,5 @@
 // src/pages/onboarding/index.tsx
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,44 +30,87 @@ const billSchema = z.object({
 type ProfileForm = z.infer<typeof profileSchema>;
 type BillForm = z.infer<typeof billSchema>;
 
+interface OnboardingState {
+  step: number;
+  profileData: ProfileForm | null;
+  billData: BillForm | null;
+  selectedAppliances: Record<string, boolean>;
+  applianceHours: Record<string, number>;
+}
+
+type OnboardingAction =
+  | { type: 'SET_STEP'; payload: number }
+  | { type: 'SET_PROFILE_DATA'; payload: ProfileForm }
+  | { type: 'SET_BILL_DATA'; payload: BillForm }
+  | { type: 'TOGGLE_APPLIANCE'; payload: string }
+  | { type: 'SET_APPLIANCE_HOURS'; payload: { key: string; val: number } };
+
+function onboardingReducer(state: OnboardingState, action: OnboardingAction): OnboardingState {
+  switch (action.type) {
+    case 'SET_STEP':
+      return { ...state, step: action.payload };
+    case 'SET_PROFILE_DATA':
+      return { ...state, profileData: action.payload };
+    case 'SET_BILL_DATA':
+      return { ...state, billData: action.payload };
+    case 'TOGGLE_APPLIANCE':
+      return {
+        ...state,
+        selectedAppliances: {
+          ...state.selectedAppliances,
+          [action.payload]: !state.selectedAppliances[action.payload],
+        },
+      };
+    case 'SET_APPLIANCE_HOURS':
+      return {
+        ...state,
+        applianceHours: {
+          ...state.applianceHours,
+          [action.payload.key]: action.payload.val,
+        },
+      };
+    default:
+      return state;
+  }
+}
+
 export default function Onboarding() {
   const navigate = useNavigate();
   const { user, updateUser } = useAuthStore();
   const { setOnboarding, setDailyHistory, setApplianceBreakdown, setInsights } = useDashboardStore();
   const { addCoins, setRank } = useGamificationStore();
 
-  const [step, setStep] = useState(1);
-  const [profileData, setProfileData] = useState<ProfileForm | null>(null);
-  const [billData, setBillData] = useState<BillForm | null>(null);
-
-  // Appliances state
-  const [selectedAppliances, setSelectedAppliances] = useState<Record<string, boolean>>({
-    AC: true,
-    Fridge: true,
-    TV: true,
-    Lights: true,
-    Fans: true,
-    Laptop: true,
-  });
-
-  const [applianceHours, setApplianceHours] = useState<Record<string, number>>({
-    AC: 8,
-    Fridge: 24,
-    TV: 4,
-    Geyser: 1.5,
-    WashingMachine: 0.5,
-    Microwave: 0.3,
-    Lights: 6,
-    Fans: 10,
-    Laptop: 6,
+  const [state, dispatch] = useReducer(onboardingReducer, {
+    step: 1,
+    profileData: null,
+    billData: null,
+    selectedAppliances: {
+      AC: true,
+      Fridge: true,
+      TV: true,
+      Lights: true,
+      Fans: true,
+      Laptop: true,
+    },
+    applianceHours: {
+      AC: 8,
+      Fridge: 24,
+      TV: 4,
+      Geyser: 1.5,
+      WashingMachine: 0.5,
+      Microwave: 0.3,
+      Lights: 6,
+      Fans: 10,
+      Laptop: 6,
+    },
   });
 
   const toggleAppliance = (key: string) => {
-    setSelectedAppliances((prev) => ({ ...prev, [key]: !prev[key] }));
+    dispatch({ type: 'TOGGLE_APPLIANCE', payload: key });
   };
 
   const handleHourChange = (key: string, val: number) => {
-    setApplianceHours((prev) => ({ ...prev, [key]: val }));
+    dispatch({ type: 'SET_APPLIANCE_HOURS', payload: { key, val } });
   };
 
   // Forms
@@ -103,17 +146,17 @@ export default function Onboarding() {
 
   // Calculations for step 4 review
   const getReviewCalculations = () => {
-    if (!profileData || !billData) return null;
+    if (!state.profileData || !state.billData) return null;
     
     // Construct appliance array from selections
     const appliances = Object.keys(DEFAULT_APPLIANCES).reduce<any[]>((acc, key) => {
-      if (selectedAppliances[key]) {
+      if (state.selectedAppliances[key]) {
         acc.push({
           id: key,
           name: DEFAULT_APPLIANCES[key].name,
           icon: DEFAULT_APPLIANCES[key].icon,
           power_kw: DEFAULT_APPLIANCES[key].power_kw,
-          avg_hours_day: applianceHours[key],
+          avg_hours_day: state.applianceHours[key],
           seasonality: DEFAULT_APPLIANCES[key].seasonality,
         });
       }
@@ -121,8 +164,8 @@ export default function Onboarding() {
     }, []);
 
     const estKwh = estimateMonthlyKwh(appliances);
-    const rate = getTariffRate(profileData.location);
-    const accuracy = Math.round(100 - Math.min(100, Math.abs((estKwh - billData.units) / billData.units) * 100));
+    const rate = getTariffRate(state.profileData.location);
+    const accuracy = Math.round(100 - Math.min(100, Math.abs((estKwh - state.billData.units) / state.billData.units) * 100));
 
     return {
       appliances,
@@ -136,32 +179,32 @@ export default function Onboarding() {
 
   // Navigation handlers
   const onProfileNext = (data: ProfileForm) => {
-    setProfileData(data);
-    setStep(2);
+    dispatch({ type: 'SET_PROFILE_DATA', payload: data });
+    dispatch({ type: 'SET_STEP', payload: 2 });
   };
 
   const onBillNext = (data: BillForm) => {
-    setBillData(data);
-    setStep(3);
+    dispatch({ type: 'SET_BILL_DATA', payload: data });
+    dispatch({ type: 'SET_STEP', payload: 3 });
   };
 
   const onAppliancesNext = () => {
-    setStep(4);
+    dispatch({ type: 'SET_STEP', payload: 4 });
   };
 
   const finishOnboarding = () => {
-    if (!profileData || !billData || !currentCalc) return;
+    if (!state.profileData || !state.billData || !currentCalc) return;
 
     // Estimate breakdowns
     const breakdown = estimateApplianceBreakdown(
       currentCalc.appliances,
-      billData.bill_amount,
-      billData.units,
+      state.billData.bill_amount,
+      state.billData.units,
       currentCalc.rate
     );
 
     // Generate daily histories
-    const history = generateDailyUsage(currentCalc.appliances, 30, profileData.location);
+    const history = generateDailyUsage(currentCalc.appliances, 30, state.profileData.location);
 
     // Rule-based insights
     const newInsights = [
@@ -183,17 +226,17 @@ export default function Onboarding() {
 
     // Store in zustand
     setOnboarding({
-      household_type: profileData.household_type,
-      location: profileData.location,
-      home_type: profileData.home_type,
-      bill_amount: billData.bill_amount,
-      units_per_month: billData.units,
+      household_type: state.profileData.household_type,
+      location: state.profileData.location,
+      home_type: state.profileData.home_type,
+      bill_amount: state.billData.bill_amount,
+      units_per_month: state.billData.units,
       appliances: currentCalc.appliances,
       estimated_units: currentCalc.estKwh,
       accuracy_pct: currentCalc.accuracy,
       prev_bills: [
-        { month: 'April', amount: billData.bill_amount, units: billData.units },
-        { month: 'March', amount: billData.bill_amount * 0.9, units: billData.units * 0.9 },
+        { month: 'April', amount: state.billData.bill_amount, units: state.billData.units },
+        { month: 'March', amount: state.billData.bill_amount * 0.9, units: state.billData.units * 0.9 },
       ],
     });
 
@@ -203,9 +246,9 @@ export default function Onboarding() {
 
     // Update user store
     updateUser({
-      household_type: profileData.household_type,
-      location: profileData.location,
-      home_type: profileData.home_type,
+      household_type: state.profileData.household_type,
+      location: state.profileData.location,
+      home_type: state.profileData.home_type,
       appliance_count: currentCalc.appliances.length,
       coins: user?.coins ? user.coins + 150 : 150,
       streak_days: 1,
@@ -237,14 +280,14 @@ export default function Onboarding() {
               <div
                 key={s}
                 className={`size-8 rounded-full border flex items-center justify-center text-xs font-bold font-mono transition-all duration-300 relative z-10 ${
-                  s === step
+                  s === state.step
                     ? 'bg-primary text-slate-900 border-primary'
-                    : s < step
+                    : s < state.step
                     ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                     : 'bg-slate-900 border-white/5 text-gray-500'
                 }`}
               >
-                {s < step ? <Check className="size-4" /> : s}
+                {s < state.step ? <Check className="size-4" /> : s}
               </div>
             ))}
           </div>
@@ -259,14 +302,14 @@ export default function Onboarding() {
         {/* Content Box */}
         <div className="glass-card rounded-2xl p-8 border border-white/5 shadow-2xl relative bg-slate-900/60 backdrop-blur-md">
           <AnimatePresence mode="wait">
-            {step === 1 && (
+            {state.step === 1 && (
               <m.div
                 key="step1"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <h3 className="font-display font-bold text-lg text-white mb-1">Step 1: Household Profile</h3>
+                <h3 className="font-display font-semibold text-lg text-white mb-1">Step 1: Household Profile</h3>
                 <p className="text-gray-400 text-xs mb-6">Describe your home setup to help customize your baseline estimates.</p>
 
                 <form onSubmit={handleProfileSubmit(onProfileNext)} className="space-y-6">
@@ -329,14 +372,14 @@ export default function Onboarding() {
               </m.div>
             )}
 
-            {step === 2 && (
+            {state.step === 2 && (
               <m.div
                 key="step2"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <h3 className="font-display font-bold text-lg text-white mb-1">Step 2: Utility Bill Details</h3>
+                <h3 className="font-display font-semibold text-lg text-white mb-1">Step 2: Utility Bill Details</h3>
                 <p className="text-gray-400 text-xs mb-6">Upload a simulated electricity bill or enter your last billing figures manually.</p>
 
                 {/* Dropzone */}
@@ -392,7 +435,7 @@ export default function Onboarding() {
                   <div className="flex justify-between pt-4">
                     <button
                       type="button"
-                      onClick={() => setStep(1)}
+                      onClick={() => dispatch({ type: 'SET_STEP', payload: 1 })}
                       className="border border-white/10 text-gray-300 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all"
                     >
                       Back
@@ -408,20 +451,20 @@ export default function Onboarding() {
               </m.div>
             )}
 
-            {step === 3 && (
+            {state.step === 3 && (
               <m.div
                 key="step3"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <h3 className="font-display font-bold text-lg text-white mb-1">Step 3: Home Appliance Calibration</h3>
+                <h3 className="font-display font-semibold text-lg text-white mb-1">Step 3: Home Appliance Calibration</h3>
                 <p className="text-gray-400 text-xs mb-6">Select key household appliances and adjust their estimated daily active hours.</p>
 
                 <div className="space-y-4 max-h-[380px] overflow-y-auto pr-2">
                   {Object.keys(DEFAULT_APPLIANCES).map((key) => {
                     const app = DEFAULT_APPLIANCES[key];
-                    const isSelected = selectedAppliances[key];
+                    const isSelected = state.selectedAppliances[key];
                     return (
                       <div
                         key={key}
@@ -454,14 +497,14 @@ export default function Onboarding() {
                           <div className="flex-1 max-w-xs md:ml-auto space-y-1.5">
                             <div className="flex justify-between text-xs font-mono font-bold text-gray-400">
                               <span>Daily active hours:</span>
-                              <span className="text-primary">{applianceHours[key]} hours</span>
+                              <span className="text-primary">{state.applianceHours[key]} hours</span>
                             </div>
                             <input
                               type="range"
                               min={0.1}
                               max={app.name.includes('Refrigerator') ? 24 : 16}
                               step={0.1}
-                              value={applianceHours[key]}
+                              value={state.applianceHours[key]}
                               onChange={(e) => handleHourChange(key, parseFloat(e.target.value))}
                               className="w-full accent-primary h-1 bg-white/10 rounded-full outline-none cursor-pointer"
                             />
@@ -475,7 +518,7 @@ export default function Onboarding() {
                 <div className="flex justify-between pt-6">
                   <button
                     type="button"
-                    onClick={() => setStep(2)}
+                    onClick={() => dispatch({ type: 'SET_STEP', payload: 2 })}
                     className="border border-white/10 text-gray-300 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all"
                   >
                     Back
@@ -491,7 +534,7 @@ export default function Onboarding() {
               </m.div>
             )}
 
-            {step === 4 && currentCalc && billData && profileData && (
+            {state.step === 4 && currentCalc && state.billData && state.profileData && (
               <m.div
                 key="step4"
                 initial={{ opacity: 0, x: 20 }}
@@ -503,7 +546,7 @@ export default function Onboarding() {
                   <div className="size-12 bg-emerald-500/10 rounded-full border border-emerald-500/30 flex items-center justify-center mx-auto mb-3">
                     <ShieldCheck className="size-6 text-emerald-400" />
                   </div>
-                  <h3 className="font-display font-bold text-lg text-white">Calibration Complete</h3>
+                  <h3 className="font-display font-semibold text-lg text-white">Calibration Complete</h3>
                   <p className="text-gray-400 text-xs">Our estimates successfully match your utility provider bill details.</p>
                 </div>
 
@@ -511,8 +554,8 @@ export default function Onboarding() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-slate-900 border border-white/5 p-4 rounded-xl text-center">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Utility Bill Load</span>
-                    <span className="font-mono font-bold text-lg text-white">{formatUnits(billData.units)}</span>
-                    <span className="block text-[10px] text-gray-500 font-sans mt-0.5">({formatCurrency(billData.bill_amount)})</span>
+                    <span className="font-mono font-bold text-lg text-white">{formatUnits(state.billData.units)}</span>
+                    <span className="block text-[10px] text-gray-500 font-sans mt-0.5">({formatCurrency(state.billData.bill_amount)})</span>
                   </div>
 
                   <div className="bg-slate-900 border border-white/5 p-4 rounded-xl text-center relative overflow-hidden">
@@ -532,11 +575,11 @@ export default function Onboarding() {
 
                 {/* Math Disaggregation breakdown text list */}
                 <div className="bg-slate-900 border border-white/5 p-5 rounded-xl space-y-3">
-                  <h4 className="font-bold text-[10px] uppercase tracking-wider text-white mb-2">Estimated Appliance Share</h4>
+                  <h4 className="font-semibold text-[10px] uppercase tracking-wider text-white mb-2">Estimated Appliance Share</h4>
                   <div className="space-y-2">
                     {currentCalc.appliances.slice(0, 4).map((app) => {
                       const sharePct = Math.round(
-                        ((app.power_kw * applianceHours[app.id] * 30) / (currentCalc.estKwh || 1)) * 100
+                        ((app.power_kw * state.applianceHours[app.id] * 30) / (currentCalc.estKwh || 1)) * 100
                       );
                       return (
                         <div key={app.id} className="flex justify-between items-center text-xs">
@@ -544,7 +587,7 @@ export default function Onboarding() {
                             <span>{app.icon}</span> {app.name}
                           </span>
                           <div className="flex items-center gap-3">
-                            <span className="font-mono text-gray-500">{applianceHours[app.id]} hrs/day</span>
+                            <span className="font-mono text-gray-500">{state.applianceHours[app.id]} hrs/day</span>
                             <span className="font-mono font-bold text-white">{sharePct}% share</span>
                           </div>
                         </div>
@@ -559,7 +602,7 @@ export default function Onboarding() {
                 <div className="flex justify-between pt-4">
                   <button
                     type="button"
-                    onClick={() => setStep(3)}
+                    onClick={() => dispatch({ type: 'SET_STEP', payload: 3 })}
                     className="border border-white/10 text-gray-300 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all"
                   >
                     Back
