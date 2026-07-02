@@ -70,7 +70,7 @@ export default function Settings() {
     <div className="space-y-8 font-headline">
       {/* Title Header */}
       <div>
-        <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">⚙️ SETTINGS & CONFIGURATIONS</h1>
+        <h1 className="font-display font-semibold text-3xl tracking-tight text-gradient">⚙️ SETTINGS & CONFIGURATIONS</h1>
         <p className="text-sm text-on-surface-variant">Configure energy providers, utility tariffs, and savings preferences</p>
       </div>
 
@@ -81,7 +81,7 @@ export default function Settings() {
           {/* DISCOM & GRID CALIBRATION */}
           <GlassCard className="p-6">
             <h2 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-4">
-              <Server className="w-5 h-5 text-sky-400" /> Electricity Provider Connection
+              <Server className="size-5 text-sky-400" /> Electricity Provider Connection
             </h2>
             <p className="text-xs text-on-surface-variant mb-6 leading-relaxed">
               Link your live digital smart meter via national DISCOM servers. Voltify tracks loads and estimates bills based on your utility's tariff slabs.
@@ -131,7 +131,7 @@ export default function Settings() {
                   type="submit"
                   className="bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim px-4 py-2 rounded-lg transition-colors font-semibold flex items-center gap-1.5 text-xs font-headline"
                 >
-                  <Check className="w-3.5 h-3.5" /> Save Provider Settings
+                  <Check className="size-3.5" /> Save Provider Settings
                 </button>
               </div>
             </form>
@@ -140,7 +140,7 @@ export default function Settings() {
           {/* COMFORT-SAFE SYSTEM (CSS) SETTINGS */}
           <GlassCard className="p-6">
             <h2 className="text-lg font-bold text-on-surface flex items-center gap-2 mb-4">
-              <Sliders className="w-5 h-5 text-rose-400" /> Comfort-Safe Efficiency Thresholds
+              <Sliders className="size-5 text-rose-400" /> Comfort-Safe Efficiency Thresholds
             </h2>
             <p className="text-xs text-on-surface-variant mb-6 leading-relaxed">
               Fine-tune smart target preferences for cooling devices to keep usage in highly-efficient tariff bands.
@@ -175,7 +175,7 @@ export default function Settings() {
                     type="checkbox"
                     checked={autoSnooze}
                     onChange={(e) => setAutoSnooze(e.target.checked)}
-                    className="rounded bg-surface-container-high border-outline-variant/50 text-rose-500 focus:ring-rose-500 w-4 h-4"
+                    className="rounded bg-surface-container-high border-outline-variant/50 text-rose-500 focus:ring-rose-500 size-4"
                   />
                   <div>
                     <p className="text-on-surface font-semibold group-hover:text-rose-400 transition-colors">Enable Autonomous Eco-Snooze</p>
@@ -206,9 +206,9 @@ export default function Settings() {
         <div className="space-y-6">
           {/* Active Status Info */}
           <GlassCard className="p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-volt-green/5 rounded-full blur-xl" />
+            <div className="absolute top-0 right-0 size-20 bg-volt-green/5 rounded-full blur-xl" />
             <h3 className="font-bold text-sm text-on-surface mb-3 flex items-center gap-1.5">
-              <Cpu className="w-4 h-4 text-emerald-400" /> Savings Estimation Model
+              <Cpu className="size-4 text-emerald-400" /> Savings Estimation Model
             </h3>
             <div className="space-y-3 text-xs">
               <div className="flex justify-between font-mono border-b border-outline-variant/20 pb-2">
@@ -235,7 +235,7 @@ export default function Settings() {
           {/* Maintenance & Purge */}
           <GlassCard className="p-6 border-rose-500/20 bg-rose-500/5">
             <h3 className="font-bold text-sm text-rose-400 mb-3 flex items-center gap-1.5">
-              <Trash2 className="w-4 h-4" /> System Maintenance
+              <Trash2 className="size-4" /> System Maintenance
             </h3>
             <p className="text-[11px] text-on-surface-variant mb-6 leading-relaxed">
               Modify the underlying database and session configurations. These actions clear persistant storage.
@@ -246,14 +246,14 @@ export default function Settings() {
                 onClick={handleResetCalibration}
                 className="w-full border border-rose-500/30 hover:bg-rose-500/15 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
               >
-                <RefreshCw className="w-3.5 h-3.5" /> Recalibrate Estimators
+                <RefreshCw className="size-3.5" /> Recalibrate Estimators
               </button>
 
               <button
                 onClick={handleFactoryReset}
                 className="w-full bg-rose-500/20 hover:bg-rose-500/30 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
               >
-                <Trash2 className="w-3.5 h-3.5 text-rose-400" /> Full Database Purge
+                <Trash2 className="size-3.5 text-rose-400" /> Full Database Purge
               </button>
             </div>
           </GlassCard>
@@ -261,7 +261,7 @@ export default function Settings() {
           {/* FAQs */}
           <GlassCard className="p-6">
             <h3 className="font-bold text-sm text-on-surface mb-3 flex items-center gap-1.5">
-              <HelpCircle className="w-4 h-4 text-primary-container" /> Energy Estimation Help
+              <HelpCircle className="size-4 text-primary-container" /> Energy Estimation Help
             </h3>
             <div className="space-y-2 text-[11px] text-on-surface-variant">
               <p className="font-semibold text-on-surface">How is energy usage estimated?</p>

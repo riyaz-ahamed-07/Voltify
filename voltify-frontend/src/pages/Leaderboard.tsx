@@ -28,11 +28,11 @@ export default function Leaderboard() {
     <div className="space-y-8 font-headline">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="font-display font-extrabold text-3xl tracking-tight text-gradient">🏆 REGIONAL LEADERBOARD</h1>
+          <h1 className="font-display font-semibold text-3xl tracking-tight text-gradient">🏆 REGIONAL LEADERBOARD</h1>
           <p className="text-sm text-on-surface-variant">Compare savings parameters against neighboring homes in your active district</p>
         </div>
         <div className="flex items-center gap-1 bg-surface-container-high/60 border border-outline-variant/30 px-4 py-2 rounded-xl text-xs">
-          <Trophy className="w-4 h-4 text-tertiary" />
+          <Trophy className="size-4 text-tertiary" />
           <span className="text-on-surface-variant">Rank:</span>
           <span className="font-mono font-bold text-tertiary">#{rank} in sector</span>
         </div>
@@ -75,7 +75,7 @@ export default function Leaderboard() {
                   </td>
                   <td className="py-3 text-center font-mono font-semibold">
                     <span className="inline-flex items-center gap-1">
-                      <Flame className="w-3.5 h-3.5 text-rose-400" />
+                      <Flame className="size-3.5 text-rose-400" />
                       {row.streak}d
                     </span>
                   </td>
@@ -95,7 +95,7 @@ export default function Leaderboard() {
         <div className="space-y-6">
           <GlassCard className="space-y-4">
             <h3 className="font-display font-bold text-sm text-on-surface uppercase tracking-wider flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" /> Active Streak Milestones
+              <Sparkles className="size-4 text-primary" /> Active Streak Milestones
             </h3>
             
             <div className="space-y-3 text-xs">

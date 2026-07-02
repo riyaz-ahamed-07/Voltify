@@ -12,7 +12,7 @@ export default function Coach() {
   return (
     <div className="space-y-8 font-headline text-on-surface">
       <div>
-        <h1 className="font-display font-black text-3xl tracking-tight text-gradient">
+        <h1 className="font-display font-semibold text-3xl tracking-tight text-gradient">
           Voltify Smart Assistant
         </h1>
         <p className="text-xs text-gray-400 mt-1">
@@ -24,9 +24,9 @@ export default function Coach() {
         {/* Chat advisor mock panel */}
         <GlassCard className="col-span-1 lg:col-span-2 space-y-6">
           <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-            <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center relative">
-              <BrainCircuit className="w-5 h-5 text-primary" />
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full animate-pulse" />
+            <div className="size-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center relative">
+              <BrainCircuit className="size-5 text-primary" />
+              <span className="absolute bottom-0 right-0 size-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full animate-pulse" />
             </div>
             <div>
               <h3 className="font-display font-bold text-sm text-white">Voltify Energy Assistant</h3>
@@ -62,7 +62,7 @@ export default function Coach() {
               disabled
             />
             <button className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors">
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="size-3" />
             </button>
           </div>
         </GlassCard>
@@ -72,8 +72,8 @@ export default function Coach() {
           <h3 className="font-display font-bold text-xs uppercase tracking-wider text-gray-400">
             Smart Recommendations
           </h3>
-          {tips.map((tip, idx) => (
-            <GlassCard key={idx} className="space-y-2 text-xs border border-white/5 hover:border-white/10 transition-colors">
+          {tips.map((tip) => (
+            <GlassCard key={tip.title} className="space-y-2 text-xs border border-white/5 hover:border-white/10 transition-colors">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 font-bold text-white text-sm">
                   <span>{tip.icon}</span> {tip.title}
