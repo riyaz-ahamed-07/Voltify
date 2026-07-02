@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { User, Shield, Flame, Coins, Zap, MapPin, Home, Users, Check, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useDashboardStore } from '../store/dashboardStore';
+import { apiService } from '../lib/api';
 import GlassCard from '../components/ui/GlassCard';
 import { toast } from 'react-toastify';
 
@@ -29,21 +30,29 @@ export default function Profile() {
     );
   }
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim()) {
       toast.error('Name and Email cannot be blank');
       return;
     }
-    updateUser({
-      name: formData.name,
-      email: formData.email,
-      home_type: formData.home_type as any,
-      household_type: formData.household_type as any,
-      location: formData.location,
-    });
-    setIsEditing(false);
-    toast.success('Profile successfully updated!');
+    
+    try {
+      const res = await apiService.updateProfile({
+        name: formData.name,
+        email: formData.email,
+        home_type: formData.home_type,
+        household_type: formData.household_type,
+        location: formData.location,
+      });
+      if (res.user) {
+        updateUser(res.user);
+      }
+      setIsEditing(false);
+      toast.success('Profile successfully updated!');
+    } catch (err) {
+      toast.error('Failed to update profile');
+    }
   };
 
   const getTierLabel = (tier: number) => {

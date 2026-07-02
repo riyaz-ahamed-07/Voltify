@@ -7,6 +7,7 @@ import { useGamificationStore } from '../store/gamificationStore';
 import GlassCard from '../components/ui/GlassCard';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { apiService } from '../lib/api';
 
 interface SettingsState {
   selectedDiscom: string;
@@ -79,7 +80,7 @@ export default function Settings() {
     telemetryResolution: '5s',
   });
 
-  const handleSaveConfig = (e: React.FormEvent) => {
+  const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isNaN(Number(state.flatRate)) || Number(state.flatRate) <= 0) {
       toast.error('Please enter a valid flat tariff rate.');
@@ -89,12 +90,15 @@ export default function Settings() {
     // Save location to user profile
     const discom = discoms.find((d) => d.code === state.selectedDiscom);
     if (discom && user) {
-      updateUser({
-        location: discom.name.split(' (')[0],
-      });
+      const newLoc = discom.name.split(' (')[0];
+      try {
+        await apiService.updateProfile({ location: newLoc });
+        updateUser({ location: newLoc });
+        toast.success('Settings saved successfully!');
+      } catch (err) {
+        toast.error('Failed to save settings to backend.');
+      }
     }
-
-    toast.success('Settings saved successfully!');
   };
 
   const handleResetCalibration = () => {

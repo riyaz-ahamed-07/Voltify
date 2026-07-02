@@ -4,7 +4,7 @@ import { Trophy, Flame, Coins, Zap, Shield, ArrowUp, ArrowDown, Sparkles } from 
 import { useAuthStore } from '../store/authStore';
 import { useGamificationStore } from '../store/gamificationStore';
 import { useDashboardStore } from '../store/dashboardStore';
-import { generateLeaderboard } from '../lib/mockData';
+import { apiService } from '../lib/api';
 import GlassCard from '../components/ui/GlassCard';
 
 export default function Leaderboard() {
@@ -14,15 +14,18 @@ export default function Leaderboard() {
   const [board, setBoard] = useState<any[]>([]);
 
   useEffect(() => {
-    if (user) {
-      setBoard(generateLeaderboard(onboarding?.household_type || 'family', {
-        name: user.name,
-        coins,
-        streak: streak_days,
-        rank,
-      }));
+    async function loadLeaderboard() {
+      if (user) {
+        try {
+          const res = await apiService.getLeaderboard(onboarding?.household_type || 'family');
+          setBoard(res.rankings);
+        } catch (err) {
+          console.error("Failed to load leaderboard", err);
+        }
+      }
     }
-  }, [user, coins, streak_days, rank, onboarding]);
+    loadLeaderboard();
+  }, [user, onboarding]);
 
   return (
     <div className="space-y-8 font-headline">

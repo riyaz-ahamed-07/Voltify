@@ -14,6 +14,7 @@ import { useDashboardStore } from '../../store/dashboardStore';
 import { useGamificationStore } from '../../store/gamificationStore';
 import { estimateMonthlyKwh, estimateApplianceBreakdown, generateDailyUsage } from '../../lib/estimation';
 import { formatCurrency, formatUnits, getTariffRate } from '../../lib/utils';
+import { apiService } from '../../lib/api';
 
 // Zod schemas for onboarding step inputs
 const profileSchema = z.object({
@@ -178,22 +179,39 @@ export default function Onboarding() {
   const currentCalc = getReviewCalculations();
 
   // Navigation handlers
-  const onProfileNext = (data: ProfileForm) => {
-    dispatch({ type: 'SET_PROFILE_DATA', payload: data });
-    dispatch({ type: 'SET_STEP', payload: 2 });
+  const onProfileNext = async (data: ProfileForm) => {
+    try {
+      await apiService.saveProfile(data);
+      dispatch({ type: 'SET_PROFILE_DATA', payload: data });
+      dispatch({ type: 'SET_STEP', payload: 2 });
+    } catch (e) {
+      toast.error('Failed to save profile');
+    }
   };
 
-  const onBillNext = (data: BillForm) => {
-    dispatch({ type: 'SET_BILL_DATA', payload: data });
-    dispatch({ type: 'SET_STEP', payload: 3 });
+  const onBillNext = async (data: BillForm) => {
+    try {
+      await apiService.saveBill(data);
+      dispatch({ type: 'SET_BILL_DATA', payload: data });
+      dispatch({ type: 'SET_STEP', payload: 3 });
+    } catch (e) {
+      toast.error('Failed to save bill');
+    }
   };
 
   const onAppliancesNext = () => {
     dispatch({ type: 'SET_STEP', payload: 4 });
   };
 
-  const finishOnboarding = () => {
+  const finishOnboarding = async () => {
     if (!state.profileData || !state.billData || !currentCalc) return;
+
+    try {
+      await apiService.saveAppliances(currentCalc.appliances);
+    } catch (e) {
+      toast.error('Failed to save appliances');
+      return;
+    }
 
     // Estimate breakdowns
     const breakdown = estimateApplianceBreakdown(

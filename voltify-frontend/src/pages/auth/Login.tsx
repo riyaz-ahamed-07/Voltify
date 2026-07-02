@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { Zap, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useDashboardStore } from '../../store/dashboardStore';
+import { apiService } from '../../lib/api';
 
 const loginSchema = z.object({
   email:    z.string().email('Invalid email address'),
@@ -29,22 +30,8 @@ export default function Login() {
   const onSubmit = async (data: LoginForm) => {
     setLoading(true);
     try {
-      // Prototype mock auth delay
-      await new Promise(r => setTimeout(r, 800));
-      const mockUser = {
-        id: 'user-1',
-        name: 'Ravi Kumar',
-        email: data.email,
-        tier: 3 as const,
-        household_type: 'family' as const,
-        location: 'Chennai',
-        home_type: 'apartment' as const,
-        appliance_count: 8,
-        coins: 250,
-        streak_days: 7,
-        created_at: new Date().toISOString(),
-      };
-      setAuth(mockUser, 'mock-jwt-token');
+      const response = await apiService.login(data);
+      setAuth(response.user, response.token);
       toast.success('Welcome back to Voltify!');
       
       // If already onboarded, send to dashboard. Otherwise send to onboarding!

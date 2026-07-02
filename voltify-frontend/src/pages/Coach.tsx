@@ -1,13 +1,25 @@
 // src/pages/Coach.tsx
+import { useState, useEffect } from 'react';
 import { Zap, Sparkles, BrainCircuit, MessageSquare, ArrowRight, Lightbulb } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
+import { apiService } from '../lib/api';
 
 export default function Coach() {
-  const tips = [
-    { title: 'Air Conditioner Temperature Optimization', icon: '❄️', impact: 'High Impact (Save ~₹900/mo)', advice: 'Maintain your AC thermostat at 24°C as advised by the Bureau of Energy Efficiency. Set a timer to shut off 1 hour before waking up; the room remains cool.' },
-    { title: 'Geyser Off-Peak Dispatching', icon: '🚿', impact: 'Medium Impact (Save ~₹150/mo)', advice: 'Run your water heater from 6–9 AM instead of evening peak hours. Heavy loads on off-peak hours reduce DISCOM grid strains.' },
-    { title: 'Standby Power Eliminators', icon: '📺', impact: 'Low Impact (Save ~₹50/mo)', advice: 'Smart TVs and appliances consume 5–10W continuously on standby. Turning off at the plug completely terminates standby currents.' },
-  ];
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchTips() {
+      try {
+        const res = await apiService.getCSSRecommendations();
+        if (res.recommendations) {
+          setRecommendations(res.recommendations);
+        }
+      } catch (err) {
+        console.error("Failed to fetch coach data", err);
+      }
+    }
+    fetchTips();
+  }, []);
 
   return (
     <div className="space-y-8 font-headline text-on-surface">
@@ -72,18 +84,18 @@ export default function Coach() {
           <h3 className="font-display font-semibold text-xs uppercase tracking-wider text-gray-400">
             Smart Recommendations
           </h3>
-          {tips.map((tip) => (
-            <GlassCard key={tip.title} className="space-y-2 text-xs border border-white/5 hover:border-white/10 transition-colors">
+          {recommendations.map((tip) => (
+            <GlassCard key={tip.id} className="space-y-2 text-xs border border-white/5 hover:border-white/10 transition-colors">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 font-bold text-white text-sm">
-                  <span>{tip.icon}</span> {tip.title}
+                  <span>{tip.icon}</span> {tip.appliance} Optimization
                 </span>
                 <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                  {tip.impact.split(' ')[0]} {tip.impact.split(' ')[1] || ''}
+                  Save ₹{tip.monthly_savings || tip.monthly_savings_rs || Math.round((tip.savings_pct || 10) * 8)}/mo
                 </span>
               </div>
               <p className="text-gray-400 leading-relaxed text-[11px] font-sans">
-                {tip.advice}
+                {tip.why_safe}
               </p>
             </GlassCard>
           ))}

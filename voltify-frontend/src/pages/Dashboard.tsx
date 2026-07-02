@@ -10,6 +10,7 @@ import { useGamificationStore } from '../store/gamificationStore';
 import { calculatePredictions, generateRuleBasedAlerts } from '../lib/estimation';
 import { formatCurrency, formatUnits, getTariffRate } from '../lib/utils';
 import { CSS_RECOMMENDATIONS, generateLeaderboard } from '../lib/mockData';
+import { apiService } from '../lib/api';
 import { toast } from 'react-toastify';
 import GlassCard from '../components/ui/GlassCard';
 
@@ -18,24 +19,37 @@ const ApplianceAllocationChart = lazy(() => import('../components/dashboard/Appl
 
 export default function Dashboard() {
   const { user } = useAuthStore();
-  const { onboarding, dailyHistory, applianceBreakdown, insights, setApplianceBreakdown } = useDashboardStore();
+  const { onboarding, dailyHistory, applianceBreakdown, insights, setApplianceBreakdown, setDailyHistory, setInsights } = useDashboardStore();
   const { coins, streak_days, rank, css_applied, applyCss, removeCss, addCoins } = useGamificationStore();
 
   const [acTemp, setAcTemp] = useState(18); // Starting at a power-heavy 18°C
   const [fridgeTemp, setFridgeTemp] = useState(2); // Power-heavy 2°C
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
 
-  // Load leaderboard rankings
+  // Load data from backend
   useEffect(() => {
-    if (user) {
-      setLeaderboard(generateLeaderboard(onboarding?.household_type || 'family', {
-        name: user.name,
-        coins,
-        streak: streak_days,
-        rank,
-      }));
+    async function loadData() {
+      try {
+        const [summary, usage, breakdown, lb] = await Promise.all([
+          apiService.getDashboardSummary(),
+          apiService.getDashboardUsage('daily'),
+          apiService.getApplianceBreakdown(),
+          apiService.getLeaderboard(onboarding?.household_type || 'family')
+        ]);
+        setDashboardStats(summary);
+        if (usage.data && usage.data.length > 0) setDailyHistory(usage.data);
+        if (breakdown.data && breakdown.data.length > 0) setApplianceBreakdown(breakdown.data);
+        if (lb.rankings) setLeaderboard(lb.rankings);
+      } catch (err) {
+        console.error('Failed to load dashboard data', err);
+        // Fallback for leaderboard is already covered by API simulation
+      }
     }
-  }, [user, coins, streak_days, rank, onboarding]);
+    if (user) {
+      loadData();
+    }
+  }, [user, onboarding]);
 
   // Initial calculations
   const tariff = getTariffRate(onboarding?.location || 'Chennai');
@@ -140,9 +154,9 @@ export default function Dashboard() {
             <Zap className="size-10 text-primary" />
           </div>
           <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Avg Daily Load</span>
-          <h3 className="font-mono font-semibold text-2xl text-on-surface">{avgDailyUnits} kWh</h3>
+          <h3 className="font-mono font-semibold text-2xl text-on-surface">{dashboardStats ? dashboardStats.today.units : avgDailyUnits} kWh</h3>
           <p className="text-xs text-on-surface-variant mt-1.5 flex items-center gap-1">
-            Approx. <span className="font-bold text-primary">₹{avgDailyCost}</span> per day
+            Approx. <span className="font-bold text-primary">₹{dashboardStats ? dashboardStats.today.cost : avgDailyCost}</span> per day
           </p>
         </GlassCard>
 
@@ -152,7 +166,7 @@ export default function Dashboard() {
             <TrendingUp className="size-10 text-tertiary" />
           </div>
           <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Projected {currentMonth}</span>
-          <h3 className="font-mono font-semibold text-2xl text-tertiary">{formatCurrency(dynamicProjectedBill)}</h3>
+          <h3 className="font-mono font-semibold text-2xl text-tertiary">{formatCurrency(dashboardStats ? dashboardStats.estimated_bill.projected : dynamicProjectedBill)}</h3>
           <p className="text-xs text-on-surface-variant mt-1.5">
             Target: <span className="font-bold text-tertiary">-{cssSavings.percentage}%</span> (Saved ₹{cssSavings.money})
           </p>

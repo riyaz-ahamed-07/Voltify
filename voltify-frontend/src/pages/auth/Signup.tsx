@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { toast } from 'react-toastify';
 import { Zap, Eye, EyeOff, Mail, Lock, User as UserIcon } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { apiService } from '../../lib/api';
 
 const signupSchema = z.object({
   name:            z.string().min(2, 'Name must be at least 2 characters'),
@@ -32,21 +33,8 @@ export default function Signup() {
   const onSubmit = async (data: SignupForm) => {
     setLoading(true);
     try {
-      await new Promise(r => setTimeout(r, 800));
-      const mockUser = {
-        id: 'user-' + Date.now(),
-        name: data.name,
-        email: data.email,
-        tier: 3 as const,
-        household_type: 'family' as const,
-        location: 'Chennai',
-        home_type: 'apartment' as const,
-        appliance_count: 0,
-        coins: 0,
-        streak_days: 1,
-        created_at: new Date().toISOString(),
-      };
-      setAuth(mockUser, 'mock-jwt-token');
+      const response = await apiService.signup(data);
+      setAuth(response.user, response.token);
       toast.success('Account created! Let\'s calibrate your energy profile.');
       navigate('/onboarding');
     } catch {
