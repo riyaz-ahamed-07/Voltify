@@ -19,9 +19,9 @@ export function GlassCard({ children, className, hover = false, glow = 'none', o
   }[glow];
 
   const cardClassName = cn(
-    'glass-card rounded-2xl p-6 border border-white/5 transition-all duration-300',
-    hover && `glass-hover cursor-pointer ${glowClass}`,
-    onClick && 'cursor-pointer hover:scale-[1.01] transform text-left w-full block focus:outline-none focus:ring-1 focus:ring-primary/20',
+    'bg-surface-container rounded-2xl p-6 border border-outline shadow-sm transition-all duration-200',
+    hover && 'hover:bg-surface-variant hover:border-primary/50',
+    onClick && 'cursor-pointer hover:scale-[1.01] transform text-left w-full block focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary',
     className
   );
 

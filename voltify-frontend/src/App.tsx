@@ -5,6 +5,8 @@ import { useDashboardStore } from './store/dashboardStore';
 import Landing from './pages/Landing';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
+import VerifyOTP from './pages/auth/VerifyOTP';
+import ForgotPassword from './pages/auth/ForgotPassword';
 import Onboarding from './pages/onboarding';
 import Dashboard from './pages/Dashboard';
 import Coach from './pages/Coach';
@@ -64,6 +66,22 @@ export default function App() {
           element={
             <GuestRoute>
               <Signup />
+            </GuestRoute>
+          } 
+        />
+        <Route 
+          path="/verify-otp" 
+          element={
+            <GuestRoute>
+              <VerifyOTP />
+            </GuestRoute>
+          } 
+        />
+        <Route 
+          path="/forgot-password" 
+          element={
+            <GuestRoute>
+              <ForgotPassword />
             </GuestRoute>
           } 
         />
@@ -130,7 +148,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* Cyberpunk styled toast container */}
+      {/* Clean SaaS styled toast container */}
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
@@ -143,13 +161,13 @@ export default function App() {
         pauseOnHover
         theme="dark"
         toastStyle={{
-          background: 'rgba(23, 28, 33, 0.95)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(0, 229, 255, 0.2)',
-          color: '#dee3ea',
+          background: '#1a1a1a',
+          border: '1px solid #333',
+          color: '#ededed',
           fontFamily: 'Inter, sans-serif',
           fontSize: '13px',
           borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
         }}
       />
     </BrowserRouter>

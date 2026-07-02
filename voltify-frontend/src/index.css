@@ -15,54 +15,30 @@
   --color-volt-textSec: #9ca3af;
   --color-volt-textMute: #6b7280;
 
-  /* Material 3 theme palette */
   --color-tertiary-container: #10b981;
-  --color-surface-bright: #1f2937;
-  --color-secondary-fixed-dim: #c084fc;
-  --color-tertiary-fixed: #10b981;
-  --color-surface: #090e1a;
-  --color-surface-container-high: #1f2937;
-  --color-on-tertiary: #047857;
-  --color-on-surface: #f3f4f6;
-  --color-outline-variant: #1f2937;
-  --color-surface-container-lowest: #050810;
-  --color-on-background: #f3f4f6;
-  --color-primary-fixed: #a5f3fc;
-  --color-on-surface-variant: #9ca3af;
-  --color-on-primary-fixed: #083344;
-  --color-on-primary-fixed-variant: #155e75;
-  --color-primary: #06b6d4;
-  --color-inverse-primary: #0891b2;
-  --color-primary-fixed-dim: #67e8f9;
-  --color-on-error: #7f1d1d;
-  --color-surface-container-low: #0b0f19;
-  --color-on-tertiary-fixed-variant: #047857;
-  --color-inverse-surface: #f3f4f6;
+  --color-surface-bright: #1c1c1c;
+  --color-surface: #0a0a0a;
+  --color-surface-container-high: #1c1c1c;
+  --color-on-surface: #ededed;
+  --color-outline-variant: #2a2a2a;
+  --color-surface-container-lowest: #000000;
+  --color-on-background: #ededed;
+  --color-primary-fixed: #0070f3;
+  --color-on-surface-variant: #888888;
+  --color-primary: #0070f3;
+  --color-inverse-primary: #3291ff;
+  --color-surface-container-low: #111111;
+  --color-inverse-surface: #ededed;
   --color-tertiary: #10b981;
-  --color-on-secondary-container: #e9d5ff;
-  --color-surface-container-highest: #374151;
-  --color-secondary-fixed: #f3e8ff;
-  --color-on-secondary: #581c87;
-  --color-on-tertiary-fixed: #047857;
-  --color-surface-tint: #06b6d4;
-  --color-tertiary-fixed-dim: #10b981;
-  --color-primary-container: #0891b2;
-  --color-outline: #374151;
-  --color-on-secondary-fixed-variant: #6b21a8;
-  --color-on-error-container: #fee2e2;
-  --color-inverse-on-surface: #111827;
-  --color-secondary-container: #7e22ce;
-  --color-error-container: #991b1b;
-  --color-surface-dim: #090e1a;
-  --color-on-primary-container: #cffafe;
-  --color-on-tertiary-container: #d1fae5;
-  --color-on-secondary-fixed: #3b0764;
-  --color-surface-variant: #1f2937;
-  --color-secondary: #c084fc;
-  --color-on-primary: #083344;
-  --color-surface-container: #111827;
-  --color-error: #f87171;
-  --color-background: #090e1a;
+  --color-surface-container-highest: #2a2a2a;
+  --color-outline: #333333;
+  --color-surface-dim: #0a0a0a;
+  --color-surface-variant: #1a1a1a;
+  --color-secondary: #666666;
+  --color-on-primary: #ffffff;
+  --color-surface-container: #111111;
+  --color-error: #e00;
+  --color-background: #0a0a0a;
 
   --font-display: "Plus Jakarta Sans", sans-serif;
   --font-body: "Inter", sans-serif;
@@ -113,8 +89,8 @@ html {
 }
 
 body {
-  background-color: #090e1a;
-  color: #f3f4f6;
+  background-color: #0a0a0a;
+  color: #ededed;
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
@@ -127,39 +103,34 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #090e1a;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: #333333;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #444444;
 }
 
-/* Glass card effect styling */
+/* Glass card effect replaced with SaaS flat panel styling */
 .glass {
-  background: rgba(17, 24, 39, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: #111111;
+  border: 1px solid #2a2a2a;
 }
 
 .glass-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 .glass-hover:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  background: rgba(17, 24, 39, 0.7);
+  border-color: #444444;
+  background: #151515;
 }
 
 .glass-card {
-  background: rgba(17, 24, 39, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  background: #111111;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
 }
@@ -177,10 +148,7 @@ body {
 
 /* Premium gradient text utility */
 .text-gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ededed;
 }
 
 /* Tech grid graphic layout overlay - cleaned */

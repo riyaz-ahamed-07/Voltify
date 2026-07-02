@@ -48,62 +48,107 @@ export default function Landing() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section 
-          className="relative pt-32 pb-48 overflow-hidden bg-slate-950 min-h-screen flex items-center justify-center" 
+          className="relative pt-20 pb-32 overflow-hidden bg-slate-950" 
           id="hero-section"
         >
           {/* Atmospheric ambient highlights */}
           <div className="absolute top-1/4 left-1/3 size-[350px] bg-primary/5 rounded-full blur-[140px] -z-20" />
           <div className="absolute bottom-1/4 right-1/3 size-[450px] bg-sky-500/5 rounded-full blur-[160px] -z-20" />
 
-          {/* Background Text (Z-0) */}
-          <div className="absolute top-[15%] md:top-[12%] left-1/2 -translate-x-1/2 w-full text-center z-0 px-4 pointer-events-none">
-            <h1 className="font-display font-bold text-[3.5rem] sm:text-7xl md:text-[8rem] lg:text-[11rem] text-white/90 tracking-tighter leading-[0.9]">
-              Voltify <br />
-              <span className="text-primary/90 text-transparent bg-clip-text bg-gradient-to-b from-primary to-emerald-600">Energy.</span>
-            </h1>
-          </div>
-
-          {/* Center Image and Button (Z-10) */}
-          <div className="relative z-10 mt-24 md:mt-40 flex flex-col items-center">
-            {/* Robot Image */}
-            <div className="relative group">
-              <img 
-                src="/robot.png" 
-                alt="AI Energy Robot" 
-                className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl object-contain drop-shadow-[0_0_80px_rgba(16,185,129,0.3)] transition-transform duration-700 group-hover:scale-[1.02]"
-                onError={(e) => {
-                  // Fallback transparent robot image if /robot.png is not found
-                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3';
-                }}
-              />
+          <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 flex flex-col gap-8">
+              <div className="inline-flex w-fit items-center gap-2 bg-white/5 backdrop-blur-md rounded-full px-4 py-1.5 border border-white/10">
+                <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest font-mono">Hardware-Free Analytics</span>
+              </div>
               
-              {/* Button at the bottom of the image */}
-              <div className="absolute -bottom-6 md:-bottom-10 left-1/2 -translate-x-1/2 z-20 w-max">
+              <h1 className="font-display font-semibold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight">
+                Understand your energy. <br/>
+                <span className="text-gradient">Lower your bills.</span>
+              </h1>
+              
+              <p className="text-gray-450 max-w-xl text-base md:text-lg leading-relaxed font-normal">
+                Voltify automatically estimates your appliance-level energy consumption from your monthly utility statements. Track efficiency targets, set savings goals, and reduce waste without installing expensive monitoring hardware.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={handleGetStarted}
-                  className="bg-primary text-slate-950 px-8 py-4 md:px-12 md:py-5 rounded-full text-sm md:text-base font-bold uppercase tracking-widest hover:bg-emerald-400 shadow-[0_0_40px_rgba(16,185,129,0.7)] transition-all flex items-center justify-center gap-3 hover:scale-105 transform duration-300 ring-4 ring-slate-950"
+                  className="bg-primary text-slate-950 px-8 py-4 rounded-xl text-xs font-semibold uppercase tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-2 hover:scale-[1.01] transform duration-150"
                 >
-                  <span>Get Instant Pricing</span>
+                  <span>Analyze Bill</span>
+                  <ArrowRight className="size-4" />
                 </button>
+                
+                <Link 
+                  to="/login"
+                  className="border border-white/10 text-white bg-white/5 backdrop-blur-md px-8 py-4 rounded-xl text-xs font-semibold uppercase tracking-wider hover:bg-white/10 transition-all flex items-center justify-center gap-2 hover:scale-[1.01] transform duration-150"
+                >
+                  <Play className="size-4 text-primary" />
+                  <span>View Live Demo</span>
+                </Link>
               </div>
+            </div>
 
-              {/* Floating feature badges (similar to reference UI) */}
-              <div className="absolute top-1/4 -left-8 md:-left-24 bg-slate-900/80 backdrop-blur-md border border-white/10 px-4 py-2 md:p-4 rounded-xl md:rounded-2xl flex items-center gap-2 md:gap-3 shadow-xl animate-float">
-                <div className="p-1.5 md:p-2 bg-blue-500/20 text-blue-400 rounded-lg"><Zap className="size-4 md:size-5" /></div>
-                <div className="hidden md:block">
-                  <p className="text-lg md:text-xl font-bold text-white font-mono">1.35 <span className="text-xs text-gray-400">kWh</span></p>
-                  <p className="text-xs text-blue-400">₹ 10.15</p>
+            {/* Right Graphics/Component-Rendered Mock Dashboard Column */}
+            <div className="lg:col-span-5 relative z-10" id="preview">
+              <div className="relative group">
+                {/* Visual interface console */}
+                <div className="relative rounded-2xl p-6 border border-white/[0.06] shadow-xl bg-slate-900/60 backdrop-blur-md">
+                  <div className="flex justify-between items-center pb-4 border-b border-white/[0.06] mb-6">
+                    <div className="flex items-center gap-2">
+                      <span className="size-2 rounded-full bg-emerald-500" />
+                      <span className="text-[10px] font-mono tracking-widest text-emerald-400 font-bold uppercase">Energy Disaggregation active</span>
+                    </div>
+                    <div className="text-[9px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase font-semibold">PREVIEW</div>
+                  </div>
+                  
+                  {/* Grid layout parameters */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-slate-950/60 p-4 rounded-xl border border-white/[0.04]">
+                      <span className="text-[9px] text-gray-400 uppercase tracking-wider block mb-1 font-mono">Current Load</span>
+                      <div className="text-xl font-bold font-mono text-primary">17.4 kWh</div>
+                      <div className="text-[9px] text-emerald-400 font-medium mt-1 font-mono">↓ 12% vs last month</div>
+                    </div>
+                    <div className="bg-slate-950/60 p-4 rounded-xl border border-white/[0.04]">
+                      <span className="text-[9px] text-gray-400 uppercase tracking-wider block mb-1 font-mono">Estimated Savings</span>
+                      <div className="text-xl font-bold font-mono text-volt-pink">₹134.40</div>
+                      <div className="text-[9px] text-volt-pink font-medium mt-1 font-mono">Weekly streak: active</div>
+                    </div>
+                  </div>
+                  
+                  {/* Appliance runtimes list */}
+                  <div className="bg-slate-950/40 rounded-xl p-4.5 border border-white/[0.04] space-y-4">
+                    <h4 className="text-[10px] font-mono text-gray-300 font-semibold tracking-wider uppercase">Appliance Load Allocation</h4>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-gray-350 flex items-center gap-2">
+                          <span className="size-2 rounded-full bg-cyan-400" />
+                          Air Conditioner (BEE 24°C)
+                        </span>
+                        <span className="font-mono text-gray-400 text-xs">32%</span>
+                      </div>
+                      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-cyan-400 rounded-full" style={{ width: '32%' }} />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-gray-350 flex items-center gap-2">
+                          <span className="size-2 rounded-full bg-indigo-400" />
+                          Refrigerator (WHO 4°C)
+                        </span>
+                        <span className="font-mono text-gray-400 text-xs">18%</span>
+                      </div>
+                      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-400 rounded-full" style={{ width: '18%' }} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="md:hidden text-xs font-bold text-white">Save Energy</div>
-              </div>
-
-              <div className="absolute top-1/3 -right-8 md:-right-24 bg-slate-900/80 backdrop-blur-md border border-white/10 px-4 py-2 md:p-4 rounded-xl md:rounded-2xl flex items-center gap-2 md:gap-3 shadow-xl animate-float-delayed">
-                <div className="p-1.5 md:p-2 bg-emerald-500/20 text-emerald-400 rounded-lg"><Cpu className="size-4 md:size-5" /></div>
-                <div className="hidden md:block">
-                  <p className="text-lg md:text-xl font-bold text-white font-mono">2.45 <span className="text-xs text-gray-400">kWh</span></p>
-                  <p className="text-xs text-emerald-400">₹ 18.20</p>
-                </div>
-                <div className="md:hidden text-xs font-bold text-white">Smart AC</div>
               </div>
             </div>
           </div>

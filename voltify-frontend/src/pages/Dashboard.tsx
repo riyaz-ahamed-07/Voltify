@@ -132,67 +132,67 @@ export default function Dashboard() {
       {/* Upper overview section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="font-display font-semibold text-3xl tracking-tight text-gradient">
+          <h1 className="font-display font-semibold text-3xl tracking-tight text-on-surface">
             Energy Consumption Dashboard
           </h1>
-          <p className="text-xs text-gray-400">
-            Region: <span className="font-mono font-bold text-primary">{onboarding?.location || 'Chennai'}</span> | Utility Rate: <span className="font-mono text-primary">₹{tariff}/kWh</span>
+          <p className="text-xs text-on-surface-variant mt-1">
+            Region: <span className="font-mono font-semibold text-primary">{onboarding?.location || 'Chennai'}</span> | Utility Rate: <span className="font-mono text-primary">₹{tariff}/kWh</span>
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs backdrop-blur-md shadow-md">
+        <div className="flex items-center gap-2 bg-surface border border-outline px-4 py-2 rounded-xl text-xs shadow-sm">
           <BadgeAlert className="size-4 text-primary" />
-          <span className="text-gray-400">Estimated Disaggregation Accuracy:</span>
-          <span className="font-mono font-bold text-primary">{onboarding?.accuracy_pct || 94}%</span>
+          <span className="text-on-surface-variant">Estimated Disaggregation Accuracy:</span>
+          <span className="font-mono font-semibold text-primary">{onboarding?.accuracy_pct || 94}%</span>
         </div>
       </div>
 
-      {/* Grid: 4 glowing stats cards */}
+      {/* Grid: 4 stats cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1 */}
-        <GlassCard className="relative overflow-hidden group hover:border-primary/50 transition-all duration-300">
-          <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <Zap className="size-10 text-primary" />
+        <GlassCard className="relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity text-primary">
+            <Zap className="size-10" />
           </div>
-          <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Avg Daily Load</span>
-          <h3 className="font-mono font-semibold text-2xl text-on-surface">{dashboardStats ? dashboardStats.today.units : avgDailyUnits} kWh</h3>
+          <span className="text-xs font-semibold text-on-surface-variant block mb-1">Avg Daily Load</span>
+          <h3 className="font-semibold text-2xl text-on-surface">{dashboardStats ? dashboardStats.today.units : avgDailyUnits} kWh</h3>
           <p className="text-xs text-on-surface-variant mt-1.5 flex items-center gap-1">
-            Approx. <span className="font-bold text-primary">₹{dashboardStats ? dashboardStats.today.cost : avgDailyCost}</span> per day
+            Approx. <span className="font-semibold text-on-surface">₹{dashboardStats ? dashboardStats.today.cost : avgDailyCost}</span> per day
           </p>
         </GlassCard>
 
         {/* Card 2 */}
-        <GlassCard className="relative overflow-hidden group hover:border-tertiary/50 transition-all duration-300">
-          <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <TrendingUp className="size-10 text-tertiary" />
+        <GlassCard className="relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity text-tertiary">
+            <TrendingUp className="size-10" />
           </div>
-          <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Projected {currentMonth}</span>
-          <h3 className="font-mono font-semibold text-2xl text-tertiary">{formatCurrency(dashboardStats ? dashboardStats.estimated_bill.projected : dynamicProjectedBill)}</h3>
+          <span className="text-xs font-semibold text-on-surface-variant block mb-1">Projected {currentMonth}</span>
+          <h3 className="font-semibold text-2xl text-on-surface">{formatCurrency(dashboardStats ? dashboardStats.estimated_bill.projected : dynamicProjectedBill)}</h3>
           <p className="text-xs text-on-surface-variant mt-1.5">
-            Target: <span className="font-bold text-tertiary">-{cssSavings.percentage}%</span> (Saved ₹{cssSavings.money})
+            Target: <span className="font-semibold text-tertiary">-{cssSavings.percentage}%</span> (Saved ₹{cssSavings.money})
           </p>
         </GlassCard>
 
         {/* Card 3 */}
-        <GlassCard className="relative overflow-hidden group hover:border-volt-pink/50 transition-all duration-300">
-          <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <Flame className="size-10 text-volt-pink" />
+        <GlassCard className="relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity text-primary">
+            <Flame className="size-10" />
           </div>
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Active Streak</span>
-          <h3 className="font-mono font-semibold text-2xl text-volt-pink">{streak_days} Days</h3>
-          <p className="text-xs text-gray-400 mt-1.5">
-            Multiplier active: <span className="font-bold text-volt-pink">1.15x</span> rate boost
+          <span className="text-xs font-semibold text-on-surface-variant block mb-1">Active Streak</span>
+          <h3 className="font-semibold text-2xl text-on-surface">{streak_days} Days</h3>
+          <p className="text-xs text-on-surface-variant mt-1.5">
+            Multiplier active: <span className="font-semibold text-primary">1.15x</span> rate boost
           </p>
         </GlassCard>
 
         {/* Card 4 */}
-        <GlassCard className="relative overflow-hidden group hover:border-primary-container/50 transition-all duration-300">
-          <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <Coins className="size-10 text-primary-container" />
+        <GlassCard className="relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity text-primary">
+            <Coins className="size-10" />
           </div>
-          <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Earned Coins</span>
-          <h3 className="font-mono font-semibold text-2xl text-primary-container">{coins} COINS</h3>
+          <span className="text-xs font-semibold text-on-surface-variant block mb-1">Earned Coins</span>
+          <h3 className="font-semibold text-2xl text-on-surface">{coins} COINS</h3>
           <p className="text-xs text-on-surface-variant mt-1.5">
-            Redeemable in <span className="font-bold text-primary-container">Shop Console</span>
+            Redeemable in <span className="font-semibold text-on-surface">Shop Console</span>
           </p>
         </GlassCard>
       </div>
@@ -203,8 +203,8 @@ export default function Dashboard() {
         <GlassCard className="col-span-1 lg:col-span-2 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="font-display font-semibold text-lg text-white">Daily Energy Consumption Index</h3>
-              <p className="text-xs text-gray-450">Estimated smart consumption statistics over the last 30 days</p>
+              <h3 className="font-display font-semibold text-lg text-on-surface">Daily Energy Consumption Index</h3>
+              <p className="text-xs text-on-surface-variant mt-0.5">Estimated smart consumption statistics over the last 30 days</p>
             </div>
             <div className="flex gap-2">
               <span className="flex items-center gap-1.5 text-xs text-on-surface-variant">
@@ -214,7 +214,7 @@ export default function Dashboard() {
           </div>
 
           <div className="h-64 w-full">
-            <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-slate-500">Loading daily metrics…</div>}>
+            <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-on-surface-variant">Loading daily metrics…</div>}>
               <DailyEnergyChart dailyHistory={dailyHistory} />
             </Suspense>
           </div>
@@ -223,15 +223,15 @@ export default function Dashboard() {
         {/* Recharts Appliance breakdown Pie chart */}
         <GlassCard className="flex flex-col justify-between">
           <div>
-            <h3 className="font-display font-semibold text-lg text-white">Appliance Allocation Index</h3>
-            <p className="text-xs text-gray-450 mb-6">Estimated load distribution based on your billing parameters</p>
+            <h3 className="font-display font-semibold text-lg text-on-surface">Appliance Allocation Index</h3>
+            <p className="text-xs text-on-surface-variant mt-0.5 mb-6">Estimated load distribution based on your billing parameters</p>
           </div>
 
           <div className="h-44 w-full relative flex items-center justify-center">
             {applianceBreakdown.length === 0 ? (
-              <p className="text-center text-xs text-outline">Configure appliances in Settings</p>
+              <p className="text-center text-xs text-on-surface-variant">Configure appliances in Settings</p>
             ) : (
-              <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-slate-500">Loading breakdown…</div>}>
+              <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-on-surface-variant">Loading breakdown…</div>}>
                 <ApplianceAllocationChart applianceBreakdown={applianceBreakdown} />
               </Suspense>
             )}
@@ -245,7 +245,7 @@ export default function Dashboard() {
                   <span className="size-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                   <span>{item.icon} {item.name}</span>
                 </span>
-                <span className="font-mono text-on-surface font-bold">{item.percentage}% ({formatCurrency(item.cost)})</span>
+                <span className="font-semibold text-on-surface">{item.percentage}% ({formatCurrency(item.cost)})</span>
               </div>
             ))}
           </div>
@@ -257,32 +257,32 @@ export default function Dashboard() {
         {/* BEE Sliders panel */}
         <GlassCard className="col-span-1 lg:col-span-2 space-y-6">
           <div>
-            <h3 className="font-display font-semibold text-lg text-white">
+            <h3 className="font-display font-semibold text-lg text-on-surface">
               ⚡ Appliance Targets & Guidelines
             </h3>
-            <p className="text-xs text-gray-405">
+            <p className="text-xs text-on-surface-variant mt-0.5">
               Set standard thresholds recommended by public bodies to lower your monthly statement expenses.
             </p>
           </div>
 
           <div className="space-y-6">
             {/* AC Temp Slider */}
-            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl space-y-4 backdrop-blur-md">
+            <div className="bg-surface border border-outline p-5 rounded-xl space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg">❄️</span>
                   <div>
-                    <h4 className="text-sm font-semibold text-white">Air Conditioner Temp Settings</h4>
-                    <p className="text-[10px] text-gray-400 font-medium">BEE Optimal Standard: <span className="text-primary font-bold font-mono">24°C</span></p>
+                    <h4 className="text-sm font-semibold text-on-surface">Air Conditioner Temp Settings</h4>
+                    <p className="text-xs text-on-surface-variant font-medium">BEE Optimal Standard: <span className="text-primary font-semibold">24°C</span></p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className={`font-mono font-bold text-lg ${acTemp >= 24 ? 'text-primary' : 'text-volt-amber'}`}>{acTemp}°C</span>
+                  <span className={`font-semibold text-lg ${acTemp >= 24 ? 'text-primary' : 'text-error'}`}>{acTemp}°C</span>
                 </div>
               </div>
 
               <div className="flex gap-4 items-center">
-                <span className="text-xs text-gray-500 font-mono">18°C</span>
+                <span className="text-xs text-on-surface-variant">18°C</span>
                 <input
                   type="range"
                   min={18}
@@ -290,40 +290,40 @@ export default function Dashboard() {
                   step={1}
                   value={acTemp}
                   onChange={(e) => handleAcSlide(parseInt(e.target.value))}
-                  className="flex-1 accent-primary h-1.5 bg-white/10 rounded-lg cursor-pointer outline-none"
+                  className="flex-1 accent-primary h-1.5 bg-outline rounded-lg cursor-pointer outline-none"
                 />
-                <span className="text-xs text-gray-500 font-mono">26°C</span>
+                <span className="text-xs text-on-surface-variant">26°C</span>
               </div>
 
               {acTemp >= 24 ? (
-                <div className="bg-primary/15 border border-primary/20 p-3 rounded-xl text-xs text-primary flex gap-2.5 items-center">
+                <div className="bg-primary/10 border border-primary/20 p-3 rounded-lg text-xs text-primary flex gap-2.5 items-center">
                   <CheckCircle className="size-4 flex-shrink-0" />
-                  <p>BEE standard active! Saving <span className="font-bold">~36% AC energy</span> with zero healthy comfort loss.</p>
+                  <p>BEE standard active! Saving <span className="font-semibold">~36% AC energy</span> with zero healthy comfort loss.</p>
                 </div>
               ) : (
-                <p className="text-[11px] text-gray-400 italic">
-                  Tip: Raising temperature from 18°C to 24°C will immediately save you <span className="text-primary font-bold">₹900/month</span>!
+                <p className="text-xs text-on-surface-variant italic">
+                  Tip: Raising temperature from 18°C to 24°C will immediately save you <span className="text-primary font-semibold">₹900/month</span>!
                 </p>
               )}
             </div>
 
             {/* Refrigerator Temp Slider */}
-            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl space-y-4 backdrop-blur-md">
+            <div className="bg-surface border border-outline p-5 rounded-xl space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg">🧊</span>
                   <div>
-                    <h4 className="text-sm font-semibold text-white">Refrigerator Temp Settings</h4>
-                    <p className="text-[10px] text-gray-400 font-medium">WHO Safety Standard: <span className="text-primary font-bold font-mono">4°C</span></p>
+                    <h4 className="text-sm font-semibold text-on-surface">Refrigerator Temp Settings</h4>
+                    <p className="text-xs text-on-surface-variant font-medium">WHO Safety Standard: <span className="text-primary font-semibold">4°C</span></p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className={`font-mono font-bold text-lg ${fridgeTemp >= 4 ? 'text-primary' : 'text-volt-amber'}`}>{fridgeTemp}°C</span>
+                  <span className={`font-semibold text-lg ${fridgeTemp >= 4 ? 'text-primary' : 'text-error'}`}>{fridgeTemp}°C</span>
                 </div>
               </div>
 
               <div className="flex gap-4 items-center">
-                <span className="text-xs text-gray-500 font-mono">1°C</span>
+                <span className="text-xs text-on-surface-variant">1°C</span>
                 <input
                   type="range"
                   min={1}
@@ -331,18 +331,18 @@ export default function Dashboard() {
                   step={1}
                   value={fridgeTemp}
                   onChange={(e) => handleFridgeSlide(parseInt(e.target.value))}
-                  className="flex-1 accent-primary h-1.5 bg-white/10 rounded-lg cursor-pointer outline-none"
+                  className="flex-1 accent-primary h-1.5 bg-outline rounded-lg cursor-pointer outline-none"
                 />
-                <span className="text-xs text-gray-500 font-mono">6°C</span>
+                <span className="text-xs text-on-surface-variant">6°C</span>
               </div>
 
               {fridgeTemp >= 4 ? (
-                <div className="bg-primary/15 border border-primary/20 p-3 rounded-xl text-xs text-primary flex gap-2.5 items-center">
+                <div className="bg-primary/10 border border-primary/20 p-3 rounded-lg text-xs text-primary flex gap-2.5 items-center">
                   <CheckCircle className="size-4 flex-shrink-0" />
-                  <p>Optimal compressor cycle active! Reduced consumption by <span className="font-bold">~8%</span>.</p>
+                  <p>Optimal compressor cycle active! Reduced consumption by <span className="font-semibold">~8%</span>.</p>
                 </div>
               ) : (
-                <p className="text-[11px] text-gray-400 italic">
+                <p className="text-xs text-on-surface-variant italic">
                   Tip: Raising from 2°C to 4°C reduces motor cycles with absolute food safety.
                 </p>
               )}
@@ -355,50 +355,50 @@ export default function Dashboard() {
           {/* Active challenges */}
           <GlassCard className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-display font-semibold text-sm text-white">ACTIVE SAVINGS QUEST</h3>
-              <Sparkles className="size-4 text-primary animate-pulse" />
+              <h3 className="font-display font-semibold text-sm text-on-surface">ACTIVE SAVINGS QUEST</h3>
+              <Sparkles className="size-4 text-tertiary animate-pulse" />
             </div>
 
-            <div className="bg-white/5 border border-white/10 p-4 rounded-xl space-y-3">
-              <span className="text-[9px] font-mono font-bold text-volt-pink uppercase tracking-widest block">WEEKLY QUEST</span>
-              <h4 className="text-sm font-semibold text-white">Use under 100 kWh this week</h4>
+            <div className="bg-surface border border-outline p-4 rounded-xl space-y-3">
+              <span className="text-[10px] font-semibold text-tertiary uppercase tracking-wider block">WEEKLY QUEST</span>
+              <h4 className="text-sm font-semibold text-on-surface">Use under 100 kWh this week</h4>
               
               <div className="space-y-1">
-                <div className="flex justify-between text-[11px] font-mono">
-                  <span className="text-gray-400 font-medium">Progress: 67 / 100 units</span>
-                  <span className="text-primary font-bold">67%</span>
+                <div className="flex justify-between text-xs">
+                  <span className="text-on-surface-variant font-medium">Progress: 67 / 100 units</span>
+                  <span className="text-tertiary font-semibold">67%</span>
                 </div>
-                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div className="bg-primary h-full rounded-full" style={{ width: '67%' }} />
+                <div className="w-full h-1.5 bg-outline rounded-full overflow-hidden">
+                  <div className="bg-tertiary h-full rounded-full" style={{ width: '67%' }} />
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-[10px] text-gray-400 pt-2 border-t border-white/5">
-                <span>Reward: <span className="font-bold text-primary font-mono">150 Coins</span></span>
-                <span className="font-mono uppercase text-volt-pink font-semibold">3 Days left</span>
+              <div className="flex justify-between items-center text-xs text-on-surface-variant pt-2 border-t border-outline">
+                <span>Reward: <span className="font-semibold text-primary">150 Coins</span></span>
+                <span className="uppercase text-tertiary font-semibold">3 Days left</span>
               </div>
             </div>
           </GlassCard>
 
           {/* Leaders board rankings */}
           <GlassCard className="space-y-4">
-            <h3 className="font-display font-semibold text-sm text-white">DISCOM LEADERBOARD PREVIEW</h3>
+            <h3 className="font-display font-semibold text-sm text-on-surface">DISCOM LEADERBOARD PREVIEW</h3>
             <div className="space-y-1.5">
               {leaderboard.slice(0, 5).map((e) => (
                 <div
                   key={e.name}
-                  className={`flex justify-between items-center p-2 rounded-xl text-xs transition-colors ${
+                  className={`flex justify-between items-center p-2 rounded-lg text-xs transition-colors ${
                     e.is_current_user
-                      ? 'bg-primary/10 border border-primary/20 text-primary font-bold shadow-cyan'
-                      : 'hover:bg-white/5 text-gray-400 hover:text-white'
+                      ? 'bg-primary/10 border border-primary/20 text-primary font-semibold shadow-sm'
+                      : 'hover:bg-surface text-on-surface-variant hover:text-on-surface'
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <span className="w-4 text-center font-mono font-bold text-[10px] text-gray-500">#{e.rank}</span>
+                    <span className="w-4 text-center font-semibold text-[10px] text-on-surface-variant">#{e.rank}</span>
                     <span>{e.name}</span>
                   </span>
-                  <div className="flex items-center gap-3 font-mono font-bold text-white">
-                    <span className="text-volt-pink font-semibold">{e.streak}d</span>
+                  <div className="flex items-center gap-3 font-semibold text-on-surface">
+                    <span className="text-tertiary">{e.streak}d</span>
                     <span>{e.coins} c</span>
                   </div>
                 </div>
@@ -411,19 +411,19 @@ export default function Dashboard() {
       {/* Grid: Alerts & Smart notifications */}
       {activeAlerts.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-display font-semibold text-sm text-white">ACTIVE UTILITY INSIGHTS</h3>
+          <h3 className="font-display font-semibold text-sm text-on-surface">ACTIVE UTILITY INSIGHTS</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activeAlerts.map((alert) => (
               <div
                 key={alert.title}
                 className={`p-4 rounded-xl border flex gap-3 items-start text-xs ${
                   alert.type === 'warning'
-                    ? 'bg-volt-pink/5 border-volt-pink/20 text-on-surface'
-                    : 'bg-tertiary/5 border-tertiary/20 text-on-surface'
+                    ? 'bg-error/10 border-error/20 text-on-surface'
+                    : 'bg-tertiary/10 border-tertiary/20 text-on-surface'
                 }`}
               >
                 {alert.type === 'warning' ? (
-                  <ShieldAlert className="size-5 text-volt-pink flex-shrink-0 mt-0.5" />
+                  <ShieldAlert className="size-5 text-error flex-shrink-0 mt-0.5" />
                 ) : (
                   <CheckCircle className="size-5 text-tertiary flex-shrink-0 mt-0.5" />
                 )}

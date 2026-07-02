@@ -88,6 +88,37 @@ export const apiService = {
     return fetchApi('/auth/login', { method: 'POST', body: JSON.stringify(data) }, fallback);
   },
 
+  async oauthLogin(provider: string) {
+    const fallback = {
+      token: 'mock-jwt-token-oauth',
+      user: {
+        id: `oauth-user-${Date.now()}`,
+        name: 'Oauth User',
+        email: 'oauth@example.com',
+        tier: 1,
+        coins: 0,
+        streak_days: 0,
+        onboarding_complete: false,
+      }
+    };
+    return fetchApi(`/auth/oauth/${provider}`, { method: 'POST' }, fallback);
+  },
+
+  async verifyOTP(data: { email: string; otp: string }) {
+    const fallback = { success: true, message: 'OTP verified successfully' };
+    return fetchApi('/auth/verify-otp', { method: 'POST', body: JSON.stringify(data) }, fallback);
+  },
+
+  async resendOTP(data: { email: string }) {
+    const fallback = { success: true, message: 'OTP sent to email' };
+    return fetchApi('/auth/resend-otp', { method: 'POST', body: JSON.stringify(data) }, fallback);
+  },
+
+  async forgotPassword(data: { email: string }) {
+    const fallback = { success: true, message: 'Password reset link sent to email' };
+    return fetchApi('/auth/forgot-password', { method: 'POST', body: JSON.stringify(data) }, fallback);
+  },
+
   async getMe() {
     return fetchApi('/auth/me');
   },
