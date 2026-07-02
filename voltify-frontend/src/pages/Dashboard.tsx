@@ -118,7 +118,7 @@ export default function Dashboard() {
       {/* Upper overview section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="font-display font-black text-3xl tracking-tight text-gradient">
+          <h1 className="font-display font-semibold text-3xl tracking-tight text-gradient">
             Energy Consumption Dashboard
           </h1>
           <p className="text-xs text-gray-400">
@@ -189,18 +189,18 @@ export default function Dashboard() {
         <GlassCard className="col-span-1 lg:col-span-2 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="font-display font-bold text-lg text-white">Daily Energy Consumption Index</h3>
+              <h3 className="font-display font-semibold text-lg text-white">Daily Energy Consumption Index</h3>
               <p className="text-xs text-gray-450">Estimated smart consumption statistics over the last 30 days</p>
             </div>
             <div className="flex gap-2">
               <span className="flex items-center gap-1.5 text-xs text-on-surface-variant">
-                <span className="w-2.5 h-2.5 bg-primary rounded-full" /> Load (kWh)
+                <span className="size-2.5 bg-primary rounded-full" /> Load (kWh)
               </span>
             </div>
           </div>
 
           <div className="h-64 w-full">
-            <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-slate-500">Loading daily metrics...</div>}>
+            <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-slate-500">Loading daily metrics…</div>}>
               <DailyEnergyChart dailyHistory={dailyHistory} />
             </Suspense>
           </div>
@@ -209,7 +209,7 @@ export default function Dashboard() {
         {/* Recharts Appliance breakdown Pie chart */}
         <GlassCard className="flex flex-col justify-between">
           <div>
-            <h3 className="font-display font-bold text-lg text-white">Appliance Allocation Index</h3>
+            <h3 className="font-display font-semibold text-lg text-white">Appliance Allocation Index</h3>
             <p className="text-xs text-gray-450 mb-6">Estimated load distribution based on your billing parameters</p>
           </div>
 
@@ -217,7 +217,7 @@ export default function Dashboard() {
             {applianceBreakdown.length === 0 ? (
               <p className="text-center text-xs text-outline">Configure appliances in Settings</p>
             ) : (
-              <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-slate-500">Loading breakdown...</div>}>
+              <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-slate-500">Loading breakdown…</div>}>
                 <ApplianceAllocationChart applianceBreakdown={applianceBreakdown} />
               </Suspense>
             )}
@@ -228,7 +228,7 @@ export default function Dashboard() {
             {applianceBreakdown.slice(0, 4).map((item) => (
               <div key={item.name} className="flex justify-between items-center text-xs">
                 <span className="text-on-surface-variant flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="size-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                   <span>{item.icon} {item.name}</span>
                 </span>
                 <span className="font-mono text-on-surface font-bold">{item.percentage}% ({formatCurrency(item.cost)})</span>
@@ -243,7 +243,7 @@ export default function Dashboard() {
         {/* BEE Sliders panel */}
         <GlassCard className="col-span-1 lg:col-span-2 space-y-6">
           <div>
-            <h3 className="font-display font-bold text-lg text-white">
+            <h3 className="font-display font-semibold text-lg text-white">
               ⚡ Appliance Targets & Guidelines
             </h3>
             <p className="text-xs text-gray-405">
@@ -258,7 +258,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg">❄️</span>
                   <div>
-                    <h4 className="text-sm font-bold text-white">Air Conditioner Temp Settings</h4>
+                    <h4 className="text-sm font-semibold text-white">Air Conditioner Temp Settings</h4>
                     <p className="text-[10px] text-gray-400 font-medium">BEE Optimal Standard: <span className="text-primary font-bold font-mono">24°C</span></p>
                   </div>
                 </div>
@@ -283,7 +283,7 @@ export default function Dashboard() {
 
               {acTemp >= 24 ? (
                 <div className="bg-primary/15 border border-primary/20 p-3 rounded-xl text-xs text-primary flex gap-2.5 items-center">
-                  <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                  <CheckCircle className="size-4 flex-shrink-0" />
                   <p>BEE standard active! Saving <span className="font-bold">~36% AC energy</span> with zero healthy comfort loss.</p>
                 </div>
               ) : (
@@ -299,7 +299,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg">🧊</span>
                   <div>
-                    <h4 className="text-sm font-bold text-white">Refrigerator Temp Settings</h4>
+                    <h4 className="text-sm font-semibold text-white">Refrigerator Temp Settings</h4>
                     <p className="text-[10px] text-gray-400 font-medium">WHO Safety Standard: <span className="text-primary font-bold font-mono">4°C</span></p>
                   </div>
                 </div>
@@ -324,7 +324,7 @@ export default function Dashboard() {
 
               {fridgeTemp >= 4 ? (
                 <div className="bg-primary/15 border border-primary/20 p-3 rounded-xl text-xs text-primary flex gap-2.5 items-center">
-                  <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                  <CheckCircle className="size-4 flex-shrink-0" />
                   <p>Optimal compressor cycle active! Reduced consumption by <span className="font-bold">~8%</span>.</p>
                 </div>
               ) : (
@@ -341,13 +341,13 @@ export default function Dashboard() {
           {/* Active challenges */}
           <GlassCard className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-display font-bold text-sm text-white">ACTIVE SAVINGS QUEST</h3>
+              <h3 className="font-display font-semibold text-sm text-white">ACTIVE SAVINGS QUEST</h3>
               <Sparkles className="size-4 text-primary animate-pulse" />
             </div>
 
             <div className="bg-white/5 border border-white/10 p-4 rounded-xl space-y-3">
               <span className="text-[9px] font-mono font-bold text-volt-pink uppercase tracking-widest block">WEEKLY QUEST</span>
-              <h4 className="text-sm font-bold text-white">Use under 100 kWh this week</h4>
+              <h4 className="text-sm font-semibold text-white">Use under 100 kWh this week</h4>
               
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px] font-mono">
@@ -368,7 +368,7 @@ export default function Dashboard() {
 
           {/* Leaders board rankings */}
           <GlassCard className="space-y-4">
-            <h3 className="font-display font-bold text-sm text-white">DISCOM LEADERBOARD PREVIEW</h3>
+            <h3 className="font-display font-semibold text-sm text-white">DISCOM LEADERBOARD PREVIEW</h3>
             <div className="space-y-1.5">
               {leaderboard.slice(0, 5).map((e) => (
                 <div
@@ -397,7 +397,7 @@ export default function Dashboard() {
       {/* Grid: Alerts & Smart notifications */}
       {activeAlerts.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-display font-bold text-sm text-white">ACTIVE UTILITY INSIGHTS</h3>
+          <h3 className="font-display font-semibold text-sm text-white">ACTIVE UTILITY INSIGHTS</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activeAlerts.map((alert) => (
               <div
@@ -414,7 +414,7 @@ export default function Dashboard() {
                   <CheckCircle className="size-5 text-tertiary flex-shrink-0 mt-0.5" />
                 )}
                 <div>
-                  <h4 className="font-bold text-sm leading-tight mb-1">{alert.title}</h4>
+                  <h4 className="font-semibold text-sm leading-tight mb-1">{alert.title}</h4>
                   <p className="text-on-surface-variant leading-relaxed">{alert.message}</p>
                 </div>
               </div>
