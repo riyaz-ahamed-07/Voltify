@@ -176,7 +176,7 @@ export const apiService = {
 
   async getPeakHours() {
     const fallback = {
-      pattern: Array.from({length: 24}).map((_, i) => ({ hour: i, label: \`\${i}h\`, intensity: Math.random() })),
+      pattern: Array.from({length: 24}).map((_, i) => ({ hour: i, label: `${i}h`, intensity: Math.random() })),
       peak_range: '6 PM - 9 PM',
       note: 'Based on your appliance usage pattern'
     };
@@ -252,7 +252,7 @@ export const apiService = {
       annual_savings_rs: 2880,
       coins_earned: 300
     };
-    return fetchApi(\`/coach/whatif?appliance=\${appliance}&change_type=\${change_type}&change_value=\${change_value}\`, {}, fallback);
+    return fetchApi(`/coach/whatif?appliance=${appliance}&change_type=${change_type}&change_value=${change_value}`, {}, fallback);
   },
 
   // ── GAMIFICATION & LEADERBOARD ──────────────────────────────────
@@ -305,7 +305,7 @@ export const apiService = {
       rankings: generateLeaderboard(type, { name: 'Ravi Kumar', coins: 250, streak: 7, rank: 47 }),
       user_rank: { rank: 47, rank_change: 12 }
     };
-    return fetchApi(\`/leaderboard/\${type}?period=\${period}\`, {}, fallback);
+    return fetchApi(`/leaderboard/${type}?period=${period}`, {}, fallback);
   },
 
   // ── NOTIFICATIONS ────────────────────────────────────────────────
@@ -319,7 +319,7 @@ export const apiService = {
   },
 
   async markNotificationRead(id: string) {
-    return fetchApi(\`/notifications/\${id}/read\`, { method: 'PUT' }, { success: true });
+    return fetchApi(`/notifications/${id}/read`, { method: 'PUT' }, { success: true });
   },
 
   async markAllNotificationsRead() {
