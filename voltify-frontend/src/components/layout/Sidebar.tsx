@@ -37,7 +37,7 @@ export default function Sidebar() {
                   `flex items-center gap-3.5 px-4.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${
                     isActive
                       ? 'bg-white/[0.08] text-white border-l-2 border-primary'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
                   }`
                 }
               >
@@ -53,7 +53,7 @@ export default function Sidebar() {
       <div className="pt-6 border-t border-white/5">
         <button
           onClick={logout}
-          className="w-full flex items-center gap-3.5 px-4.5 py-3 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 font-headline font-semibold text-sm transition-all duration-300"
+          className="w-full flex items-center gap-3.5 px-4.5 py-3 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-[#f43f5e]/10 font-headline font-semibold text-sm transition-all duration-300"
         >
           <LogOut className="size-5 flex-shrink-0" />
           <span className="tracking-wide">Sign Out</span>

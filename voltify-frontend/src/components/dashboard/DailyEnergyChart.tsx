@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/prefer-dynamic-import */
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DailyHistoryItem {

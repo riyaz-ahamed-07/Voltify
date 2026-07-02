@@ -126,7 +126,7 @@ export default function Login() {
               className="w-full py-3 bg-primary-container text-on-primary-container font-semibold font-display rounded-lg hover:bg-primary-container/90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase text-xs tracking-wider"
             >
               {loading ? (
-                <><span className="size-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Signing in...</>
+                <><span className="size-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Signing in…</>
               ) : (
                 <>Sign In <Zap className="size-4" /></>
               )}

@@ -148,7 +148,7 @@ export default function Signup() {
               className="w-full py-3 bg-primary-container text-on-primary-container font-semibold font-display rounded-lg hover:bg-primary-container/90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 uppercase text-xs tracking-wider"
             >
               {loading
-                ? <><span className="size-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Creating Account...</>
+                ? <><span className="size-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />Creating Account…</>
                 : <>Create Account <Zap className="size-4" /></>}
             </button>
           </form>
