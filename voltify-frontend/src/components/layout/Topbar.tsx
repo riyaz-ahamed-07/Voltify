@@ -1,16 +1,25 @@
 // src/components/layout/Topbar.tsx
 import { useState } from 'react';
-import { Bell, Flame, Coins, Check, Zap } from 'lucide-react';
+import { Bell, Flame, Coins, Check, Zap, LayoutDashboard, BrainCircuit, Trophy, User, Settings, LogOut } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useGamificationStore } from '../../store/gamificationStore';
 import { MOCK_NOTIFICATIONS } from '../../lib/mockData';
 import { toast } from 'react-toastify';
 
 export default function Topbar() {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { coins, streak_days } = useGamificationStore();
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const links = [
+    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/coach', label: 'Coach', icon: BrainCircuit },
+    { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+    { to: '/profile', label: 'Profile', icon: User },
+    { to: '/settings', label: 'Settings', icon: Settings },
+  ];
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -27,14 +36,36 @@ export default function Topbar() {
 
   return (
     <header className="bg-slate-950/80 backdrop-blur-xl border-b border-white/[0.06] py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-40">
-      {/* Title */}
-      <div className="min-w-0">
-        <h2 className="font-display font-semibold text-sm md:text-base tracking-tight text-white flex items-center gap-2">
-          Voltify Energy Insights
-        </h2>
-        <p className="text-[10px] md:text-xs text-gray-400 truncate">
-          Welcome back, <span className="font-semibold text-gray-200">{user?.name || 'User'}</span>
-        </p>
+      {/* Brand & Nav */}
+      <div className="flex items-center gap-8">
+        <div className="flex items-center gap-2">
+          <div className="size-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Zap className="size-4 text-primary" />
+          </div>
+          <span className="font-display font-bold text-lg tracking-tight text-white hidden md:block">Voltify</span>
+        </div>
+        
+        <nav className="hidden md:flex items-center gap-2">
+          {links.map((link) => {
+            const Icon = link.icon;
+            return (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                    isActive
+                      ? 'bg-white/[0.08] text-white border-b-2 border-primary'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <Icon className="size-4 shrink-0" />
+                <span>{link.label}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
       </div>
 
       {/* Action panel */}
@@ -116,6 +147,15 @@ export default function Topbar() {
             </div>
           )}
         </div>
+        
+        {/* Logout */}
+        <button
+          onClick={logout}
+          className="p-2 bg-white/5 rounded-full border border-white/5 text-gray-400 hover:text-rose-400 hover:bg-[#f43f5e]/10 transition-all shrink-0"
+          title="Sign Out"
+        >
+          <LogOut className="size-4" />
+        </button>
       </div>
     </header>
   );
