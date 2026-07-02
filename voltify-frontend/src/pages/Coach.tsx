@@ -29,7 +29,7 @@ export default function Coach() {
               <span className="absolute bottom-0 right-0 size-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full animate-pulse" />
             </div>
             <div>
-              <h3 className="font-display font-bold text-sm text-white">Voltify Energy Assistant</h3>
+              <h3 className="font-display font-semibold text-sm text-white">Voltify Energy Assistant</h3>
               <p className="text-[10px] text-emerald-400 font-mono">Assistant Active</p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function Coach() {
 
         {/* Advisor card list */}
         <div className="space-y-4">
-          <h3 className="font-display font-bold text-xs uppercase tracking-wider text-gray-400">
+          <h3 className="font-display font-semibold text-xs uppercase tracking-wider text-gray-400">
             Smart Recommendations
           </h3>
           {tips.map((tip) => (
