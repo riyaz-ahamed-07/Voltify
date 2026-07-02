@@ -41,7 +41,7 @@ export default function Topbar() {
       <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {/* Streak indicator */}
         <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-volt-pink/30 transition-colors cursor-help group relative shrink-0">
-          <Flame className="w-3.5 h-3.5 text-volt-pink" />
+          <Flame className="size-3.5 text-volt-pink" />
           <span className="font-mono text-[10px] md:text-xs font-semibold text-volt-pink tracking-wider">
             {streak_days} DAY STREAK
           </span>
@@ -53,7 +53,7 @@ export default function Topbar() {
 
         {/* Coins indicator */}
         <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-primary/30 transition-colors cursor-help group relative shrink-0">
-          <Coins className="w-3.5 h-3.5 text-primary" />
+          <Coins className="size-3.5 text-primary" />
           <span className="font-mono text-[10px] md:text-xs font-semibold text-primary tracking-wider">
             {coins} COINS
           </span>
@@ -69,9 +69,9 @@ export default function Topbar() {
             onClick={() => setShowDropdown(!showDropdown)}
             className="p-2 bg-white/5 rounded-full border border-white/5 text-gray-400 hover:text-primary hover:border-primary/50 transition-all relative"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="size-4" />
             {unreadCount > 0 && (
-              <span className="absolute top-0 right-0 w-2 h-2 bg-volt-pink rounded-full border border-surface animate-ping" />
+              <span className="absolute top-0 right-0 size-2 bg-volt-pink rounded-full border border-surface animate-ping" />
             )}
           </button>
 
@@ -84,7 +84,7 @@ export default function Topbar() {
                     onClick={markAllAsRead}
                     className="text-[11px] text-primary hover:underline flex items-center gap-1 font-semibold"
                   >
-                    <Check className="w-3 h-3" /> Mark all read
+                    <Check className="size-3" /> Mark all read
                   </button>
                 )}
               </div>
@@ -94,10 +94,11 @@ export default function Topbar() {
                   <p className="text-center text-xs text-gray-400 py-4">No recent logs</p>
                 ) : (
                   notifications.map((n) => (
-                    <div
+                    <button
+                      type="button"
                       key={n.id}
                       onClick={() => markAsRead(n.id)}
-                      className={`p-2.5 rounded-lg border text-xs transition-colors cursor-pointer ${
+                      className={`p-2.5 rounded-lg border text-xs transition-colors cursor-pointer w-full text-left block ${
                         n.read
                           ? 'bg-transparent border-transparent text-gray-400'
                           : 'bg-primary/5 border-primary/20 text-white hover:bg-primary/10'
@@ -105,10 +106,10 @@ export default function Topbar() {
                     >
                       <div className="flex items-start justify-between gap-1 mb-1">
                         <span className="font-bold">{n.title}</span>
-                        {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-volt-pink mt-1 shrink-0" />}
+                        {!n.read && <span className="size-1.5 rounded-full bg-volt-pink mt-1 shrink-0" />}
                       </div>
                       <p className="text-gray-400 text-[11px] leading-relaxed">{n.message}</p>
-                    </div>
+                    </button>
                   ))
                 )}
               </div>

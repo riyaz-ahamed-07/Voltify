@@ -19,8 +19,8 @@ export default function Sidebar() {
       <div className="space-y-8">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-primary" />
+          <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Zap className="size-5 text-primary" />
           </div>
           <span className="font-display font-bold text-lg tracking-tight text-white">Voltify</span>
         </div>
@@ -41,7 +41,7 @@ export default function Sidebar() {
                   }`
                 }
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon className="size-5 flex-shrink-0" />
                 <span className="tracking-wide">{link.label}</span>
               </NavLink>
             );
@@ -55,7 +55,7 @@ export default function Sidebar() {
           onClick={logout}
           className="w-full flex items-center gap-3.5 px-4.5 py-3 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 font-headline font-semibold text-sm transition-all duration-300"
         >
-          <LogOut className="w-5 h-5 flex-shrink-0" />
+          <LogOut className="size-5 flex-shrink-0" />
           <span className="tracking-wide">Sign Out</span>
         </button>
       </div>
