@@ -52,8 +52,8 @@ export default function Landing() {
           id="hero-section"
         >
           {/* Atmospheric ambient highlights */}
-          <div className="absolute top-1/4 left-1/3 w-[350px] h-[350px] bg-primary/5 rounded-full blur-[140px] -z-20" />
-          <div className="absolute bottom-1/4 right-1/3 w-[450px] h-[450px] bg-sky-500/5 rounded-full blur-[160px] -z-20" />
+          <div className="absolute top-1/4 left-1/3 size-[350px] bg-primary/5 rounded-full blur-[140px] -z-20" />
+          <div className="absolute bottom-1/4 right-1/3 size-[450px] bg-sky-500/5 rounded-full blur-[160px] -z-20" />
 
           <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
             {/* Left Content Column */}
@@ -120,7 +120,7 @@ export default function Landing() {
                   
                   {/* Appliance runtimes list */}
                   <div className="bg-slate-950/40 rounded-xl p-4.5 border border-white/[0.04] space-y-4">
-                    <h4 className="text-[10px] font-mono text-gray-300 font-bold tracking-wider uppercase">Appliance Load Allocation</h4>
+                    <h4 className="text-[10px] font-mono text-gray-300 font-semibold tracking-wider uppercase">Appliance Load Allocation</h4>
                     
                     <div className="space-y-2">
                       <div className="flex justify-between items-center text-xs">
@@ -179,7 +179,7 @@ export default function Landing() {
                   </p>
                 </div>
                 {/* Clean data load graphic */}
-                <div className="h-20 w-full flex items-end space-x-2 border-b border-white/[0.06] pb-2">
+                <div className="h-20 w-full flex items-end gap-2 border-b border-white/[0.06] pb-2">
                   <div className="w-1/5 bg-primary/20 hover:bg-primary/30 rounded-t-lg h-[30%] transition-all duration-200" />
                   <div className="w-1/5 bg-primary/25 hover:bg-primary/35 rounded-t-lg h-[55%] transition-all duration-200" />
                   <div className="w-1/5 bg-primary rounded-t-lg h-[95%] transition-all duration-200" />
@@ -328,26 +328,26 @@ export default function Landing() {
           </div>
           
           <div className="col-span-1 md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="flex flex-col space-y-3">
-              <h4 className="font-bold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Product</h4>
+            <div className="flex flex-col gap-3">
+              <h4 className="font-semibold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Product</h4>
               <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#features">Features</a>
               <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#how-it-works">How it Works</a>
               <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#preview">System Preview</a>
             </div>
-            <div className="flex flex-col space-y-3">
-              <h4 className="font-bold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Guidelines</h4>
+            <div className="flex flex-col gap-3">
+              <h4 className="font-semibold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Guidelines</h4>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">DISCOM Rates</Link>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">BEE Standards</Link>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">WHO Comfort</Link>
             </div>
-            <div className="flex flex-col space-y-3">
-              <h4 className="font-bold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Company</h4>
+            <div className="flex flex-col gap-3">
+              <h4 className="font-semibold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Company</h4>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">About Us</Link>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">Blog</Link>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">Security Specs</Link>
             </div>
-            <div className="flex flex-col space-y-3">
-              <h4 className="font-bold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Support</h4>
+            <div className="flex flex-col gap-3">
+              <h4 className="font-semibold text-[10px] uppercase tracking-widest text-white mb-2 font-mono">Support</h4>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">User Support</Link>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">API Details</Link>
               <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" to="/">Contact Team</Link>
