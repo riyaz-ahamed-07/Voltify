@@ -42,7 +42,7 @@ export default function Leaderboard() {
         {/* Rankings Table */}
         <GlassCard className="col-span-1 lg:col-span-2 overflow-x-auto">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="font-display font-bold text-base text-on-surface">Regional Sector Rankings</h3>
+            <h3 className="font-display font-semibold text-base text-on-surface">Regional Sector Rankings</h3>
             <span className="text-[10px] text-outline font-mono uppercase">Sector: Chennai North</span>
           </div>
 
@@ -94,14 +94,14 @@ export default function Leaderboard() {
         {/* Side Panel: Streak Milestones */}
         <div className="space-y-6">
           <GlassCard className="space-y-4">
-            <h3 className="font-display font-bold text-sm text-on-surface uppercase tracking-wider flex items-center gap-2">
+            <h3 className="font-display font-semibold text-sm text-on-surface uppercase tracking-wider flex items-center gap-2">
               <Sparkles className="size-4 text-primary" /> Active Streak Milestones
             </h3>
             
             <div className="space-y-3 text-xs">
               <div className="border border-outline-variant/30 p-3 rounded-lg flex justify-between items-center">
                 <div>
-                  <h4 className="font-bold text-on-surface">7-Day Saver</h4>
+                  <h4 className="font-semibold text-on-surface">7-Day Saver</h4>
                   <p className="text-[10px] text-on-surface-variant">Unlock 1.15x Saving Multiplier</p>
                 </div>
                 <span className="text-[10px] bg-primary/20 text-primary font-mono px-2 py-0.5 rounded uppercase font-bold">Active</span>
@@ -109,7 +109,7 @@ export default function Leaderboard() {
 
               <div className="border border-outline-variant/30 p-3 rounded-lg flex justify-between items-center opacity-60">
                 <div>
-                  <h4 className="font-bold text-on-surface">30-Day Sovereign</h4>
+                  <h4 className="font-semibold text-on-surface">30-Day Sovereign</h4>
                   <p className="text-[10px] text-on-surface-variant">Unlock 1.35x Saving Multiplier</p>
                 </div>
                 <span className="text-[10px] bg-outline-variant/30 text-outline font-mono px-2 py-0.5 rounded uppercase font-bold">Locked</span>
@@ -117,7 +117,7 @@ export default function Leaderboard() {
 
               <div className="border border-outline-variant/30 p-3 rounded-lg flex justify-between items-center opacity-60">
                 <div>
-                  <h4 className="font-bold text-on-surface">90-Day Grid Master</h4>
+                  <h4 className="font-semibold text-on-surface">90-Day Grid Master</h4>
                   <p className="text-[10px] text-on-surface-variant">Unlock 1.6x Saving Multiplier</p>
                 </div>
                 <span className="text-[10px] bg-outline-variant/30 text-outline font-mono px-2 py-0.5 rounded uppercase font-bold">Locked</span>
