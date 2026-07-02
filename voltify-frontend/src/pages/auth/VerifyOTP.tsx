@@ -5,7 +5,7 @@ import { Zap, ArrowLeft } from 'lucide-react';
 import { apiService } from '../../lib/api';
 
 export default function VerifyOTP() {
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(30);
   const location = useLocation();
@@ -25,14 +25,14 @@ export default function VerifyOTP() {
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) {
       // Handle paste
-      const pasted = value.slice(0, 4).split('');
+      const pasted = value.slice(0, 6).split('');
       const newOtp = [...otp];
       pasted.forEach((char, i) => {
-        if (index + i < 4) newOtp[index + i] = char;
+        if (index + i < 6) newOtp[index + i] = char;
       });
       setOtp(newOtp);
       // Focus last filled input
-      const lastIndex = Math.min(index + pasted.length, 3);
+      const lastIndex = Math.min(index + pasted.length, 5);
       inputRefs.current[lastIndex]?.focus();
       return;
     }
@@ -42,7 +42,7 @@ export default function VerifyOTP() {
     setOtp(newOtp);
 
     // Auto-advance
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -56,8 +56,8 @@ export default function VerifyOTP() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = otp.join('');
-    if (code.length < 4) {
-      toast.error('Please enter the full 4-digit code.');
+    if (code.length < 6) {
+      toast.error('Please enter the full 6-digit code.');
       return;
     }
     setLoading(true);
@@ -97,7 +97,7 @@ export default function VerifyOTP() {
           </div>
           <h1 className="font-display text-2xl font-semibold text-on-surface tracking-tight">Check your email</h1>
           <p className="text-on-surface-variant mt-2 text-sm px-4">
-            We've sent a 4-digit verification code to <span className="font-semibold text-on-surface">{email}</span>.
+            We've sent a 6-digit verification code to <span className="font-semibold text-on-surface">{email}</span>.
           </p>
         </div>
 
@@ -113,7 +113,7 @@ export default function VerifyOTP() {
                   value={digit}
                   onChange={(e) => handleChange(idx, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(idx, e)}
-                  className="w-14 h-16 text-center text-2xl font-semibold bg-surface border border-outline rounded-xl text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-mono"
+                  className="w-10 sm:w-12 h-14 text-center text-2xl font-semibold bg-surface border border-outline rounded-xl text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-mono"
                 />
               ))}
             </div>
