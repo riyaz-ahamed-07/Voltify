@@ -2,8 +2,17 @@ const bcrypt = require('bcrypt');
 const { signToken } = require('../utils/jwt');
 const authService = require('../services/authService');
 const { validateSignup, validateLogin } = require('../utils/validators');
+const emailService = require('../services/emailService');
 
 const SALT_ROUNDS = 12;
+
+// In-memory OTP store: email -> { otp, expiresAt }
+const otpStore = new Map();
+
+// Helper to generate a 6-digit numeric OTP
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
 /**
  * POST /api/auth/signup
@@ -24,6 +33,19 @@ const signup = async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
   const user = await authService.createUser({ name, email, passwordHash });
+
+  // Generate and send OTP
+  const otp = generateOTP();
+  const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+  otpStore.set(email.toLowerCase(), { otp, expiresAt });
+
+  try {
+    await emailService.sendOTPEmail(email, otp);
+  } catch (error) {
+    console.error('Failed to send verification OTP email:', error);
+    // Continue signup but log error so server doesn't crash
+  }
+
   const token = signToken(user.id);
 
   return res.status(201).json({
@@ -100,39 +122,81 @@ const me = async (req, res) => {
 
 /**
  * POST /api/auth/verify-otp
- * OTP verification (simplified — no real email service in MVP)
+ * Body: { email, otp }
  */
 const verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
   if (!email || !otp) {
     return res.status(400).json({ error: 'Email and OTP are required' });
   }
-  // In Tier 3 MVP, OTP verification is simulated
-  // A real implementation would check against a stored OTP in DB with expiry
+
+  const record = otpStore.get(email.toLowerCase());
+  if (!record) {
+    return res.status(400).json({ error: 'No OTP requested for this email. Please sign up or resend code.' });
+  }
+
+  if (Date.now() > record.expiresAt) {
+    otpStore.delete(email.toLowerCase());
+    return res.status(400).json({ error: 'OTP has expired. Please request a new code.' });
+  }
+
+  if (record.otp !== otp.trim()) {
+    return res.status(400).json({ error: 'Invalid verification code. Please check your email and try again.' });
+  }
+
+  // Success: Clear the OTP from store
+  otpStore.delete(email.toLowerCase());
+
   return res.status(200).json({ success: true, message: 'OTP verified successfully' });
 };
 
 /**
  * POST /api/auth/resend-otp
+ * Body: { email }
  */
 const resendOTP = async (req, res) => {
   const { email } = req.body;
   if (!email) {
     return res.status(400).json({ error: 'Email is required' });
   }
-  return res.status(200).json({ success: true, message: 'OTP sent to email' });
+
+  const otp = generateOTP();
+  const expiresAt = Date.now() + 5 * 60 * 1000;
+  otpStore.set(email.toLowerCase(), { otp, expiresAt });
+
+  try {
+    await emailService.sendOTPEmail(email, otp);
+    return res.status(200).json({ success: true, message: 'OTP resent to your email.' });
+  } catch (error) {
+    console.error('Failed to resend verification OTP email:', error);
+    return res.status(500).json({ error: 'Failed to send OTP email. Please try again later.' });
+  }
 };
 
 /**
  * POST /api/auth/forgot-password
+ * Body: { email }
  */
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   if (!email) {
     return res.status(400).json({ error: 'Email is required' });
   }
+
   const user = await authService.getUserByEmail(email);
-  // Always return success to prevent email enumeration
+  if (user) {
+    // Generate a secure reset link (mock frontend endpoint for password reset)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetLink = `${frontendUrl}/reset-password?email=${encodeURIComponent(email)}`;
+    
+    try {
+      await emailService.sendForgotPasswordEmail(email, resetLink);
+    } catch (error) {
+      console.error('Failed to send forgot password email:', error);
+    }
+  }
+
+  // Always return success to prevent email enumeration (security best practice)
   return res.status(200).json({ success: true, message: 'If an account exists, a reset link has been sent.' });
 };
 
