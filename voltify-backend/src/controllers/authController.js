@@ -235,4 +235,30 @@ const oauthCallback = async (req, res) => {
   });
 };
 
-module.exports = { signup, login, me, verifyOTP, resendOTP, forgotPassword, oauthCallback };
+/**
+ * POST /api/auth/reset-password
+ * Body: { email, password }
+ */
+const resetPassword = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and new password are required' });
+  }
+
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  }
+
+  const user = await authService.getUserByEmail(email);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+  await authService.updatePassword(user.id, passwordHash);
+
+  return res.status(200).json({ success: true, message: 'Password has been reset successfully.' });
+};
+
+module.exports = { signup, login, me, verifyOTP, resendOTP, forgotPassword, oauthCallback, resetPassword };

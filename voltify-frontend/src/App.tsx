@@ -6,9 +6,10 @@ import Landing from './pages/Landing';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import VerifyOTP from './pages/auth/VerifyOTP';
-import ForgotPassword from './pages/auth/ForgotPassword';
-import OAuthSuccess from './pages/auth/OAuthSuccess';
 import Onboarding from './pages/onboarding';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
+import OAuthSuccess from './pages/auth/OAuthSuccess';
 import Dashboard from './pages/Dashboard';
 import Coach from './pages/Coach';
 import Leaderboard from './pages/Leaderboard';
@@ -19,7 +20,9 @@ import AppLayout from './components/layout/AppLayout';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
+import { Zap } from 'lucide-react';
+import { apiService } from './lib/api';
 
 // Route Guard: Access only if authenticated
 function PrivateRoute({ children }: { children: ReactNode }) {
@@ -40,6 +43,45 @@ function GuestRoute({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
+  const { token, logout, updateUser } = useAuthStore();
+  const [checkingAuth, setCheckingAuth] = useState(!!token);
+
+  useEffect(() => {
+    async function verifySession() {
+      if (!token) {
+        setCheckingAuth(false);
+        return;
+      }
+      try {
+        const user = await apiService.getMe();
+        if (user) {
+          updateUser(user);
+        }
+      } catch (err: any) {
+        console.error('Session verification failed. Logging out...', err);
+        // Stale session or user deleted in DB
+        logout();
+      } finally {
+        setCheckingAuth(false);
+      }
+    }
+    verifySession();
+  }, [token, logout, updateUser]);
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center font-body text-white">
+        <div className="relative flex items-center justify-center mb-4">
+          <div className="absolute inset-0 size-16 rounded-full bg-primary/20 animate-ping" />
+          <div className="size-16 rounded-2xl bg-slate-900 border border-white/[0.08] flex items-center justify-center relative z-10">
+            <Zap className="size-8 text-primary animate-pulse" />
+          </div>
+        </div>
+        <p className="text-gray-400 text-sm tracking-wide font-medium">Verifying session...</p>
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -76,6 +118,14 @@ export default function App() {
           element={
             <GuestRoute>
               <ForgotPassword />
+            </GuestRoute>
+          } 
+        />
+        <Route 
+          path="/reset-password" 
+          element={
+            <GuestRoute>
+              <ResetPassword />
             </GuestRoute>
           } 
         />

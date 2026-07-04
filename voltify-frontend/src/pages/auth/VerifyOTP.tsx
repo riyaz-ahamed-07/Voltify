@@ -3,8 +3,10 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Zap, ArrowLeft } from 'lucide-react';
 import { apiService } from '../../lib/api';
+import { useAuthStore } from '../../store/authStore';
 
 export default function VerifyOTP() {
+  const { setAuth } = useAuthStore();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(30);
@@ -64,7 +66,16 @@ export default function VerifyOTP() {
     try {
       await apiService.verifyOTP({ email, otp: code });
       toast.success('Email verified successfully!');
-      navigate('/login');
+      
+      const token = location.state?.token;
+      const user = location.state?.user;
+
+      if (token && user) {
+        setAuth(user, token);
+        navigate('/onboarding');
+      } else {
+        navigate('/login');
+      }
     } catch {
       toast.error('Invalid OTP. Please try again.');
     } finally {

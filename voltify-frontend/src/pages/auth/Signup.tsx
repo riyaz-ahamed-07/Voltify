@@ -31,10 +31,10 @@ export default function Signup() {
   const onSubmit = async (data: SignupForm) => {
     setLoading(true);
     try {
-      await apiService.signup(data);
+      const response = await apiService.signup(data);
       toast.success('Account created! Please verify your email.');
-      // Pass the email in state so OTP page can use it
-      navigate('/verify-otp', { state: { email: data.email } });
+      // Pass email, token, and user so the OTP page can log them in directly
+      navigate('/verify-otp', { state: { email: data.email, token: response.token, user: response.user } });
     } catch (err: any) {
       toast.error(err.message || 'Failed to create account. Email may be taken.');
     } finally {

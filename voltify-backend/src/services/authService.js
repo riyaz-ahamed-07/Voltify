@@ -66,4 +66,14 @@ const updateLastActive = async (userId) => {
   );
 };
 
-module.exports = { getUserByEmail, getUserById, createUser, findOrCreateOAuthUser, updateLastActive };
+/**
+ * Updates the user's password hash (called during password resets)
+ */
+const updatePassword = async (userId, passwordHash) => {
+  await pool.query(
+    `UPDATE users SET password_hash = $1 WHERE id = $2`,
+    [passwordHash, userId]
+  );
+};
+
+module.exports = { getUserByEmail, getUserById, createUser, findOrCreateOAuthUser, updateLastActive, updatePassword };

@@ -253,7 +253,7 @@ export default function Onboarding() {
         id: 'in-1',
         type: 'warning' as const,
         title: 'AC Load Calibration Alert',
-        message: 'Your AC is calculated to take up ' + (breakdown.find(b => b.name === 'Air Conditioner')?.percentage || '35') + '% of your total bill. Adjust temperature to save up to ₹900.',
+        message: 'Your AC is calculated to take up ' + (breakdown.find((b: any) => b.name === 'Air Conditioner')?.percentage || '35') + '% of your total bill. Adjust temperature to save up to ₹900.',
         action: '/dashboard',
       },
       {

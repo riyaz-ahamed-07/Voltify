@@ -123,6 +123,11 @@ export const apiService = {
     return fetchApi('/auth/forgot-password', { method: 'POST', body: JSON.stringify(data) }, fallback);
   },
 
+  async resetPassword(data: { email: string; password: string }) {
+    const fallback = { success: true, message: 'Password reset successfully' };
+    return fetchApi('/auth/reset-password', { method: 'POST', body: JSON.stringify(data) }, fallback);
+  },
+
   async getMe() {
     return fetchApi('/auth/me');
   },
