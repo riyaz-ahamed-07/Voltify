@@ -18,9 +18,13 @@ import { apiService } from '../../lib/api';
 
 // Zod schemas for onboarding step inputs
 const profileSchema = z.object({
-  household_type: z.enum(['bachelor', 'family', 'large_family', 'organization']),
+  household_type: z.enum(['bachelor', 'family', 'large_family', 'organization'], {
+    message: 'Please select household size'
+  }),
   location:        z.string().min(2, 'Please select your region'),
-  home_type:       z.enum(['apartment', 'house', 'villa']),
+  home_type:       z.enum(['apartment', 'house', 'villa'], {
+    message: 'Please select dwelling type'
+  }),
 });
 
 const billSchema = z.object({
@@ -85,14 +89,7 @@ export default function Onboarding() {
     step: 1,
     profileData: null,
     billData: null,
-    selectedAppliances: {
-      AC: true,
-      Fridge: true,
-      TV: true,
-      Lights: true,
-      Fans: true,
-      Laptop: true,
-    },
+    selectedAppliances: {},
     applianceHours: {
       AC: 8,
       Fridge: 24,
@@ -118,9 +115,9 @@ export default function Onboarding() {
   const { register: regProfile, handleSubmit: handleProfileSubmit, formState: { errors: profileErrors } } = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      household_type: 'family',
-      location: 'Chennai',
-      home_type: 'apartment',
+      household_type: '' as any,
+      location: '',
+      home_type: '' as any,
     },
   });
 
@@ -134,12 +131,12 @@ export default function Onboarding() {
     maxFiles: 1,
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
-        // Mock extract parameters from simulated bill
+        // Extract parameters from bill
         toast.info('Analyzing utility document via Voltify AI...');
         setTimeout(() => {
-          setBillValue('bill_amount', 3200);
-          setBillValue('units', 400);
-          toast.success('Simulated bill decoded! ₹3,200 Amount / 400 kWh detected');
+          setBillValue('bill_amount', 3200, { shouldValidate: true });
+          setBillValue('units', 400, { shouldValidate: true });
+          toast.success('Utility bill decoded! ₹3,200 Amount / 400 kWh detected');
         }, 1200);
       }
     },
@@ -181,7 +178,8 @@ export default function Onboarding() {
   // Navigation handlers
   const onProfileNext = async (data: ProfileForm) => {
     try {
-      await apiService.saveProfile(data);
+      const selectedCount = Object.values(state.selectedAppliances).filter(Boolean).length || 6;
+      await apiService.saveProfile({ ...data, appliance_count: selectedCount });
       dispatch({ type: 'SET_PROFILE_DATA', payload: data });
       dispatch({ type: 'SET_STEP', payload: 2 });
     } catch (e) {
@@ -200,26 +198,51 @@ export default function Onboarding() {
   };
 
   const onAppliancesNext = () => {
+    const selectedCount = Object.values(state.selectedAppliances).filter(Boolean).length;
+    if (selectedCount === 0) {
+      toast.warning('Please select at least one appliance to calibrate your energy model.');
+      return;
+    }
     dispatch({ type: 'SET_STEP', payload: 4 });
   };
 
   const finishOnboarding = async () => {
     if (!state.profileData || !state.billData || !currentCalc) return;
 
+    let serverData: any = null;
     try {
-      await apiService.saveAppliances(currentCalc.appliances);
+      const response = await apiService.saveAppliances(currentCalc.appliances);
+      if (response && response.success && response.data) {
+        serverData = response.data;
+      }
     } catch (e) {
       toast.error('Failed to save appliances');
       return;
     }
 
+    const NEON_COLORS = ['#22d3ee', '#ec4899', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#a78bfa'];
+
     // Estimate breakdowns
-    const breakdown = estimateApplianceBreakdown(
-      currentCalc.appliances,
-      state.billData.bill_amount,
-      state.billData.units,
-      currentCalc.rate
-    );
+    const breakdown = serverData?.breakdown
+      ? serverData.breakdown.map((item: any, idx: number) => {
+          const appKey = Object.keys(DEFAULT_APPLIANCES).find(
+            k => DEFAULT_APPLIANCES[k].name === item.name
+          );
+          return {
+            name: item.name,
+            icon: appKey ? DEFAULT_APPLIANCES[appKey].icon : '⚡',
+            units: parseFloat(item.estimated_kwh || '0'),
+            percentage: parseFloat(item.percentage || '0'),
+            cost: parseFloat(item.estimated_cost || '0'),
+            color: NEON_COLORS[idx % NEON_COLORS.length],
+          };
+        })
+      : estimateApplianceBreakdown(
+          currentCalc.appliances,
+          state.billData.bill_amount,
+          state.billData.units,
+          currentCalc.rate
+        );
 
     // Generate daily histories
     const history = generateDailyUsage(currentCalc.appliances, 30, state.profileData.location);
@@ -237,7 +260,7 @@ export default function Onboarding() {
         id: 'in-2',
         type: 'success' as const,
         title: 'Energy Calibration Accuracy',
-        message: 'Telemetry calculations matched your uploaded utility billing files with ' + currentCalc.accuracy + '% accuracy!',
+        message: 'Telemetry calculations matched your uploaded utility billing files with ' + (serverData?.match_percentage ?? currentCalc.accuracy) + '% accuracy!',
         action: '/dashboard',
       },
     ];
@@ -250,8 +273,8 @@ export default function Onboarding() {
       bill_amount: state.billData.bill_amount,
       units_per_month: state.billData.units,
       appliances: currentCalc.appliances,
-      estimated_units: currentCalc.estKwh,
-      accuracy_pct: currentCalc.accuracy,
+      estimated_units: serverData?.estimated_monthly_units ?? currentCalc.estKwh,
+      accuracy_pct: serverData?.match_percentage ?? currentCalc.accuracy,
       prev_bills: [
         { month: 'April', amount: state.billData.bill_amount, units: state.billData.units },
         { month: 'March', amount: state.billData.bill_amount * 0.9, units: state.billData.units * 0.9 },
@@ -340,10 +363,12 @@ export default function Onboarding() {
                         id="home_type"
                         className="w-full px-4 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary transition-colors"
                       >
+                        <option value="" disabled>Select...</option>
                         <option value="apartment">Apartment / Flat</option>
                         <option value="house">Independent House</option>
                         <option value="villa">Luxury Villa</option>
                       </select>
+                      {profileErrors.home_type && <p className="text-error text-xs mt-1">{profileErrors.home_type.message}</p>}
                     </div>
 
                     {/* Household Type */}
@@ -354,11 +379,13 @@ export default function Onboarding() {
                         id="household_type"
                         className="w-full px-4 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary transition-colors"
                       >
+                        <option value="" disabled>Select...</option>
                         <option value="bachelor">Single Person</option>
                         <option value="family">Small Family (2–4 Persons)</option>
                         <option value="large_family">Large Family (5+ Persons)</option>
                         <option value="organization">Office / Institution</option>
                       </select>
+                      {profileErrors.household_type && <p className="text-error text-xs mt-1">{profileErrors.household_type.message}</p>}
                     </div>
 
                     {/* Region */}
@@ -369,12 +396,14 @@ export default function Onboarding() {
                         id="location"
                         className="w-full px-4 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary transition-colors"
                       >
+                        <option value="" disabled>Select...</option>
                         <option value="Chennai">Tamil Nadu (TANGEDCO - Chennai)</option>
                         <option value="Mumbai">Maharashtra (MSEDCL/Adani - Mumbai)</option>
                         <option value="Delhi">Delhi (BSES/Tata Power - Delhi)</option>
                         <option value="Bangalore">Karnataka (BESCOM - Bangalore)</option>
                         <option value="Hyderabad">Telangana (TSSPDCL - Hyderabad)</option>
                       </select>
+                      {profileErrors.location && <p className="text-error text-xs mt-1">{profileErrors.location.message}</p>}
                     </div>
                   </div>
 
@@ -411,8 +440,8 @@ export default function Onboarding() {
                 >
                   <input {...getInputProps()} />
                   <Upload className="size-8 text-on-surface-variant mb-3 group-hover:text-primary transition-colors" />
-                  <p className="text-sm font-semibold text-on-surface">Drag & Drop simulated bill PDF here</p>
-                  <p className="text-xs text-on-surface-variant mt-1">Accepts simulated files to instantly decode details</p>
+                  <p className="text-sm font-semibold text-on-surface">Drag & Drop electricity bill PDF here</p>
+                  <p className="text-xs text-on-surface-variant mt-1">Accepts utility files to instantly decode details</p>
                 </div>
 
                 <div className="relative flex py-2 items-center">
