@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '../types/user';
+import { useDashboardStore } from './dashboardStore';
 
 interface AuthState {
   user: User | null;
@@ -22,8 +23,11 @@ export const useAuthStore = create<AuthState>()(
       setAuth: (user, token) =>
         set({ user, token, isAuthenticated: true }),
 
-      logout: () =>
-        set({ user: null, token: null, isAuthenticated: false }),
+      logout: () => {
+        // Clear dashboard state to prevent data leakage between sessions
+        useDashboardStore.getState().resetDashboard();
+        set({ user: null, token: null, isAuthenticated: false });
+      },
 
       updateUser: (updates) =>
         set((state) => ({

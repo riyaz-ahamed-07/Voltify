@@ -34,27 +34,36 @@ export default function Login() {
       setAuth(response.user, response.token);
       toast.success('Welcome back to Voltify!');
       
-      // If already onboarded, send to dashboard. Otherwise send to onboarding!
-      if (isOnboarded) {
+      // Use response.user.onboarding_complete as the source of truth
+      if (response.user.onboarding_complete) {
+        // Synchronize store's onboarded state
+        useDashboardStore.getState().setOnboarding({
+          household_type: response.user.household_type,
+          location: response.user.location,
+          home_type: response.user.home_type,
+          bill_amount: 0,
+          units_per_month: 0,
+          appliances: [],
+          estimated_units: 0,
+          accuracy_pct: 0,
+          prev_bills: []
+        });
         navigate('/dashboard');
       } else {
+        // If not onboarded, clear any prior cached state
+        useDashboardStore.getState().resetDashboard();
         navigate('/onboarding');
       }
-    } catch {
-      toast.error('Invalid credentials. Try again.');
+    } catch (err: any) {
+      toast.error(err.message || 'Invalid credentials. Try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOAuth = async (provider: string) => {
-    try {
-      const response = await apiService.oauthLogin(provider);
-      setAuth(response.user, response.token);
-      toast.success('Welcome back to Voltify!');
-      navigate(isOnboarded ? '/dashboard' : '/onboarding');
-    } catch {
-      toast.error(`Failed to login with ${provider}`);
+  const handleOAuth = (provider: string) => {
+    if (provider === 'google') {
+      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/google`;
     }
   };
 
@@ -159,7 +168,9 @@ export default function Login() {
           </p>
         </div>
       </div>
+
     </div>
   );
 }
+
 export { Login };
