@@ -34,12 +34,16 @@ export default function Landing() {
           </div>
           
           <div className="flex items-center gap-4">
-            <Link className="hidden md:inline-block text-gray-400 hover:text-white transition-colors text-sm font-semibold tracking-wide px-4 py-2" to="/login">Sign In</Link>
+            {isAuthenticated ? (
+              <Link className="hidden md:inline-block text-gray-400 hover:text-white transition-colors text-sm font-semibold tracking-wide px-4 py-2" to="/dashboard">Dashboard</Link>
+            ) : (
+              <Link className="hidden md:inline-block text-gray-400 hover:text-white transition-colors text-sm font-semibold tracking-wide px-4 py-2" to="/login">Sign In</Link>
+            )}
             <button 
               onClick={handleGetStarted}
               className="bg-primary text-slate-950 px-6 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider hover:opacity-90 transition-all"
             >
-              Get Started
+              {isAuthenticated ? 'Go to App' : 'Get Started'}
             </button>
           </div>
         </div>
@@ -82,11 +86,11 @@ export default function Landing() {
                 </button>
                 
                 <Link 
-                  to="/login"
+                  to={isAuthenticated ? '/dashboard' : '/login'}
                   className="border border-white/10 text-white bg-white/5 backdrop-blur-md px-8 py-4 rounded-xl text-xs font-semibold uppercase tracking-wider hover:bg-white/10 transition-all flex items-center justify-center gap-2 hover:scale-[1.01] transform duration-150"
                 >
                   <Play className="size-4 text-primary" />
-                  <span>View Live Demo</span>
+                  <span>{isAuthenticated ? 'Go to App' : 'View Live Demo'}</span>
                 </Link>
               </div>
             </div>

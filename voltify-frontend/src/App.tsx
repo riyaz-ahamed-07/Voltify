@@ -7,6 +7,7 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import VerifyOTP from './pages/auth/VerifyOTP';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import OAuthSuccess from './pages/auth/OAuthSuccess';
 import Onboarding from './pages/onboarding';
 import Dashboard from './pages/Dashboard';
 import Coach from './pages/Coach';
@@ -42,15 +43,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Landing (Redirect to dashboard if logged in) */}
-        <Route 
-          path="/" 
-          element={
-            <GuestRoute>
-              <Landing />
-            </GuestRoute>
-          } 
-        />
+        {/* Public Landing */}
+        <Route path="/" element={<Landing />} />
 
         {/* Guest Auth Screens */}
         <Route 
@@ -82,6 +76,14 @@ export default function App() {
           element={
             <GuestRoute>
               <ForgotPassword />
+            </GuestRoute>
+          } 
+        />
+        <Route 
+          path="/oauth-success" 
+          element={
+            <GuestRoute>
+              <OAuthSuccess />
             </GuestRoute>
           } 
         />
