@@ -8,7 +8,19 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const isMockEmail = (email) => {
+  if (!email) return false;
+  const domain = email.toLowerCase().split('@')[1];
+  return ['example.com', 'test.com', 'mock.com', 'localhost'].includes(domain);
+};
+
 const sendOTPEmail = async (to, otp) => {
+  if (isMockEmail(to)) {
+    console.log(`[MOCK EMAIL SERVICE] Intercepted mock/test address: ${to}`);
+    console.log(`[MOCK EMAIL SERVICE] No SMTP sent. Generated OTP: ${otp}`);
+    return { messageId: `mock-otp-${Date.now()}` };
+  }
+
   const mailOptions = {
     from: process.env.EMAIL_FROM || `"Voltify" <${process.env.GMAIL_USER}>`,
     to,
@@ -36,6 +48,12 @@ const sendOTPEmail = async (to, otp) => {
 };
 
 const sendForgotPasswordEmail = async (to, resetLink) => {
+  if (isMockEmail(to)) {
+    console.log(`[MOCK EMAIL SERVICE] Intercepted mock/test address: ${to}`);
+    console.log(`[MOCK EMAIL SERVICE] No SMTP sent. Password Reset Link: ${resetLink}`);
+    return { messageId: `mock-reset-${Date.now()}` };
+  }
+
   const mailOptions = {
     from: process.env.EMAIL_FROM || `"Voltify" <${process.env.GMAIL_USER}>`,
     to,
