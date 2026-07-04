@@ -16,14 +16,35 @@ const profileRoutes      = require('./src/routes/profile.routes');
 const settingsRoutes     = require('./src/routes/settings.routes');
 
 const errorHandler = require('./src/middleware/errorHandler');
+const passport = require('./src/config/passport');
 
 const app = express();
+
+app.use(passport.initialize());
 
 // ───────────────────────────────
 // MIDDLEWARE
 // ───────────────────────────────
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  process.env.CORS_ORIGIN
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in whitelist or is any local host address
+    const isLocal = /^http:\/\/localhost(:\d+)?$/.test(origin);
+    if (isLocal || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
