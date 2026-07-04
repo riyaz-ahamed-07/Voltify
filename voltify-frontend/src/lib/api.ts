@@ -88,20 +88,24 @@ export const apiService = {
     return fetchApi('/auth/login', { method: 'POST', body: JSON.stringify(data) }, fallback);
   },
 
-  async oauthLogin(provider: string) {
+  async oauthLogin(provider: string, payload?: { name: string; email: string }) {
     const fallback = {
       token: 'mock-jwt-token-oauth',
       user: {
         id: `oauth-user-${Date.now()}`,
-        name: 'Oauth User',
-        email: 'oauth@example.com',
+        name: payload?.name || 'Oauth User',
+        email: payload?.email || 'oauth@example.com',
         tier: 1,
         coins: 0,
         streak_days: 0,
         onboarding_complete: false,
       }
     };
-    return fetchApi(`/auth/oauth/${provider}`, { method: 'POST' }, fallback);
+    const options: RequestInit = { method: 'POST' };
+    if (payload) {
+      options.body = JSON.stringify(payload);
+    }
+    return fetchApi(`/auth/oauth/${provider}`, options, fallback);
   },
 
   async verifyOTP(data: { email: string; otp: string }) {
