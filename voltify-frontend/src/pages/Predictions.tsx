@@ -20,8 +20,8 @@ export default function Predictions() {
   const [billShock, setBillShock] = useState<any>({ risk: 'LOW', probability: 24, projected_bill: 2450 });
   
   // What-If Simulation State
-  const [simAppliance, setSimAppliance] = useState('AC');
-  const [simChange, setSimChange] = useState('temp_up');
+  const [simAppliance, setSimAppliance] = useState('Air Conditioner');
+  const [simChange, setSimChange] = useState('temperature');
   const [simValue, setSimValue] = useState('2');
   const [simResult, setSimResult] = useState<any>(null);
   const [simLoading, setSimLoading] = useState(false);

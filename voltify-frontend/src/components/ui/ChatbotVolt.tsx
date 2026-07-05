@@ -20,6 +20,7 @@ export default function ChatbotVolt() {
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -28,6 +29,13 @@ export default function ChatbotVolt() {
   useEffect(() => {
     if (isOpen) setTimeout(scrollToBottom, 80);
   }, [isOpen, messages]);
+
+  // Auto-focus input box whenever chatbot finishes thinking (loading becomes false)
+  useEffect(() => {
+    if (!loading && isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [loading, isOpen]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,6 +184,7 @@ export default function ChatbotVolt() {
             className="flex items-center gap-2 px-4 py-3 border-t border-[#1f1f1f] bg-[#111111] shrink-0"
           >
             <input
+              ref={inputRef}
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}

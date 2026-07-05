@@ -155,6 +155,15 @@ export default function Topbar() {
           )}
         </div>
 
+        {/* User Profile Icon Button */}
+        <NavLink
+          to="/profile"
+          className="p-2 bg-white/5 rounded-full border border-white/5 text-gray-400 hover:text-primary hover:border-primary/50 transition-all shrink-0"
+          title="Profile"
+        >
+          <User className="size-4" />
+        </NavLink>
+
         {/* Settings Icon Button */}
         <NavLink
           to="/settings"
