@@ -14,6 +14,21 @@ interface DailyHistoryItem {
   accuracy_pct?: number;
 }
 
+type MonthlyChartData = {
+  date: string;
+  label: string;
+  actual: number;
+  estimated: number;
+  accuracy_pct: number;
+};
+
+type DailyChartData = {
+  date: string;
+  label: string;
+  units: number;
+  cost?: number;
+};
+
 interface DailyEnergyChartProps {
   dailyHistory: DailyHistoryItem[];
 }
@@ -110,9 +125,15 @@ export default function DailyEnergyChart({ dailyHistory }: DailyEnergyChartProps
     );
   }
 
-  const avgUnits = isMonthly 
-    ? data.reduce((s, d) => s + (d.actual || 0), 0) / data.length
-    : data.reduce((s, d) => s + (d.units || 0), 0) / data.length;
+  const avgUnits = isMonthly
+    ? (data as MonthlyChartData[]).reduce(
+        (s, d) => s + d.actual,
+        0
+      ) / data.length
+    : (data as DailyChartData[]).reduce(
+        (s, d) => s + d.units,
+        0
+      ) / data.length;
 
   return (
     <ResponsiveContainer width="100%" height="100%">
