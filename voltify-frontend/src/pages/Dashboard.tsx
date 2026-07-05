@@ -35,6 +35,13 @@ export default function Dashboard() {
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [claimingCheckIn, setClaimingCheckIn] = useState(false);
 
+  // Cognee Memory States
+  const [showDnaModal, setShowDnaModal] = useState(false);
+  const [homeDna, setHomeDna] = useState<any>(null);
+  const [replayIndex, setReplayIndex] = useState(4);
+  const [replayedState, setReplayedState] = useState<any>(null);
+  const [showEvidenceId, setShowEvidenceId] = useState<string | null>(null);
+
   // Comfort-Safe Savings (CSS) Recommendations State
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [cssTotals, setCssTotals] = useState<any>({ potential: 1020, annual: 12240 });
@@ -125,6 +132,25 @@ export default function Dashboard() {
       loadData();
     }
   }, [user, onboarding]);
+
+  // Load Cognee memory DNA and temporal replay state
+  useEffect(() => {
+    async function loadMemoryData() {
+      try {
+        const [dna, replay] = await Promise.all([
+          apiService.getHomeDNA(),
+          apiService.getMemoryReplay('October')
+        ]);
+        setHomeDna(dna);
+        setReplayedState(replay);
+      } catch (err) {
+        console.error('Failed to load Cognee memory parameters:', err);
+      }
+    }
+    if (user) {
+      loadMemoryData();
+    }
+  }, [user]);
 
   // Sync and update usage graph history when period changes
   useEffect(() => {
@@ -311,6 +337,37 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* ── Your Home's Story (Cognee Evolving Status Header Card) ── */}
+      <GlassCard className="p-6 border border-primary/20 bg-gradient-to-r from-primary/10 via-transparent to-transparent flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none text-primary">
+          <Sparkles className="size-24" />
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="size-2 bg-primary rounded-full animate-pulse" />
+            <h2 className="font-display text-sm font-bold tracking-widest uppercase text-primary">Your Home's Story</h2>
+          </div>
+          <div className="flex flex-col md:flex-row gap-2 md:gap-6 text-xs text-zinc-400">
+            <p>Learning Since: <span className="font-semibold text-white font-mono">October 2025</span></p>
+            <p className="hidden md:inline text-zinc-600">|</p>
+            <p>Today: <span className="font-semibold text-emerald-400 font-mono">18% More Efficient</span></p>
+            <p className="hidden md:inline text-zinc-600">|</p>
+            <p>Lifetime Savings: <span className="font-semibold text-primary font-mono">₹7,420</span></p>
+          </div>
+          <p className="text-xs text-zinc-300">
+            Latest Learning: <span className="font-semibold text-zinc-200 italic">"Bedroom AC usage has become more efficient over the last 3 months."</span>
+          </p>
+        </div>
+
+        {/* Spotify-Wrapped Home DNA Slide-over Button */}
+        <button
+          onClick={() => setShowDnaModal(true)}
+          className="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/10 cursor-pointer select-none transition-all duration-200"
+        >
+          🧬 View Home DNA
+        </button>
+      </GlassCard>
 
       {/* Grid: 4 stats cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -680,12 +737,180 @@ export default function Dashboard() {
                 <div>
                   <h4 className="font-semibold text-sm leading-tight mb-1">{alert.title}</h4>
                   <p className="text-on-surface-variant leading-relaxed">{alert.message}</p>
+                  
+                  {/* How did my home learn this? evidence trigger */}
+                  <div className="mt-2.5 pt-2 border-t border-white/5 flex flex-col gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setShowEvidenceId(showEvidenceId === alert.title ? null : alert.title)}
+                      className="text-primary hover:underline text-[10px] text-left cursor-pointer font-bold uppercase tracking-wider flex items-center gap-1.5"
+                    >
+                      🔍 How did my home learn this?
+                    </button>
+                    {showEvidenceId === alert.title && (
+                      <div className="p-2 bg-slate-950/45 border border-white/5 rounded-lg text-[9px] text-zinc-300 font-mono leading-relaxed animate-fade-in">
+                        Evidence Base: 8 Utility Bills, 126 Occupancy Check-ins, 34 Conversational Dialogues, OpenWeather Temperature Index, and 18 saving challenges.
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
       )}
+      {/* ── Relive My Home (Temporal Journey) ── */}
+      <GlassCard className="p-6 border border-primary/20 bg-white/[0.01] space-y-6 relative overflow-hidden">
+        <div className="space-y-1">
+          <h3 className="font-display font-semibold text-lg text-white flex items-center gap-2">
+            <Sliders className="size-5 text-primary animate-pulse" />
+            Relive My Home's Journey
+          </h3>
+          <p className="text-xs text-zinc-400">
+            Reconstruct the exact historical decisions, goals, and weather metrics your home remembers.
+          </p>
+        </div>
+
+        {/* Month Slider */}
+        <div className="space-y-4">
+          <input
+            type="range"
+            min="0"
+            max="4"
+            value={replayIndex}
+            onChange={async (e) => {
+              const idx = parseInt(e.target.value);
+              setReplayIndex(idx);
+              const months = ['March', 'April', 'June', 'August', 'October'];
+              const month = months[idx];
+              try {
+                const state = await apiService.getMemoryReplay(month);
+                setReplayedState(state);
+              } catch (err) {
+                console.error('Failed to load replay state:', err);
+              }
+            }}
+            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-primary"
+          />
+          
+          {/* Step Labels */}
+          <div className="flex justify-between text-[9px] font-mono text-zinc-500 font-bold px-1">
+            <span className={replayIndex === 0 ? 'text-primary font-bold' : ''}>MARCH (Fridge Upgrade)</span>
+            <span className={replayIndex === 1 ? 'text-primary font-bold' : ''}>APRIL (AC Heatwave)</span>
+            <span className={replayIndex === 2 ? 'text-primary font-bold' : ''}>JUNE (Saving Challenge)</span>
+            <span className={replayIndex === 3 ? 'text-primary font-bold' : ''}>AUGUST (Baseload Dropped)</span>
+            <span className={replayIndex === 4 ? 'text-primary font-bold' : ''}>OCTOBER (18% Efficient)</span>
+          </div>
+        </div>
+
+        {/* Replayed State Display */}
+        {replayedState && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-4 bg-primary/5 border border-primary/10 rounded-xl animate-fade-in text-xs">
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold block">Temporal Status</span>
+              <span className="font-mono font-bold text-white block mt-0.5">{replayedState.month}</span>
+            </div>
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold block">Consolidated Metrics</span>
+              <span className="font-mono font-bold text-white block mt-0.5">₹{replayedState.bill_amount} ({replayedState.units} kWh)</span>
+            </div>
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold block">Ambient Weather & Goal</span>
+              <span className="font-mono font-bold text-white block mt-0.5">{replayedState.weather_temp}°C | {replayedState.active_goal}</span>
+            </div>
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold block">Memory Milestones</span>
+              <div className="space-y-0.5 mt-0.5 text-zinc-300 font-sans text-[10px]">
+                {replayedState.timeline_events?.map((ev: string, i: number) => (
+                  <span key={i} className="block">• {ev}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </GlassCard>
+
+      {/* ── Spotify Wrapped Home DNA Slide-Over Modal ── */}
+      {showDnaModal && homeDna && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md animate-fade-in px-4">
+          <GlassCard className="max-w-md w-full p-8 border border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.15)] relative overflow-hidden space-y-6 bg-slate-900">
+            {/* Glowing neon bg bubble */}
+            <div className="absolute -top-24 -left-24 size-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
+            
+            {/* Close button */}
+            <button
+              onClick={() => setShowDnaModal(false)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors cursor-pointer text-sm font-bold p-1 hover:bg-white/5 rounded-lg"
+            >
+              ✕
+            </button>
+
+            {/* Title */}
+            <div className="text-center space-y-2">
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">HOME DNA WRAPPED</span>
+              <h3 className="font-display font-bold text-2xl text-white tracking-tight">Your Home's Personality</h3>
+              <p className="text-[10px] text-zinc-400">Built from months of persistent memories.</p>
+            </div>
+
+            {/* Score Indicators */}
+            <div className="space-y-4">
+              {/* Intelligence Score */}
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/5 p-4 rounded-xl">
+                <div>
+                  <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold block">Energy Intelligence Score</span>
+                  <span className="text-[10px] text-zinc-400">Consolidated graph weight</span>
+                </div>
+                <div className="text-3xl font-mono font-black text-emerald-400">
+                  {homeDna.score}/100
+                </div>
+              </div>
+
+              {/* Progress bars / stars */}
+              <div className="space-y-3 p-4 bg-white/[0.01] border border-white/[0.03] rounded-xl text-xs">
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-300 font-medium">🌿 Eco-Conscious</span>
+                  <span className="font-mono text-amber-400 font-bold">
+                    {'⭐'.repeat(homeDna.eco_conscious)}{'☆'.repeat(5 - homeDna.eco_conscious)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-300 font-medium">🧊 Comfort-First</span>
+                  <span className="font-mono text-amber-400 font-bold">
+                    {'⭐'.repeat(homeDna.comfort_first)}{'☆'.repeat(5 - homeDna.comfort_first)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-300 font-medium">⚡ Habit Consistency</span>
+                  <span className="font-mono text-amber-400 font-bold">
+                    {'⭐'.repeat(homeDna.habit_consistency)}{'☆'.repeat(5 - homeDna.habit_consistency)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                  <span className="text-zinc-300 font-medium">🎯 Recommendation Adoption</span>
+                  <span className="font-mono text-emerald-400 font-bold">
+                    {homeDna.adoption_rate}/5
+                  </span>
+                </div>
+              </div>
+
+              {/* Personality Summary */}
+              <div className="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-xs text-zinc-300 leading-relaxed italic text-center">
+                "{homeDna.summary}"
+              </div>
+
+              {/* Methodology details */}
+              <div className="p-3 bg-white/[0.01] rounded-xl text-[9px] text-zinc-500 leading-relaxed">
+                <span className="font-bold text-zinc-400 block mb-1">Methodology & Sources:</span>
+                {homeDna.methodology}
+              </div>
+            </div>
+          </GlassCard>
+        </div>
+      )}
+
       {/* Daily Check-In Modal with Interactive Telemetry Log */}
       {showCheckInModal && (() => {
         return (

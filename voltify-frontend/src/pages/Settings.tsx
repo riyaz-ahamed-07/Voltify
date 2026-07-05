@@ -124,6 +124,17 @@ export default function Settings() {
     }
   };
 
+  const handleWipeMemory = async () => {
+    if (window.confirm('CRITICAL ACTION: This will completely wipe all of your home\'s learned memory from the Cognee Graph. Your home will remember nothing. Proceed?')) {
+      try {
+        await apiService.resetCoachMemory();
+        toast.error('AI memory wiped successfully. Your home is now a blank slate.');
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to wipe Cognee memory.');
+      }
+    }
+  };
+
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== 'DELETE') return;
     try {
@@ -332,9 +343,16 @@ export default function Settings() {
 
               <button
                 onClick={handleFactoryReset}
-                className="w-full bg-rose-500/20 hover:bg-rose-500/30 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
+                className="w-full bg-rose-500/20 hover:bg-rose-500/30 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <Trash2 className="size-3.5 text-rose-400" /> Full Session Purge
+              </button>
+
+              <button
+                onClick={handleWipeMemory}
+                className="w-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Trash2 className="size-3.5 text-red-400" /> Wipe AI Memory Graph
               </button>
             </div>
           </GlassCard>

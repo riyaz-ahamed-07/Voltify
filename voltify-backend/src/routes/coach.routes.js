@@ -8,6 +8,11 @@ const {
   applyCSSRecommendation,
   whatIf,
   chatWithVolt,
+  getHomeDNA,
+  getHomeEvolution,
+  getMemoryVault,
+  getMemoryReplay,
+  resetMemory,
 } = require('../controllers/coachController');
 const { requireAuth } = require('../middleware/auth');
 
@@ -20,5 +25,12 @@ router.get('/css-recommendations', getCSSRecommendations);
 router.post('/css-apply',          applyCSSRecommendation);
 router.get('/whatif',              whatIf);
 router.post('/chat',               chatWithVolt);
+
+// Cognee Memory Native Routes
+router.get('/home-dna',            getHomeDNA);
+router.get('/evolution',           getHomeEvolution);
+router.get('/memory-vault',        getMemoryVault);
+router.get('/memory-replay',       getMemoryReplay);
+router.post('/reset-memory',       resetMemory);
 
 module.exports = router;

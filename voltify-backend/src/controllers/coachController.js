@@ -8,6 +8,7 @@ const { cssRecommendations } = require('../utils/mockData');
 const coinService = require('../services/coinService');
 const notificationService = require('../services/notificationService');
 const llmService = require('../services/llmService');
+const cogneeService = require('../services/cogneeService');
 
 /**
  * GET /api/coach/predictions
@@ -217,6 +218,16 @@ const applyCSSRecommendation = async (req, res) => {
     [userId, appliance, setting_applied, rec.savings_pct, rec.comfort_pct, rec.monthly_savings_rs]
   );
 
+  // Ingest decision to Cognee
+  try {
+    await cogneeService.remember(
+      userId,
+      `User applied Comfort-Safe Savings (CSS) recommendation: Set ${appliance} to ${setting_applied}. Estimated monthly savings: ₹${rec.monthly_savings_rs}, comfort level: ${rec.comfort_pct}%.`
+    );
+  } catch (err) {
+    console.error('[coachController] Cognee CSS remember failed:', err.message);
+  }
+
   const coinsToAward = Math.round(rec.monthly_savings_rs / 10);
   const coinResult = await coinService.awardCoins(
     userId, coinsToAward, 'earned',
@@ -287,7 +298,7 @@ const chatWithVolt = async (req, res) => {
   }
 
   try {
-    const reply = await llmService.chatWithVolt(messages);
+    const reply = await llmService.chatWithVolt(req.user.id, messages);
     return res.status(200).json({
       success: true,
       reply
@@ -298,4 +309,86 @@ const chatWithVolt = async (req, res) => {
   }
 };
 
-module.exports = { getPredictions, getActualVsPredicted, getAlerts, getCSSRecommendations, applyCSSRecommendation, whatIf, chatWithVolt };
+/**
+ * GET /api/coach/home-dna
+ */
+const getHomeDNA = async (req, res) => {
+  try {
+    const dna = await cogneeService.getHomeDNA(req.user.id);
+    return res.status(200).json(dna);
+  } catch (err) {
+    console.error('[coachController] getHomeDNA failed:', err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/**
+ * GET /api/coach/evolution
+ */
+const getHomeEvolution = async (req, res) => {
+  try {
+    const evolution = await cogneeService.getHomeEvolution(req.user.id);
+    return res.status(200).json(evolution);
+  } catch (err) {
+    console.error('[coachController] getHomeEvolution failed:', err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/**
+ * GET /api/coach/memory-vault
+ */
+const getMemoryVault = async (req, res) => {
+  try {
+    const vault = await cogneeService.getMemoryVault(req.user.id);
+    return res.status(200).json(vault);
+  } catch (err) {
+    console.error('[coachController] getMemoryVault failed:', err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/**
+ * GET /api/coach/memory-replay
+ */
+const getMemoryReplay = async (req, res) => {
+  const { month } = req.query;
+  if (!month) {
+    return res.status(400).json({ error: 'month parameter is required' });
+  }
+  try {
+    const replayState = await cogneeService.getReplayedState(req.user.id, month);
+    return res.status(200).json(replayState);
+  } catch (err) {
+    console.error('[coachController] getMemoryReplay failed:', err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/**
+ * POST /api/coach/reset-memory
+ */
+const resetMemory = async (req, res) => {
+  try {
+    await cogneeService.forget(req.user.id);
+    return res.status(200).json({ success: true, message: 'AI memory wiped successfully' });
+  } catch (err) {
+    console.error('[coachController] resetMemory failed:', err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = {
+  getPredictions,
+  getActualVsPredicted,
+  getAlerts,
+  getCSSRecommendations,
+  applyCSSRecommendation,
+  whatIf,
+  chatWithVolt,
+  getHomeDNA,
+  getHomeEvolution,
+  getMemoryVault,
+  getMemoryReplay,
+  resetMemory
+};

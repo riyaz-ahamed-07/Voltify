@@ -4,6 +4,7 @@ const challengeService = require('../services/challengeService');
 const { coinShopItems } = require('../utils/mockData');
 const notificationService = require('../services/notificationService');
 const { getEffectiveTariffRate, calculateMonthlyEstimates } = require('../services/estimationEngine');
+const cogneeService = require('../services/cogneeService');
 
 /**
  * GET /api/gamification/stats
@@ -223,6 +224,16 @@ const dailyCheckin = async (req, res) => {
     // Award base coins
     const baseCoins = 25;
     const checkinAward = await coinService.awardCoins(userId, baseCoins, 'checkin', 'Daily Check-In Reward');
+
+    // Ingest check-in data to Cognee
+    try {
+      await cogneeService.remember(
+        userId,
+        `Daily check-in completed on ${todayStr}. Active running logs: ${totalUnits} Units. Appliance running status: ${JSON.stringify(appliance_hours)}.`
+      );
+    } catch (err) {
+      console.error('[gamificationController] Cognee check-in remember failed:', err.message);
+    }
 
     // Create notification
     await notificationService.create(userId, {

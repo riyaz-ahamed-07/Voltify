@@ -13,6 +13,7 @@ const challengeService = require('../services/challengeService');
 const coinService = require('../services/coinService');
 // unpdf is used instead of pdf-parse - it is serverless/edge compatible (no DOMMatrix/canvas deps)
 const llmService = require('../services/llmService');
+const cogneeService = require('../services/cogneeService');
 
 /**
  * POST /api/onboarding/profile
@@ -50,6 +51,16 @@ const saveProfile = async (req, res) => {
      WHERE id = $5`,
     [household_type, location.trim(), home_type || null, parseInt(appliance_count), req.user.id]
   );
+
+  // Ingest profile context to Cognee
+  try {
+    await cogneeService.remember(
+      req.user.id,
+      `Home Profile Setup: Household is a ${household_type} located in ${location.trim()}. Dwelling type is ${home_type || 'apartment'} containing ${appliance_count} primary appliances.`
+    );
+  } catch (err) {
+    console.error('[onboardingController] Cognee profile ingestion failed:', err.message);
+  }
 
   return res.status(200).json({
     success: true,
@@ -115,6 +126,16 @@ const saveBill = async (req, res) => {
     [req.user.id, billMonthStr, parseFloat(bill_amount), parseFloat(units)]
   );
 
+  // Ingest bill context to Cognee
+  try {
+    await cogneeService.remember(
+      req.user.id,
+      `Electricity Bill Uploaded: Period: ${billMonthStr}, Units consumed: ${units} kWh, Total cost: ₹${bill_amount}.`
+    );
+  } catch (err) {
+    console.error('[onboardingController] Cognee bill ingestion failed:', err.message);
+  }
+
   if (prev_bills && Array.isArray(prev_bills)) {
     for (const prevBill of prev_bills) {
       if (prevBill.bill_amount && prevBill.units && prevBill.month) {
@@ -125,6 +146,14 @@ const saveBill = async (req, res) => {
            ON CONFLICT DO NOTHING`,
           [req.user.id, prevMonthStr, parseFloat(prevBill.bill_amount), parseFloat(prevBill.units)]
         );
+        try {
+          await cogneeService.remember(
+            req.user.id,
+            `Electricity Bill Uploaded (Historical): Period: ${prevMonthStr}, Units consumed: ${prevBill.units} kWh, Total cost: ₹${prevBill.bill_amount}.`
+          );
+        } catch (err) {
+          // Ignore fallback log failure
+        }
       }
     }
   }
@@ -227,6 +256,17 @@ const saveAppliances = async (req, res) => {
 
   // Award onboarding complete bonus coins
   await coinService.awardCoins(req.user.id, 150, 'bonus', 'Onboarding Complete Bonus');
+
+  // Ingest appliance profiles to Cognee
+  try {
+    const listStr = savedAppliances.map(a => `${a.name} (${a.power_kw} kW, runs ${a.avg_hours_day} hours/day)`).join(', ');
+    await cogneeService.remember(
+      req.user.id,
+      `Appliance setup complete. Household contains these appliances: ${listStr}. Total calibrated monthly units is estimated to be ${estimatedMonthlyUnits.toFixed(1)} kWh.`
+    );
+  } catch (err) {
+    console.error('[onboardingController] Cognee appliances ingestion failed:', err.message);
+  }
 
   await challengeService.createWeeklyChallenge(req.user.id, estimatedMonthlyUnits);
 

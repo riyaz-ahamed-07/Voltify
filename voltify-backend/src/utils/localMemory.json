@@ -1,0 +1,21 @@
+{
+  "test-user-judge-123": {
+    "has_learned_seeded": false,
+    "custom_memories": [],
+    "timeline_history": []
+  },
+  "c077d2de-1ba8-463c-8df4-e2f85aeec12c": {
+    "has_learned_seeded": true,
+    "custom_memories": [
+      {
+        "id": "mem-custom-1783186574662",
+        "learned_memory": "Logged daily occupancy routines",
+        "confidence": 85,
+        "source": "User Action",
+        "reasoning": "User check-in event updated: \"Daily check-in completed on 2026-07-04. Active running logs: 10.5 Units. Appliance running status: {}.\"",
+        "created_at": "2026-07-04T17:36:14.662Z"
+      }
+    ],
+    "timeline_history": []
+  }
+}

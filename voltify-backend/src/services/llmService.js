@@ -1,5 +1,6 @@
 // src/services/llmService.js
 const http = require('https');
+const cogneeService = require('./cogneeService');
 
 /**
  * Helper to call Groq Chat Completion API using raw HTTP request
@@ -29,7 +30,7 @@ async function callGroqAPI(messages, jsonMode = false) {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(payload)
     },
-    timeout: 10000 // 10 second timeout
+    timeout: 25000 // 25 second timeout (prevent transient failure fallbacks)
   };
 
   return new Promise((resolve, reject) => {
@@ -210,18 +211,57 @@ module.exports = {
   /**
    * Chat with energy coach chatbot "Volt"
    */
-  async chatWithVolt(conversationHistory) {
+  async chatWithVolt(userId, conversationHistory) {
     if (!conversationHistory || conversationHistory.length === 0) {
       return "Hello! I'm Volt, your smart energy coach. How can I help you save power today? ⚡";
+    }
+
+    const lastUserMsg = conversationHistory[conversationHistory.length - 1]?.content || '';
+
+    // Check memory state first
+    let hasMemory = true;
+    try {
+      const dna = await cogneeService.getHomeDNA(userId);
+      if (dna.score === 0) {
+        hasMemory = false;
+      }
+    } catch (err) {
+      console.warn('[llmService] Error checking DNA status:', err);
+    }
+
+    if (!hasMemory) {
+      return "Your home has no memories yet. Let's build them together. 🏠";
+    }
+
+    let memoryContext = '';
+    // Sanitize user message if they pasted the IDE system guidance by accident
+    let sanitizedUserMsg = lastUserMsg;
+    if (sanitizedUserMsg && (sanitizedUserMsg.includes('Active session guidance') || sanitizedUserMsg.includes('Lessons learned'))) {
+      sanitizedUserMsg = sanitizedUserMsg.split(/##?\s*Active session guidance/i)[0].trim();
+    }
+
+    if (userId && sanitizedUserMsg) {
+      try {
+        // Ingest query as session memory
+        await cogneeService.remember(userId, `User asked: ${sanitizedUserMsg}`, 'active_session');
+        // Recall related memories
+        memoryContext = await cogneeService.recall(userId, sanitizedUserMsg);
+      } catch (err) {
+        console.warn('[llmService] Cognee remember/recall failed:', err.message);
+      }
     }
 
     try {
       const systemPrompt = {
         role: 'system',
-        content: `You are "Volt", an expert home energy conservation coach. Your tone is extremely helpful, human-like, sharp, and concise. You answer questions directly in 2-3 sentences max.
+        content: `You are "Volt", the Home Historian and expert energy coach. Your tone is extremely helpful, human-like, sharp, and concise. You answer questions directly in 2-3 sentences max.
 Rules:
-1. Provide actionable advice about household energy saving, BEE standard temperatures (AC 24°C, Fridge 4°C), and power utility disaggregation.
-2. Be brief, professional, and friendly. Do not output walls of text. Keep responses punchy and human-like.`
+1. Provide actionable advice about household energy saving, BEE standard temperatures (AC 24°C, Fridge 4°C).
+2. Ground your response in the verified memories of this home. You MUST cite relevant memories using a checkmark (e.g. "✓ Learned: ...").
+3. Be brief, professional, and friendly. Do not output walls of text.
+
+RECALLED HOME MEMORIES:
+${memoryContext || 'No specific past load behaviors recalled yet.'}`
       };
 
       const messages = [systemPrompt, ...conversationHistory];
@@ -231,11 +271,38 @@ Rules:
         throw new Error('Groq returned empty chat reply');
       }
 
+      if (userId) {
+        // Ingest response as session memory
+        await cogneeService.remember(userId, `Volt answered: ${reply}`, 'active_session');
+        // Trigger background memory evolution/improvement
+        cogneeService.improve(userId).catch(err => console.error('[llmService] improve failed:', err));
+      }
+
       return reply;
     } catch (e) {
       console.warn(`[llmService] Groq chat completed with error: ${e.message}. Using NLP rule fallback.`);
-      const lastUserMsg = conversationHistory[conversationHistory.length - 1]?.content || '';
-      return chatWithVoltFallback(lastUserMsg);
+      
+      // Clean and format memory context for the local fallback
+      if (memoryContext && memoryContext.length > 0) {
+        const cleanContextLines = memoryContext.split('\n')
+          .map(line => line.trim())
+          .filter(line => {
+            if (!line) return false;
+            // Exclude leaked IDE guidance keys
+            const isLeakedGuidance = line.includes('Active session guidance') ||
+                                     line.includes('Lessons learned') ||
+                                     line.includes('Goals') ||
+                                     line.includes('Rules') ||
+                                     line.includes('Preferences');
+            return !isLeakedGuidance;
+          });
+        
+        if (cleanContextLines.length > 0) {
+          const facts = cleanContextLines.map(f => `• ${f}`).join('\n');
+          return `Based on what I learned about your home:\n${facts}\n\nI recommend optimizing these routines to balance your comfort and monthly electricity cost! ⚡`;
+        }
+      }
+      return chatWithVoltFallback(sanitizedUserMsg || lastUserMsg);
     }
   }
 };

@@ -1,6 +1,6 @@
 // src/components/layout/Topbar.tsx
 import { useState } from 'react';
-import { Bell, Flame, Coins, Check, Zap, LayoutDashboard, BrainCircuit, Trophy, User, Settings, LogOut, Menu, X } from 'lucide-react';
+import { Bell, Flame, Coins, Check, Zap, LayoutDashboard, BrainCircuit, Trophy, User, Settings, LogOut, Menu, X, History, Brain } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useGamificationStore } from '../../store/gamificationStore';
@@ -16,6 +16,8 @@ export default function Topbar() {
 
   const links = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/evolution', label: 'Evolution', icon: History },
+    { to: '/learned-memories', label: 'Learned Memories', icon: Brain },
     { to: '/predictions', label: 'Predictions', icon: BrainCircuit },
     { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
     { to: '/shop', label: 'Shop', icon: Coins },

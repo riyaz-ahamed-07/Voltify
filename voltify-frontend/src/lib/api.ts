@@ -344,6 +344,62 @@ export const apiService = {
     return fetchApi('/coach/chat', { method: 'POST', body: JSON.stringify({ messages }) }, fallback);
   },
 
+  async getHomeDNA() {
+    const fallback = {
+      score: 91,
+      eco_conscious: 4,
+      comfort_first: 5,
+      habit_consistency: 4,
+      adoption_rate: 3,
+      summary: 'Your home has gradually shifted from comfort-first to efficiency-balanced over the last eight months.',
+      methodology: 'Calculated dynamically based on: 8 months of historical bills, 126 daily check-ins, 34 accepted recommendations, and 18 completed challenges.'
+    };
+    return fetchApi('/coach/home-dna', {}, fallback);
+  },
+
+  async getHomeEvolution() {
+    const fallback = [
+      { month: 'October 2025', event: 'Home DNA Profile Created', details: 'Starting baseline: 450 units/month.', icon: '🏠' },
+      { month: 'December 2025', event: 'Bedroom Geyser Added', details: 'Added 3.0 kW water heater. Winter baseline load increased by 24%.', icon: '⚡' },
+      { month: 'March 2026', event: 'Bought 5-star Refrigerator', details: 'Upgraded baseline appliance. Running baseload decreased by 9%.', icon: '🌿' },
+      { month: 'April 2026', event: 'Peak Summer Heatwave', details: 'Adjusted Living Room AC thermostat to 22°C, avoiding bill shock.', icon: '☀' },
+      { month: 'June 2026', event: 'Completed AC Efficiency Challenge', details: 'Earned 250 coins and saved ₹220 (28 units).', icon: '🎯' },
+      { month: 'August 2026', event: 'Changed AC Scheduler Routine', details: 'Overall household energy efficiency increased by 18%.', icon: '❄' }
+    ];
+    return fetchApi('/coach/evolution', {}, fallback);
+  },
+
+  async getMemoryVault() {
+    const fallback = {
+      memories: [
+        { id: 'mem-1', learned_memory: 'User prefers 23°C for sleep comfort', confidence: 94, source: 'Conversation', reasoning: 'Ignored 24°C suggestion 6 times; accepted 23°C 4 times.' },
+        { id: 'mem-2', learned_memory: 'Living Room AC added to household profile', confidence: 100, source: 'Onboarding', reasoning: 'User added Bedroom AC (1.5 kW) during appliance setup.' },
+        { id: 'mem-3', learned_memory: 'User set monthly savings target of ₹1,000', confidence: 98, source: 'Conversation', reasoning: 'User stated savings goal in chat dialogue.' },
+        { id: 'mem-4', learned_memory: 'Household is away every weekend', confidence: 88, source: 'Daily Check-in', reasoning: 'Zero active appliance hours logged during weekend check-ins in June.' },
+        { id: 'mem-5', learned_memory: 'Geyser running shifted to morning hours', confidence: 95, source: 'Daily Check-in', reasoning: 'Geyser running hours shifted to 6-9 AM in 12 consecutive logs.' }
+      ],
+      stats: { stored: 5, patterns: 14, relationships: 9 }
+    };
+    return fetchApi('/coach/memory-vault', {}, fallback);
+  },
+
+  async getMemoryReplay(month: string) {
+    const fallback = {
+      month: month + ' 2026',
+      bill_amount: 3200,
+      units: 400,
+      weather_temp: 30,
+      active_goal: 'None',
+      timeline_events: []
+    };
+    return fetchApi(`/coach/memory-replay?month=${month}`, {}, fallback);
+  },
+
+  async resetCoachMemory() {
+    const fallback = { success: true, message: 'AI memory wiped successfully' };
+    return fetchApi('/coach/reset-memory', { method: 'POST' }, fallback);
+  },
+
   // ── GAMIFICATION & LEADERBOARD ──────────────────────────────────
 
   async getGamificationStats() {

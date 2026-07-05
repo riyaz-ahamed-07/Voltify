@@ -19,6 +19,8 @@ import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import InfoPage from './pages/InfoPage';
+import Evolution from './pages/Evolution';
+import MemoryVault from './pages/MemoryVault';
 import AppLayout from './components/layout/AppLayout';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -168,12 +170,27 @@ export default function App() {
               </OnboardedRoute>
             } 
           />
-          {/* Sub-features - Guarded by onboarding */}
           <Route 
             path="predictions" 
             element={
               <OnboardedRoute>
                 <Predictions />
+              </OnboardedRoute>
+            } 
+          />
+          <Route 
+            path="evolution" 
+            element={
+              <OnboardedRoute>
+                <Evolution />
+              </OnboardedRoute>
+            } 
+          />
+          <Route 
+            path="learned-memories" 
+            element={
+              <OnboardedRoute>
+                <MemoryVault />
               </OnboardedRoute>
             } 
           />
