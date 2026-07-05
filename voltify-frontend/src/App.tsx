@@ -73,9 +73,7 @@ export default function App() {
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center font-body text-white">
         <div className="relative flex items-center justify-center mb-4">
           <div className="absolute inset-0 size-16 rounded-full bg-primary/20 animate-ping" />
-          <div className="size-16 rounded-2xl bg-slate-900 border border-white/[0.08] flex items-center justify-center relative z-10">
-            <Zap className="size-8 text-primary animate-pulse" />
-          </div>
+          <img src="/logo.gif" alt="Voltify Logo" className="size-16 animate-pulse relative z-10" />
         </div>
         <p className="text-gray-400 text-sm tracking-wide font-medium">Verifying session...</p>
       </div>

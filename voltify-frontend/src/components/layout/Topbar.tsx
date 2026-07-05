@@ -39,9 +39,7 @@ export default function Topbar() {
       {/* Brand & Nav */}
       <div className="flex items-center gap-8">
         <div className="flex items-center gap-2">
-          <div className="size-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Zap className="size-4 text-primary" />
-          </div>
+          <img src="/logo.gif" alt="Voltify Logo" className="size-8 object-contain" />
           <span className="font-display font-bold text-lg tracking-tight text-white hidden md:block">Voltify</span>
         </div>
         

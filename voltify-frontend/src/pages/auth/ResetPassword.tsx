@@ -54,9 +54,7 @@ export default function ResetPassword() {
         {/* Header */}
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
-            <div className="size-12 rounded-xl bg-surface border border-outline flex items-center justify-center shadow-sm">
-              <Zap className="size-6 text-primary" />
-            </div>
+            <img src="/logo.gif" alt="Voltify Logo" className="size-14 object-contain" />
           </div>
           <h1 className="font-display text-2xl font-semibold text-on-surface tracking-tight">
             Reset your password

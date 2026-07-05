@@ -20,10 +20,8 @@ export default function Landing() {
       {/* Navigation Bar */}
       <nav className="bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50 border-b border-white/[0.06] shadow-sm">
         <div className="flex justify-between items-center w-full px-6 md:px-10 py-4 max-w-7xl mx-auto">
-          <Link to="/" className="flex items-center gap-3 transition-transform duration-300 hover:scale-[1.01]">
-            <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <Zap className="size-5 text-primary" />
-            </div>
+          <Link to="/" className="flex items-center gap-2 transition-transform duration-300 hover:scale-[1.01]">
+            <img src="/logo.gif" alt="Voltify Logo" className="size-10 object-contain" />
             <span className="font-display font-bold text-xl tracking-tight text-white">Voltify</span>
           </Link>
           
@@ -281,9 +279,7 @@ export default function Landing() {
               
               {/* Step 3 */}
               <div className="relative z-10 flex flex-col items-center text-center group">
-                <div className="size-20 rounded-2xl bg-slate-900 border border-primary/20 flex items-center justify-center mb-6 group-hover:scale-[1.02] transition-all duration-300">
-                  <Zap className="size-8 text-primary" />
-                </div>
+                <img src="/logo.gif" alt="Voltify Logo" className="size-20 object-contain mb-6 group-hover:scale-105 transition-all duration-300" />
                 <div className="bg-primary text-slate-950 font-semibold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono">
                   Step 03
                 </div>
@@ -322,8 +318,8 @@ export default function Landing() {
       <footer className="bg-slate-950 text-gray-500 pt-16 pb-10 border-t border-white/[0.06]">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 px-6 md:px-10 max-w-7xl mx-auto">
           <div className="col-span-1 space-y-4">
-            <div className="flex items-center gap-2">
-              <Zap className="size-5 text-primary" />
+            <div className="flex items-center gap-2.5">
+              <img src="/logo.gif" alt="Voltify Logo" className="size-10 object-contain" />
               <span className="font-display font-bold text-xl text-white tracking-tight">Voltify</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed font-normal">

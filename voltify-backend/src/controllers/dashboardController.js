@@ -1,6 +1,37 @@
 const pool = require('../config/db');
 const { generatePredictions, detectBillShock } = require('../services/estimationEngine');
+const { generateAndSaveDailyEstimates, calculateMonthlyEstimates, addPercentageBreakdown } = require('../services/estimationEngine');
 const notificationService = require('../services/notificationService');
+
+// Appliance icon map for enriching DB results with icons
+const APPLIANCE_ICONS = {
+  'air conditioner': '❄️',
+  'ac': '❄️',
+  'refrigerator': '🧊',
+  'fridge': '🧊',
+  'lights': '💡',
+  'lighting': '💡',
+  'fans': '🌀',
+  'fan': '🌀',
+  'washing machine': '🫧',
+  'tv': '📺',
+  'television': '📺',
+  'water heater': '🚿',
+  'geyser': '🚿',
+  'microwave': '📡',
+  'computer': '💻',
+  'laptop': '💻',
+};
+
+const getApplianceIcon = (name) => {
+  const lower = (name || '').toLowerCase();
+  for (const [key, icon] of Object.entries(APPLIANCE_ICONS)) {
+    if (lower.includes(key)) return icon;
+  }
+  return '🔌';
+};
+
+const NEON_COLORS = ['#22d3ee', '#ec4899', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#a78bfa'];
 
 /**
  * GET /api/dashboard/summary
@@ -9,11 +40,35 @@ const getSummary = async (req, res) => {
   const userId = req.user.id;
 
   const todayStr = new Date().toISOString().split('T')[0];
-  const todayResult = await pool.query(
+
+  // Try to get today's estimate
+  let todayResult = await pool.query(
     `SELECT estimated_units, estimated_cost FROM daily_estimates
      WHERE user_id = $1 AND date = $2`,
     [userId, todayStr]
   );
+
+  // If no data for today, seed the estimates on-the-fly
+  if (todayResult.rows.length === 0) {
+    const appliancesResult = await pool.query(
+      'SELECT * FROM appliances WHERE user_id = $1',
+      [userId]
+    );
+    const userResult = await pool.query(
+      'SELECT location FROM users WHERE id = $1',
+      [userId]
+    );
+    const location = userResult.rows[0]?.location || 'Chennai';
+
+    if (appliancesResult.rows.length > 0) {
+      await generateAndSaveDailyEstimates(userId, appliancesResult.rows, location, 30);
+      todayResult = await pool.query(
+        `SELECT estimated_units, estimated_cost FROM daily_estimates
+         WHERE user_id = $1 AND date = $2`,
+        [userId, todayStr]
+      );
+    }
+  }
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -63,25 +118,32 @@ const getSummary = async (req, res) => {
 
   const avgPerDay = parseFloat(thisMonth?.total_units || 0) / Math.max(daysElapsed, 1);
   const projectedMonthlyUnits = avgPerDay * daysInMonth;
+  const totalCostSoFar = parseFloat(thisMonth?.total_cost || 0);
+  const avgCostPerUnit = parseFloat(thisMonth?.total_units || 0) > 0
+    ? totalCostSoFar / parseFloat(thisMonth.total_units)
+    : 8.0;
+  const projectedBill = parseFloat((projectedMonthlyUnits * avgCostPerUnit).toFixed(2));
 
-  await notificationService.generateRuleBasedNotifications(userId);
+  try {
+    await notificationService.generateRuleBasedNotifications(userId);
+  } catch (e) { /* non-critical */ }
 
   return res.status(200).json({
     today: {
-      units: todayUnits,
+      units: parseFloat(todayUnits.toFixed(3)),
       cost: parseFloat(today?.estimated_cost || 0),
       vs_yesterday_pct: parseFloat(dayChangeRatio.toFixed(1)),
       is_higher: dayChangeRatio > 0,
     },
     this_month: {
-      units: parseFloat(thisMonth?.total_units || 0),
-      cost: parseFloat(thisMonth?.total_cost || 0),
+      units: parseFloat(parseFloat(thisMonth?.total_units || 0).toFixed(3)),
+      cost: parseFloat(totalCostSoFar.toFixed(2)),
       days_elapsed: daysElapsed,
       days_remaining: daysRemaining,
       projected_units: parseFloat(projectedMonthlyUnits.toFixed(3)),
     },
     estimated_bill: {
-      projected: parseFloat(((projectedMonthlyUnits) * (parseFloat(thisMonth?.total_cost || 0) / Math.max(parseFloat(thisMonth?.total_units || 1), 1))).toFixed(2)),
+      projected: projectedBill,
       last_month: parseFloat(lastBill?.bill_amount || 0),
       on_track: lastBill ? projectedMonthlyUnits <= parseFloat(lastBill.units) * 1.15 : true,
     },
@@ -98,34 +160,61 @@ const getSummary = async (req, res) => {
 const getUsage = async (req, res) => {
   const { period = 'daily' } = req.query;
   const userId = req.user.id;
-
-  let query;
   const params = [userId];
 
+  let query;
+
   if (period === 'daily') {
+    // Check if we have data for the last 30 days
+    const checkResult = await pool.query(
+      `SELECT COUNT(*) AS cnt FROM daily_estimates
+       WHERE user_id = $1 AND date >= CURRENT_DATE - INTERVAL '29 days'`,
+      [userId]
+    );
+
+    // If no data, seed on-the-fly from the user's appliances
+    if (parseInt(checkResult.rows[0]?.cnt || 0) === 0) {
+      const appliancesResult = await pool.query(
+        'SELECT * FROM appliances WHERE user_id = $1',
+        [userId]
+      );
+      const userResult = await pool.query(
+        'SELECT location FROM users WHERE id = $1',
+        [userId]
+      );
+      const location = userResult.rows[0]?.location || 'Chennai';
+
+      if (appliancesResult.rows.length > 0) {
+        await generateAndSaveDailyEstimates(userId, appliancesResult.rows, location, 30);
+      }
+    }
+
     query = `
-      SELECT date, estimated_units AS units, estimated_cost AS cost
+      SELECT
+        date::text AS date,
+        estimated_units AS units,
+        estimated_cost AS cost
       FROM daily_estimates
       WHERE user_id = $1
-        AND date >= CURRENT_DATE - INTERVAL '6 days'
+        AND date >= CURRENT_DATE - INTERVAL '29 days'
       ORDER BY date ASC
     `;
   } else if (period === 'weekly') {
     query = `
       SELECT
-        DATE_TRUNC('week', date) AS week_start,
+        DATE_TRUNC('week', date)::text AS date,
         SUM(estimated_units) AS units,
         SUM(estimated_cost) AS cost
       FROM daily_estimates
       WHERE user_id = $1
         AND date >= CURRENT_DATE - INTERVAL '28 days'
       GROUP BY DATE_TRUNC('week', date)
-      ORDER BY week_start ASC
+      ORDER BY date ASC
     `;
   } else if (period === 'monthly') {
     query = `
       SELECT
-        month,
+        month::text AS date,
         units AS actual_units,
         bill_amount AS actual_cost,
         estimated_units,
@@ -153,9 +242,11 @@ const getApplianceBreakdown = async (req, res) => {
   monthStart.setDate(1);
   const monthStartStr = monthStart.toISOString().split('T')[0];
 
+  // Try to get pre-computed estimates for this month
   const result = await pool.query(
     `SELECT
        a.name,
+       a.icon,
        ae.estimated_units,
        ae.estimated_pct AS percentage,
        ae.estimated_cost
@@ -167,30 +258,48 @@ const getApplianceBreakdown = async (req, res) => {
     [userId, monthStartStr]
   );
 
-  if (result.rows.length === 0) {
-    const appliancesResult = await pool.query(
-      'SELECT * FROM appliances WHERE user_id = $1',
-      [userId]
-    );
-
-    const { calculateMonthlyEstimates, addPercentageBreakdown } = require('../services/estimationEngine');
-    const userResult = await pool.query('SELECT location FROM users WHERE id = $1', [userId]);
-    const location = userResult.rows[0]?.location || 'Chennai';
-
-    const withEstimates = calculateMonthlyEstimates(appliancesResult.rows, new Date().getMonth(), location);
-    const withPercentages = addPercentageBreakdown(withEstimates);
-
+  if (result.rows.length > 0) {
     return res.status(200).json({
-      data: withPercentages.map(a => ({
-        name: a.name,
-        estimated_units: a.estimated_monthly_kwh,
-        percentage: a.percentage,
-        estimated_cost: a.estimated_cost,
+      data: result.rows.map((row, idx) => ({
+        name: row.name,
+        icon: row.icon || getApplianceIcon(row.name),
+        units: parseFloat(row.estimated_units),
+        percentage: parseFloat(row.percentage),
+        cost: parseFloat(row.estimated_cost),
+        color: NEON_COLORS[idx % NEON_COLORS.length],
       })),
     });
   }
 
-  return res.status(200).json({ data: result.rows });
+  // Fallback: compute on-the-fly from appliances table
+  const appliancesResult = await pool.query(
+    'SELECT * FROM appliances WHERE user_id = $1',
+    [userId]
+  );
+
+  if (appliancesResult.rows.length === 0) {
+    return res.status(200).json({ data: [] });
+  }
+
+  const userResult = await pool.query('SELECT location FROM users WHERE id = $1', [userId]);
+  const location = userResult.rows[0]?.location || 'Chennai';
+
+  const month = new Date().getMonth();
+  const withEstimates = calculateMonthlyEstimates(appliancesResult.rows, month, location);
+  const withPercentages = addPercentageBreakdown(withEstimates);
+
+  return res.status(200).json({
+    data: withPercentages
+      .filter(a => a.estimated_monthly_kwh > 0)
+      .map((a, idx) => ({
+        name: a.name,
+        icon: a.icon || getApplianceIcon(a.name),
+        units: a.estimated_monthly_kwh,
+        percentage: a.percentage,
+        cost: a.estimated_cost,
+        color: NEON_COLORS[idx % NEON_COLORS.length],
+      })),
+  });
 };
 
 /**
@@ -262,27 +371,6 @@ const getInsights = async (req, res) => {
       action: 'Keep it up',
       action_url: '/leaderboard',
     });
-  }
-
-  const lastBillResult = await pool.query(
-    `SELECT month FROM monthly_bills WHERE user_id = $1 ORDER BY month DESC LIMIT 1`,
-    [userId]
-  );
-  if (lastBillResult.rows[0]) {
-    const lastBillMonth = new Date(lastBillResult.rows[0].month);
-    const monthsAgo = (new Date().getFullYear() - lastBillMonth.getFullYear()) * 12 +
-      (new Date().getMonth() - lastBillMonth.getMonth());
-    if (monthsAgo >= 1) {
-      insights.push({
-        id: 'insight-upload-bill',
-        type: 'info',
-        icon: '📊',
-        title: 'Upload your latest bill',
-        message: "Upload this month's bill to recalibrate your estimates and improve accuracy",
-        action: 'Upload Bill',
-        action_url: '/settings',
-      });
-    }
   }
 
   const cssResult = await pool.query(

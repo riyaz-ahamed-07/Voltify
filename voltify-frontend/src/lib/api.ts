@@ -188,9 +188,14 @@ export const apiService = {
 
   async getDashboardUsage(period: 'daily' | 'weekly' | 'monthly' = 'daily') {
     const appliances = Object.keys(DEFAULT_APPLIANCES).map(k => ({ ...DEFAULT_APPLIANCES[k], id: k } as Appliance));
+    const rawFallback = generateDailyUsage(appliances, period === 'daily' ? 30 : 30, 'Chennai');
+    // Ensure dates are always YYYY-MM-DD (not ISO timestamps)
     const fallback = {
       period,
-      data: generateDailyUsage(appliances, period === 'daily' ? 7 : 30, 'Chennai')
+      data: rawFallback.map(d => ({
+        ...d,
+        date: d.date.split('T')[0], // strip time if present
+      }))
     };
     return fetchApi(`/dashboard/usage?period=${period}`, {}, fallback);
   },
@@ -201,7 +206,23 @@ export const apiService = {
     const fallback = {
       data: estimateApplianceBreakdown(appliances, estUnits * 8.0, estUnits, 8.0)
     };
-    return fetchApi('/dashboard/appliance-breakdown', {}, fallback);
+    const res = await fetchApi('/dashboard/appliance-breakdown', {}, fallback);
+    if (res && Array.isArray(res.data)) {
+      const NEON_COLORS = ['#22d3ee', '#ec4899', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#a78bfa'];
+      res.data = res.data.map((item: any, idx: number) => {
+        const defaultApp = appliances.find(a => a.name.toLowerCase() === item.name.toLowerCase())
+                         || appliances.find(a => item.name.toLowerCase().includes(a.name.toLowerCase()));
+        return {
+          name: item.name,
+          units: item.units !== undefined ? item.units : (item.estimated_units !== undefined ? item.estimated_units : 0),
+          percentage: item.percentage !== undefined ? item.percentage : 0,
+          cost: item.cost !== undefined ? item.cost : (item.estimated_cost !== undefined ? item.estimated_cost : 0),
+          icon: item.icon || defaultApp?.icon || '🔌',
+          color: item.color || NEON_COLORS[idx % NEON_COLORS.length]
+        };
+      });
+    }
+    return res;
   },
 
   async getInsights() {

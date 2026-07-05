@@ -54,9 +54,7 @@ export default function Signup() {
         {/* Logo */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-2 mb-2">
-            <div className="size-10 rounded-xl bg-surface border border-outline flex items-center justify-center">
-              <Zap className="size-5 text-primary" />
-            </div>
+            <img src="/logo.gif" alt="Voltify Logo" className="size-16 object-contain" />
           </Link>
           <h1 className="font-display text-2xl font-semibold text-on-surface tracking-tight">Create an account</h1>
           <p className="text-on-surface-variant mt-1.5 text-sm">Start your energy saving journey today.</p>

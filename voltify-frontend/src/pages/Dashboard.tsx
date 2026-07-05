@@ -37,13 +37,24 @@ export default function Dashboard() {
           apiService.getApplianceBreakdown(),
           apiService.getLeaderboard(onboarding?.household_type || 'family')
         ]);
-        setDashboardStats(summary);
-        if (usage.data && usage.data.length > 0) setDailyHistory(usage.data);
-        if (breakdown.data && breakdown.data.length > 0) setApplianceBreakdown(breakdown.data);
-        if (lb.rankings) setLeaderboard(lb.rankings);
+
+        if (summary) setDashboardStats(summary);
+
+        // Backend returns { period, data: [{date, units, cost}] }
+        if (usage?.data && Array.isArray(usage.data) && usage.data.length > 0) {
+          setDailyHistory(usage.data);
+        }
+
+        // Backend returns { data: [{name, icon, units, percentage, cost, color}] }
+        if (breakdown?.data && Array.isArray(breakdown.data) && breakdown.data.length > 0) {
+          setApplianceBreakdown(breakdown.data);
+        }
+
+        if (lb?.rankings && Array.isArray(lb.rankings)) {
+          setLeaderboard(lb.rankings);
+        }
       } catch (err) {
         console.error('Failed to load dashboard data', err);
-        // Fallback for leaderboard is already covered by API simulation
       }
     }
     if (user) {
@@ -154,9 +165,14 @@ export default function Dashboard() {
             <Zap className="size-10" />
           </div>
           <span className="text-xs font-semibold text-on-surface-variant block mb-1">Avg Daily Load</span>
-          <h3 className="font-semibold text-2xl text-on-surface">{dashboardStats ? dashboardStats.today.units : avgDailyUnits} kWh</h3>
+          <h3 className="font-semibold text-2xl text-on-surface">
+            {dashboardStats?.today?.units > 0 ? `${dashboardStats.today.units} kWh` : `${avgDailyUnits} kWh`}
+          </h3>
           <p className="text-xs text-on-surface-variant mt-1.5 flex items-center gap-1">
-            Approx. <span className="font-semibold text-on-surface">₹{dashboardStats ? dashboardStats.today.cost : avgDailyCost}</span> per day
+            Approx.{' '}
+            <span className="font-semibold text-on-surface">
+              ₹{dashboardStats?.today?.cost > 0 ? dashboardStats.today.cost : avgDailyCost}
+            </span>{' '}per day
           </p>
         </GlassCard>
 
@@ -166,7 +182,13 @@ export default function Dashboard() {
             <TrendingUp className="size-10" />
           </div>
           <span className="text-xs font-semibold text-on-surface-variant block mb-1">Projected {currentMonth}</span>
-          <h3 className="font-semibold text-2xl text-on-surface">{formatCurrency(dashboardStats ? dashboardStats.estimated_bill.projected : dynamicProjectedBill)}</h3>
+          <h3 className="font-semibold text-2xl text-on-surface">
+            {formatCurrency(
+              dashboardStats?.estimated_bill?.projected > 0
+                ? dashboardStats.estimated_bill.projected
+                : dynamicProjectedBill
+            )}
+          </h3>
           <p className="text-xs text-on-surface-variant mt-1.5">
             Target: <span className="font-semibold text-tertiary">-{cssSavings.percentage}%</span> (Saved ₹{cssSavings.money})
           </p>
@@ -201,20 +223,20 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recharts Daily Usage Area chart */}
         <GlassCard className="col-span-1 lg:col-span-2 flex flex-col justify-between">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <div>
               <h3 className="font-display font-semibold text-lg text-on-surface">Daily Energy Consumption Index</h3>
-              <p className="text-xs text-on-surface-variant mt-0.5">Estimated smart consumption statistics over the last 30 days</p>
+              <p className="text-xs text-on-surface-variant mt-0.5">
+                Last {dailyHistory.length > 0 ? dailyHistory.length : 30} days of estimated consumption
+              </p>
             </div>
-            <div className="flex gap-2">
-              <span className="flex items-center gap-1.5 text-xs text-on-surface-variant">
-                <span className="size-2.5 bg-primary rounded-full" /> Load (kWh)
-              </span>
-            </div>
+            <span className="flex items-center gap-1.5 text-xs text-on-surface-variant">
+              <span className="size-2 rounded-full bg-[#00e5ff]" /> Load (kWh)
+            </span>
           </div>
 
           <div className="h-64 w-full">
-            <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-on-surface-variant">Loading daily metrics…</div>}>
+            <Suspense fallback={<div className="h-full flex items-center justify-center text-xs text-on-surface-variant">Loading chart…</div>}>
               <DailyEnergyChart dailyHistory={dailyHistory} />
             </Suspense>
           </div>
