@@ -156,34 +156,34 @@ export default function Landing() {
         {/* ② The 3 Infrastructure Tiers Section */}
         <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center bg-surface-container-lowest/40 relative border-t border-white/5" id="features">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="text-center mb-10 space-y-2">
-              <h2 className="font-display font-semibold text-3xl text-white">
+            <div className="text-center mb-12 space-y-3">
+              <h2 className="font-display font-semibold text-4xl text-white">
                 Three Tiers of <span className="text-gradient font-semibold">Energy Inclusion</span>
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-gray-400 max-w-3xl mx-auto text-sm sm:text-base font-light leading-relaxed">
                 Voltify works for every household in India, completely independent of your electrical infrastructure or income level.
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Tier 1 */}
-              <div className="relative rounded-2xl p-6 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
+              <div className="relative rounded-2xl p-10 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12 h-[380px]">
                 <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 font-bold">TIER 1 (80% OF INDIA)</span>
-                    <span className="text-[9px] text-gray-500 font-mono">Normal Meter</span>
+                  <div className="flex justify-between items-start mb-6">
+                    <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded border border-cyan-500/20 font-bold">TIER 1 (80% OF INDIA)</span>
+                    <span className="text-[10px] text-gray-500 font-mono">Normal Meter</span>
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-white mb-2">Manual Bill Decoupler</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-4 font-normal">
+                  <h3 className="font-display font-semibold text-2xl text-white mb-3">Manual Bill Decoupler</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-normal">
                     OCR statement ingestion (Tesseract) + basic appliance settings. Calculates a calibrated daily baseline estimate using regional weather indices.
                   </p>
                 </div>
-                <div className="bg-slate-950/40 rounded-xl p-3.5 border border-white/[0.04] space-y-1">
-                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                <div className="bg-slate-950/40 rounded-xl p-4.5 border border-white/[0.04] space-y-1.5">
+                  <div className="flex justify-between text-xs text-gray-400 font-mono">
                     <span>Calibration Factor:</span>
                     <span className="text-white">Active</span>
                   </div>
-                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                  <div className="flex justify-between text-xs text-gray-400 font-mono">
                     <span>Disaggregation:</span>
                     <span className="text-primary font-bold">Rule-based Math</span>
                   </div>
@@ -191,23 +191,23 @@ export default function Landing() {
               </div>
               
               {/* Tier 2 */}
-              <div className="relative rounded-2xl p-6 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
+              <div className="relative rounded-2xl p-10 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12 h-[380px]">
                 <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="text-[10px] font-mono text-volt-pink bg-volt-pink/10 px-2 py-0.5 rounded border border-volt-pink/20 font-bold">TIER 2 (SMART METERS)</span>
-                    <span className="text-[9px] text-gray-500 font-mono">DISCOM Connected</span>
+                  <div className="flex justify-between items-start mb-6">
+                    <span className="text-xs font-mono text-volt-pink bg-volt-pink/10 px-3 py-1 rounded border border-volt-pink/20 font-bold">TIER 2 (SMART METERS)</span>
+                    <span className="text-[10px] text-gray-500 font-mono">DISCOM Connected</span>
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-white mb-2">Automated Ingest Pipeline</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-4 font-normal">
+                  <h3 className="font-display font-semibold text-2xl text-white mb-3">Automated Ingest Pipeline</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-normal">
                     Pulls hourly total household metrics directly from DISCOM Open APIs (OAuth2). Employs advanced LSTM/GRU logic to read appliance fingerprints.
                   </p>
                 </div>
-                <div className="bg-slate-950/40 rounded-xl p-3.5 border border-white/[0.04] space-y-1">
-                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                <div className="bg-slate-950/40 rounded-xl p-4.5 border border-white/[0.04] space-y-1.5">
+                  <div className="flex justify-between text-xs text-gray-400 font-mono">
                     <span>Ingestion Interval:</span>
                     <span className="text-white">Hourly / 15-Min</span>
                   </div>
-                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                  <div className="flex justify-between text-xs text-gray-400 font-mono">
                     <span>Disaggregation:</span>
                     <span className="text-volt-pink font-bold">LSTM AI Models</span>
                   </div>
@@ -215,23 +215,23 @@ export default function Landing() {
               </div>
               
               {/* Tier 3 */}
-              <div className="relative rounded-2xl p-6 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
+              <div className="relative rounded-2xl p-10 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12 h-[380px]">
                 <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">TIER 3 (SMART PLUGS)</span>
-                    <span className="text-[9px] text-gray-500 font-mono">IoT Connected</span>
+                  <div className="flex justify-between items-start mb-6">
+                    <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded border border-emerald-500/20 font-bold">TIER 3 (SMART PLUGS)</span>
+                    <span className="text-[10px] text-gray-500 font-mono">IoT Connected</span>
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-white mb-2">Per-Appliance Monitoring</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-4 font-normal">
+                  <h3 className="font-display font-semibold text-2xl text-white mb-3">Per-Appliance Monitoring</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-normal">
                     Plugs directly into smart home APIs (Tuya IoT Cloud, Tapo SDK). Obtains exact real-time wattage reports for high-drain hardware with zero guesses.
                   </p>
                 </div>
-                <div className="bg-slate-950/40 rounded-xl p-3.5 border border-white/[0.04] space-y-1">
-                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                <div className="bg-slate-950/40 rounded-xl p-4.5 border border-white/[0.04] space-y-1.5">
+                  <div className="flex justify-between text-xs text-gray-400 font-mono">
                     <span>Refresh Rate:</span>
                     <span className="text-white">Real-Time (WebSocket)</span>
                   </div>
-                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                  <div className="flex justify-between text-xs text-gray-400 font-mono">
                     <span>Disaggregation:</span>
                     <span className="text-emerald-400 font-bold">Direct Readings</span>
                   </div>
@@ -241,58 +241,58 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ③ The 4 Intelligence Layers Section */}
+        {/* ③ The 4 Intelligence Layers Section - 2x2 Large Card Layout */}
         <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center relative border-t border-white/[0.06] bg-slate-950" id="how-it-works">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="text-center mb-10 space-y-2">
-              <h2 className="font-display font-semibold text-3xl text-white">
+            <div className="text-center mb-12 space-y-3">
+              <h2 className="font-display font-semibold text-4xl text-white">
                 The 4 Architecture <span className="text-gradient">Layers</span>
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto text-xs sm:text-sm font-light leading-relaxed">
+              <p className="text-gray-400 max-w-3xl mx-auto text-sm sm:text-base font-light leading-relaxed">
                 Voltify's core functionality is organized into four logical stacks to provide stability and explainability.
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Layer 1 */}
-              <div className="bg-slate-900/40 border border-white/[0.05] p-5 rounded-xl flex flex-col justify-between group">
+              <div className="bg-slate-900/40 border border-white/[0.05] p-8 rounded-2xl flex flex-col justify-between group h-[190px]">
                 <div>
-                  <div className="text-[10px] font-mono text-primary bg-primary/10 w-fit px-2 py-0.5 rounded border border-primary/25 mb-3 font-bold">01 / FOUNDATION</div>
-                  <h3 className="font-display font-semibold text-base text-white mb-2">Ingestion & Norms</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-4">
+                  <div className="text-xs font-mono text-primary bg-primary/10 w-fit px-3 py-1 rounded border border-primary/25 mb-4 font-bold">01 / FOUNDATION</div>
+                  <h3 className="font-display font-semibold text-2xl text-white mb-2">Ingestion & Norms</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">
                     Multer ingestion pipelines, Tesseract OCR parsers, and state-specific TNEB tariff slab configs to standardize all inputs.
                   </p>
                 </div>
               </div>
               
               {/* Layer 2 */}
-              <div className="bg-slate-900/40 border border-white/[0.05] p-5 rounded-xl flex flex-col justify-between group">
+              <div className="bg-slate-900/40 border border-white/[0.05] p-8 rounded-2xl flex flex-col justify-between group h-[190px]">
                 <div>
-                  <div className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 w-fit px-2 py-0.5 rounded border border-cyan-500/25 mb-3 font-bold">02 / INTELLIGENCE</div>
-                  <h3 className="font-display font-semibold text-base text-white mb-2">Predictive Models</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-4">
+                  <div className="text-xs font-mono text-cyan-400 bg-cyan-500/10 w-fit px-3 py-1 rounded border border-cyan-500/25 mb-4 font-bold">02 / INTELLIGENCE</div>
+                  <h3 className="font-display font-semibold text-2xl text-white mb-2">Predictive Models</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">
                     ARIMA (24-48 hr) and Facebook Prophet (monthly) models forecast bills, while Isolation Forest detects active load anomalies.
                   </p>
                 </div>
               </div>
               
               {/* Layer 3 */}
-              <div className="bg-slate-900/40 border border-white/[0.05] p-5 rounded-xl flex flex-col justify-between group">
+              <div className="bg-slate-900/40 border border-white/[0.05] p-8 rounded-2xl flex flex-col justify-between group h-[190px]">
                 <div>
-                  <div className="text-[10px] font-mono text-volt-pink bg-volt-pink/10 w-fit px-2 py-0.5 rounded border border-volt-pink/25 mb-3 font-bold">03 / ENGAGEMENT</div>
-                  <h3 className="font-display font-semibold text-base text-white mb-2">AI Memory & Play</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-4">
+                  <div className="text-xs font-mono text-volt-pink bg-volt-pink/10 w-fit px-3 py-1 rounded border border-volt-pink/25 mb-4 font-bold">03 / ENGAGEMENT</div>
+                  <h3 className="font-display font-semibold text-2xl text-white mb-2">AI Memory & Play</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">
                     VoltBuddy chatbot (powered by Cognee), segmented leaderboards, streaks, multipliers, and adaptive weekly challenges.
                   </p>
                 </div>
               </div>
               
               {/* Layer 4 */}
-              <div className="bg-slate-900/40 border border-white/[0.05] p-5 rounded-xl flex flex-col justify-between group">
+              <div className="bg-slate-900/40 border border-white/[0.05] p-8 rounded-2xl flex flex-col justify-between group h-[190px]">
                 <div>
-                  <div className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 w-fit px-2 py-0.5 rounded border border-emerald-500/25 mb-3 font-bold">04 / SAFETY & TRUST</div>
-                  <h3 className="font-display font-semibold text-base text-white mb-2">Comfort-Safe Savings</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-4">
+                  <div className="text-xs font-mono text-emerald-400 bg-emerald-500/10 w-fit px-3 py-1 rounded border border-emerald-500/25 mb-4 font-bold">04 / SAFETY & TRUST</div>
+                  <h3 className="font-display font-semibold text-2xl text-white mb-2">Comfort-Safe Savings</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">
                     CSS tradeoffs show exact comfort-to-savings ratios. Hardcoded guardrails enforce BEE/WHO thresholds (AC &ge; 24°C, Fridge &ge; 4°C).
                   </p>
                 </div>
@@ -308,33 +308,33 @@ export default function Landing() {
             <div className="space-y-6 text-left">
               <div className="inline-flex items-center gap-2 bg-emerald-500/10 rounded-full px-4 py-1.5 border border-emerald-500/20">
                 <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest font-mono">Cognitive Memory Engine</span>
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">Cognitive Memory Engine</span>
               </div>
-              <h2 className="font-display font-semibold text-3xl sm:text-4xl text-white leading-tight">
+              <h2 className="font-display font-semibold text-4xl sm:text-5xl text-white leading-tight">
                 Self-Improving Memory Layer <br/>
                 <span className="text-gradient">Powered by Cognee</span>
               </h2>
-              <p className="text-gray-400 text-sm leading-relaxed font-light">
+              <p className="text-gray-450 text-sm md:text-base leading-relaxed font-light">
                 Voltify integrates deeply with Cognee's hybrid graph-vector memory layer. Every user conversation, daily check-in logs, and appliance loads are structured into an ontological knowledge graph unique to their home ID. Volt does not forget what was agreed upon in the last session.
               </p>
               
               {/* API Lifecycle Details */}
               <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="p-4 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
-                  <div className="text-primary text-xs font-bold mb-1">remember()</div>
-                  <div className="text-[10px] text-gray-500 leading-normal">Ingests raw text and files into user-specific graph nodes.</div>
+                <div className="p-6 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
+                  <div className="text-primary text-sm font-bold mb-1">remember()</div>
+                  <div className="text-xs text-gray-500 leading-normal">Ingests raw text and files into user-specific graph nodes.</div>
                 </div>
-                <div className="p-4 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
-                  <div className="text-cyan-400 text-xs font-bold mb-1">recall()</div>
-                  <div className="text-[10px] text-gray-500 leading-normal">Retrieves deep relationships using semantic similarity checks.</div>
+                <div className="p-6 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
+                  <div className="text-cyan-400 text-sm font-bold mb-1">recall()</div>
+                  <div className="text-xs text-gray-500 leading-normal">Retrieves deep relationships using semantic similarity checks.</div>
                 </div>
-                <div className="p-4 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
-                  <div className="text-volt-pink text-xs font-bold mb-1">improve()</div>
-                  <div className="text-[10px] text-gray-500 leading-normal">Consolidates short-term sessions into long-term habits.</div>
+                <div className="p-6 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
+                  <div className="text-volt-pink text-sm font-bold mb-1">improve()</div>
+                  <div className="text-xs text-gray-500 leading-normal">Consolidates short-term sessions into long-term habits.</div>
                 </div>
-                <div className="p-4 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
-                  <div className="text-white text-xs font-bold mb-1">forget()</div>
-                  <div className="text-[10px] text-gray-500 leading-normal">Surgically wipes dataset context upon resetting memories.</div>
+                <div className="p-6 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
+                  <div className="text-white text-sm font-bold mb-1">forget()</div>
+                  <div className="text-xs text-gray-500 leading-normal">Surgically wipes dataset context upon resetting memories.</div>
                 </div>
               </div>
             </div>
