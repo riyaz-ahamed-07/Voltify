@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { apiService } from '../lib/api';
 import { GlassCard } from '../components/ui/GlassCard';
-import { Calendar, TrendingUp, Cpu, Landmark, ShieldAlert, Award } from 'lucide-react';
+import { Calendar, TrendingUp, Cpu, Landmark, ShieldAlert, Award, Brain, CheckCircle2, FileCode } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 interface TimelineEvent {
@@ -12,18 +12,39 @@ interface TimelineEvent {
   icon: string;
 }
 
+interface Memory {
+  id: string;
+  learned_memory: string;
+  confidence: number;
+  source: string;
+  reasoning: string;
+}
+
+interface VaultStats {
+  stored: number;
+  patterns: number;
+  relationships: number;
+}
+
 export default function Evolution() {
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
+  const [memories, setMemories] = useState<Memory[]>([]);
+  const [stats, setStats] = useState<VaultStats>({ stored: 0, patterns: 0, relationships: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const data = await apiService.getHomeEvolution();
-        setTimeline(data);
+        const [timelineData, vaultData] = await Promise.all([
+          apiService.getHomeEvolution(),
+          apiService.getMemoryVault()
+        ]);
+        setTimeline(timelineData);
+        setMemories(vaultData.memories);
+        setStats(vaultData.stats);
       } catch (err: any) {
-        console.error('Failed to load evolution data:', err);
-        toast.error('Failed to fetch evolution history');
+        console.error('Failed to load evolution & memory data:', err);
+        toast.error('Failed to fetch home memory logs');
       } finally {
         setLoading(false);
       }
@@ -35,37 +56,45 @@ export default function Evolution() {
     <div className="space-y-8 animate-fade-in p-6">
       {/* ── Page Header ── */}
       <div>
-        <h1 className="font-display text-3xl font-bold tracking-tight text-white">Home Evolution</h1>
-        <p className="text-sm text-zinc-400 mt-1">See how today's decisions shape tomorrow's bills.</p>
+        <h1 className="font-display text-3xl font-bold tracking-tight text-white font-headline">Home Evolution & Memory</h1>
+        <p className="text-sm text-zinc-400 mt-1 font-sans">See how today's decisions shape tomorrow's bills and inspect Cognee's structured home memory nodes.</p>
       </div>
 
       {/* ── Core Hero Stats Card ── */}
       <GlassCard className="p-6 border border-primary/20 bg-gradient-to-r from-primary/5 via-transparent to-transparent">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
           <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Days Evolved</span>
-            <p className="text-3xl font-mono font-bold text-white">286 Days</p>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 font-mono">Days Evolved</span>
+            <p className="text-2xl font-mono font-bold text-white">286 Days</p>
           </div>
           <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Current Efficiency</span>
-            <p className="text-3xl font-mono font-bold text-emerald-400">+18%</p>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 font-mono">Efficiency</span>
+            <p className="text-2xl font-mono font-bold text-emerald-400">+18%</p>
           </div>
           <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Lifetime Saved</span>
-            <p className="text-3xl font-mono font-bold text-primary">₹7,420</p>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 font-mono">Saved</span>
+            <p className="text-2xl font-mono font-bold text-primary">₹7,420</p>
           </div>
           <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">CO₂ Avoided</span>
-            <p className="text-3xl font-mono font-bold text-teal-400">112 kg</p>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 font-mono">Stored Nodes</span>
+            <p className="text-2xl font-mono font-bold text-teal-400">{stats.stored} Nodes</p>
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 font-mono">Patterns</span>
+            <p className="text-2xl font-mono font-bold text-indigo-400">{stats.patterns} Patterns</p>
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 font-mono">Edges</span>
+            <p className="text-2xl font-mono font-bold text-pink-400">{stats.relationships} Edges</p>
           </div>
         </div>
       </GlassCard>
 
-      {/* ── Timeline Section ── */}
+      {/* ── Main Combined Layout ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Timeline representation (Col span 2) */}
-        <GlassCard className="p-6 lg:col-span-2 space-y-6">
-          <h2 className="font-display font-semibold text-lg text-white flex items-center gap-2">
+        {/* Left Column: Timeline Milestone Chronology (Col span 1) */}
+        <GlassCard className="p-6 lg:col-span-1 space-y-6">
+          <h2 className="font-display font-semibold text-lg text-white flex items-center gap-2 font-headline">
             <Calendar className="size-5 text-primary" />
             Milestone Chronology
           </h2>
@@ -78,7 +107,7 @@ export default function Evolution() {
           ) : timeline.length === 0 ? (
             <div className="text-center py-12 space-y-2">
               <ShieldAlert className="size-8 text-zinc-600 mx-auto" />
-              <p className="text-sm text-zinc-500">Your home has no memories yet. Let's build them together.</p>
+              <p className="text-sm text-zinc-500">Your home has no milestones yet.</p>
             </div>
           ) : (
             <div className="relative border-l border-zinc-800 ml-4 pl-6 space-y-8 py-2">
@@ -89,14 +118,14 @@ export default function Evolution() {
                     {item.icon}
                   </span>
 
-                  <div className="space-y-1">
+                  <div className="space-y-1 text-left">
                     <span className="text-[10px] font-mono font-semibold uppercase tracking-widest text-primary">
                       {item.month}
                     </span>
-                    <h3 className="font-display text-sm font-semibold text-white group-hover:text-primary transition-colors">
+                    <h3 className="font-display text-sm font-semibold text-white group-hover:text-primary transition-colors font-headline">
                       {item.event}
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed max-w-xl">
+                    <p className="text-xs text-zinc-400 leading-relaxed">
                       {item.details}
                     </p>
                   </div>
@@ -106,42 +135,91 @@ export default function Evolution() {
           )}
         </GlassCard>
 
-        {/* Narrative reasoning guide card (Col span 1) */}
-        <div className="space-y-6">
-          <GlassCard className="p-6 space-y-4">
-            <h3 className="font-display font-semibold text-sm text-white flex items-center gap-2">
-              <Cpu className="size-4 text-primary" />
-              Continuous Ingest Pipeline
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Every action you perform on Voltify — completing a challenge, adjusting appliance loads, checking in daily, or uploading bills — is automatically structured and remembered by the Cognee engine.
-            </p>
-            <div className="border-t border-zinc-800 pt-3 space-y-2">
-              <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
-                <span className="size-1.5 rounded-full bg-emerald-500" />
-                Input: Daily check-in log
-              </div>
-              <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
-                <span className="size-1.5 rounded-full bg-emerald-500" />
-                Input: Bi-monthly utility statement
-              </div>
-              <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
-                <span className="size-1.5 rounded-full bg-emerald-500" />
-                Input: Recommendation feedback
-              </div>
-            </div>
-          </GlassCard>
+        {/* Right Column: Memories Table (Col span 2) */}
+        <GlassCard className="p-6 lg:col-span-2 space-y-6">
+          <h2 className="font-display font-semibold text-lg text-white flex items-center gap-2 font-headline">
+            <Brain className="size-5 text-teal-400" />
+            Learned Facts & Reasoning Logs
+          </h2>
 
-          <GlassCard className="p-6 space-y-4 border border-teal-500/10 bg-teal-500/5">
-            <h3 className="font-display font-semibold text-sm text-teal-400 flex items-center gap-2">
-              <Award className="size-4" />
-              Memory Milestone Met!
-            </h3>
-            <p className="text-xs text-zinc-300 leading-relaxed">
-              Your home reached the <strong>Efficiency-Balanced</strong> status on August 2026. Cognee consolidated your AC routines and confirmed a permanent 18% savings pattern.
-            </p>
-          </GlassCard>
-        </div>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-12 space-y-3">
+              <span className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              <p className="text-xs text-zinc-500">Reading Cognee memory records...</p>
+            </div>
+          ) : memories.length === 0 ? (
+            <div className="text-center py-12 space-y-2">
+              <ShieldAlert className="size-8 text-zinc-600 mx-auto" />
+              <p className="text-sm text-zinc-500">Your home has no memories yet. Let's build them together.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="border-b border-zinc-800 text-zinc-500">
+                    <th className="pb-3 font-semibold uppercase tracking-wider w-[35%] font-sans">Learned Memory</th>
+                    <th className="pb-3 font-semibold uppercase tracking-wider font-sans">Source</th>
+                    <th className="pb-3 font-semibold uppercase tracking-wider font-sans">Confidence</th>
+                    <th className="pb-3 font-semibold uppercase tracking-wider w-[45%] font-sans">Reasoning / Evidence</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/50">
+                  {memories.map((m) => {
+                    const sourceColors: Record<string, string> = {
+                      'Conversation': 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+                      'Onboarding': 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
+                      'Daily Check-in': 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+                      'User Action': 'bg-purple-500/10 border-purple-500/20 text-purple-400',
+                    };
+                    const color = sourceColors[m.source] || 'bg-zinc-500/10 border-zinc-500/20 text-zinc-400';
+
+                    return (
+                      <tr key={m.id} className="group hover:bg-zinc-800/10 transition-colors">
+                        <td className="py-4 pr-4 font-semibold text-white flex items-start gap-2.5 font-sans">
+                          <CheckCircle2 className="size-4 text-emerald-500 shrink-0 mt-0.5" />
+                          {m.learned_memory}
+                        </td>
+                        <td className="py-4">
+                          <span className={`px-2 py-0.5 rounded-full border text-[9px] font-mono font-semibold uppercase tracking-wide ${color}`}>
+                            {m.source}
+                          </span>
+                        </td>
+                        <td className="py-4 font-mono font-bold text-zinc-300">
+                          {m.confidence}%
+                        </td>
+                        <td className="py-4 pl-4 text-zinc-405 leading-relaxed italic font-sans">
+                          {m.reasoning}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </GlassCard>
+      </div>
+
+      {/* ── Footer Explanatory Block ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <GlassCard className="p-6 space-y-3">
+          <h3 className="font-display font-semibold text-sm text-white flex items-center gap-2 font-headline">
+            <Cpu className="size-4 text-primary" />
+            Continuous Ingest Pipeline
+          </h3>
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            Every action you perform on Voltify — completing a challenge, adjusting appliance loads, checking in daily, or uploading bills — is automatically structured and remembered by the Cognee engine.
+          </p>
+        </GlassCard>
+        <GlassCard className="p-6 space-y-3">
+          <h3 className="font-display font-semibold text-sm text-white flex items-center gap-2 font-headline">
+            <Brain className="size-4 text-teal-400" />
+            How Does the Home Learn?
+          </h3>
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            Unlike simple database variables, Voltify uses Cognee's hybrid graph-vector memory to extract facts, establish links between devices and weather, and synthesize actions into high-confidence habits.
+          </p>
+        </GlassCard>
       </div>
     </div>
   );

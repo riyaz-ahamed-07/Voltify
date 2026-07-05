@@ -16,8 +16,7 @@ export default function Topbar() {
 
   const links = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/evolution', label: 'Evolution', icon: History },
-    { to: '/learned-memories', label: 'Learned Memories', icon: Brain },
+    { to: '/evolution', label: 'Evolution & Memory', icon: History },
     { to: '/predictions', label: 'Predictions', icon: BrainCircuit },
     { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
     { to: '/shop', label: 'Shop', icon: Coins },
