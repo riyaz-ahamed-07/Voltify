@@ -11,7 +11,7 @@ const { validateAppliance, validateBill } = require('../utils/validators');
 const notificationService = require('../services/notificationService');
 const challengeService = require('../services/challengeService');
 const coinService = require('../services/coinService');
-const { PDFParse } = require('pdf-parse');
+// pdf-parse is lazy-loaded inside parseBillPDF to prevent DOMMatrix crash on Vercel serverless
 const llmService = require('../services/llmService');
 
 /**
@@ -71,6 +71,8 @@ const parseBillPDF = async (req, res) => {
 
   try {
     const dataBuffer = req.file.buffer;
+    // Lazy-load pdf-parse to avoid DOMMatrix crash on Vercel serverless startup
+    const { PDFParse } = require('pdf-parse');
     const parser = new PDFParse({ data: dataBuffer });
     const pdfData = await parser.getText();
     const pdfText = pdfData.text;
