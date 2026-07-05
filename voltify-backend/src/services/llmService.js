@@ -164,6 +164,14 @@ module.exports = {
    * Parse bill raw statement text via LLM
    */
   async parseBillText(text) {
+    if (Array.isArray(text)) {
+      text = text.join('\n');
+    }
+    if (typeof text !== 'string') {
+      console.warn('[llmService] Received non-string PDF text, coercing to string');
+      text = String(text);
+    }
+    // Return defaults for empty or whitespace‑only input
     if (!text || text.trim().length === 0) {
       return { bill_amount: 3200, units: 400 };
     }
