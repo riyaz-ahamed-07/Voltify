@@ -87,28 +87,84 @@ function getDefaultSeededMemories() {
 async function checkIfSeeded(userId) {
   const db = readLocalMemory();
   const userMem = db[userId];
-  if (userMem && userMem.has_learned_seeded) return true;
-
+  
+  let isDemo = false;
   try {
     const userRes = await pool.query('SELECT email FROM users WHERE id = $1', [userId]);
     const email = userRes.rows[0]?.email || '';
     if (email.toLowerCase() === 'demo@voltify.com') {
+      isDemo = true;
+    }
+  } catch (err) {
+    console.error('[cogneeService] Error checking demo account email:', err);
+  }
+
+  const hasSeeded = (userMem && userMem.has_learned_seeded) || isDemo;
+
+  if (hasSeeded) {
+    if (!userMem || !userMem.has_seeded_cloud) {
       if (!db[userId]) {
         db[userId] = {
           has_learned_seeded: true,
+          has_seeded_cloud: true,
           custom_memories: [],
           timeline_history: []
         };
       } else {
         db[userId].has_learned_seeded = true;
+        db[userId].has_seeded_cloud = true;
       }
       writeLocalMemory(db);
-      return true;
+      
+      // Asynchronously trigger Cloud background seeding
+      seedCogneeCloud(userId).catch(err => 
+        console.error('[cogneeService] Background cloud seeding failed:', err.message)
+      );
     }
-  } catch (err) {
-    console.error('[cogneeService] Error checking demo account email:', err);
+    return true;
   }
   return false;
+}
+
+/**
+ * Seed historical facts directly into Cognee Cloud so recall works in production
+ */
+async function seedCogneeCloud(userId) {
+  console.log(`[cogneeService] Starting background Cognee Cloud seeding for User: ${userId}`);
+  const facts = [
+    "User prefers 23°C for sleep comfort. Ignored 24°C suggestion 6 times; accepted 23°C 4 times.",
+    "Living Room AC (1.5 kW) was added to the household profile during appliance onboarding.",
+    "User set a monthly savings target of ₹1,000 in conversation.",
+    "Household is typically away every weekend, showing zero active appliance hours during weekends.",
+    "Geyser running hours were successfully shifted to off-peak morning hours (6–9 AM) in consecutive logs.",
+    "Added Bedroom Geyser (3.0 kW water heater) in December 2025, which increased baseline winter load by 24%.",
+    "Upgraded to a 5-star Refrigerator in March 2026, which decreased baseline running load by 9%.",
+    "Adjusted Living Room AC thermostat to 22°C during Peak Summer Heatwave in April 2026.",
+    "Completed the AC Efficiency Challenge in June 2026, earning 250 coins and saving ₹220 (28 units).",
+    "Changed AC Scheduler Routine in August 2026, increasing overall efficiency by 18%."
+  ];
+
+  try {
+    for (const text of facts) {
+      await callCogneeAPI('POST', '/remember', {
+        datasetName: `user_${userId}`,
+        session_id: 'initial_seed',
+        data: [{ text: text }],
+        run_in_background: false
+      });
+      // Delay between calls to prevent rate limits
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    // Trigger cognify pass to structure and link the facts
+    await callCogneeAPI('POST', '/cognify', {
+      datasets: [`user_${userId}`],
+      run_in_background: false
+    });
+    console.log(`[cogneeService] Cognee Cloud seeding and cognify completed successfully for User: ${userId}`);
+  } catch (err) {
+    console.error(`[cogneeService] Failed to seed facts into Cognee Cloud:`, err.message);
+  }
 }
 
 /**
