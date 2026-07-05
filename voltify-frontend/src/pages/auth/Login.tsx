@@ -63,7 +63,8 @@ export default function Login() {
 
   const handleOAuth = (provider: string) => {
     if (provider === 'google') {
-      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/google`;
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      window.location.href = `${apiBase}/auth/google?state=${encodeURIComponent(window.location.origin)}`;
     }
   };
 

@@ -17,11 +17,23 @@ router.post('/reset-password', resetPassword);
 router.post('/oauth/google', oauthCallback);
 
 // Real Google OAuth redirect and callback routes
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', (req, res, next) => {
+  const state = req.query.state || '';
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    state: state
+  })(req, res, next);
+});
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login`, session: false }),
+  (req, res, next) => {
+    const state = req.query.state || '';
+    passport.authenticate('google', { 
+      failureRedirect: `${state || process.env.FRONTEND_URL || 'http://localhost:5173'}/login`, 
+      session: false 
+    })(req, res, next);
+  },
   (req, res) => {
     const token = signToken(req.user.id);
     const userStr = JSON.stringify({
@@ -33,7 +45,8 @@ router.get(
       streak_days: req.user.streak_days,
       onboarding_complete: req.user.onboarding_complete,
     });
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/oauth-success?token=${token}&user=${encodeURIComponent(userStr)}`);
+    const frontendUrl = req.query.state || process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/oauth-success?token=${token}&user=${encodeURIComponent(userStr)}`);
   }
 );
 
