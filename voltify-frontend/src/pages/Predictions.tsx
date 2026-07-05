@@ -256,82 +256,8 @@ export default function Predictions() {
         </GlassCard>
       </div>
 
-      {/* Grid: CSS and What-If Simulator */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        {/* Comfort-Safe Savings (CSS) Recommendations */}
-        <GlassCard className="space-y-6">
-          <div className="flex items-center justify-between border-b border-white/5 pb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="size-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <CheckCircle2 className="size-4 text-emerald-400" />
-              </div>
-              <div>
-                <h3 className="font-display font-semibold text-sm text-white">Comfort-Safe Savings (CSS)</h3>
-                <p className="text-[10px] text-gray-400">BEE & Comfort-standard optimization targets</p>
-              </div>
-            </div>
-
-            <div className="text-right">
-              <span className="text-xs font-mono text-emerald-400 font-bold block">₹{totals.potential}/mo</span>
-              <span className="text-[9px] text-gray-400 block font-mono">Potential Savings</span>
-            </div>
-          </div>
-
-          {/* List of Recommendations */}
-          <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
-            {recommendations && recommendations.length > 0 ? (
-              recommendations.map((tip) => (
-                <div key={tip.id} className="p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-all space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 font-bold text-white text-xs">
-                      <span>{getApplianceEmoji(tip.appliance)}</span> {tip.title || `${tip.appliance} Optimization`}
-                    </span>
-                    <span className="text-[10px] font-mono text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
-                      Save ₹{tip.monthly_savings_rs || tip.monthly_savings || 240}/mo
-                    </span>
-                  </div>
-                  
-                  <p className="text-gray-400 leading-relaxed text-[11px] font-sans">
-                    {tip.explanation || tip.why_safe || 'BEE & WHO environmental comfort guidelines for appliance energy reduction.'}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-white/[0.03] text-[10px]">
-                    <div className="flex items-center gap-3">
-                      <span className="text-gray-500 font-sans">
-                        Target: <span className="font-semibold text-white font-mono">{tip.recommended_setting || tip.target_setting || 'ECO'}</span>
-                      </span>
-                      {tip.comfort_pct && (
-                        <span className="text-gray-500 font-sans">
-                          Comfort: <span className="text-primary font-semibold font-mono">{tip.comfort_pct}%</span>
-                        </span>
-                      )}
-                    </div>
-                    
-                    {tip.already_applied ? (
-                      <span className="font-mono text-emerald-400 flex items-center gap-1 font-semibold">
-                        <CheckCircle2 className="size-3" /> Target Applied
-                      </span>
-                    ) : (
-                      <button 
-                        onClick={() => handleApplyRecommendation(tip.id, tip.appliance, tip.recommended_setting || tip.target_setting || 'ECO')}
-                        className="inline-flex items-center gap-1 text-[9px] text-slate-950 bg-primary px-3 py-1.5 rounded-lg hover:opacity-90 transition-all font-semibold uppercase tracking-wider"
-                      >
-                        <Coins className="size-3" /> Apply & Earn
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="h-40 flex items-center justify-center border border-white/5 rounded-2xl bg-white/[0.01]">
-                <span className="text-xs text-gray-500">Loading energy targets...</span>
-              </div>
-            )}
-          </div>
-        </GlassCard>
-
-        {/* Interactive What-If Simulator */}
+      {/* Interactive What-If Simulator */}
+      <div className="max-w-4xl mx-auto">
         <GlassCard className="space-y-6">
           <div className="flex items-center gap-2.5 border-b border-white/5 pb-4">
             <div className="size-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -428,7 +354,6 @@ export default function Predictions() {
             </div>
           )}
         </GlassCard>
-
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Zap, Flame, Coins, Trophy, Sparkles, TrendingUp, AlertTriangle, CheckCircle,
+  Zap, Flame, Coins, Trophy, Sparkles, TrendingUp, AlertTriangle, CheckCircle, CheckCircle2,
   Info, Thermometer, ShieldAlert, BadgeAlert, ArrowUpRight, Plus, Minus, ArrowRight, ArrowLeft, Sliders, Check
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
@@ -35,9 +35,13 @@ export default function Dashboard() {
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [claimingCheckIn, setClaimingCheckIn] = useState(false);
 
+  // Comfort-Safe Savings (CSS) Recommendations State
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [cssTotals, setCssTotals] = useState<any>({ potential: 1020, annual: 12240 });
+
   // Telemetry check-in states
-  const [checkInStep, setCheckInStep] = useState(1);
-  const [checkInUnits, setCheckInUnits] = useState(10.5);
+  const [overallPerception, setOverallPerception] = useState<'below' | 'normal' | 'above' | 'custom'>('normal');
+  const [appliancePerceptions, setAppliancePerceptions] = useState<Record<string, 'below' | 'normal' | 'above' | 'custom'>>({});
   const [checkInApplianceHours, setCheckInApplianceHours] = useState<Record<string, number>>({});
 
   const userAppliances = onboarding?.appliances || Object.entries(DEFAULT_APPLIANCES).map(([id, app]) => ({ ...app, id } as Appliance));
@@ -46,13 +50,15 @@ export default function Dashboard() {
   // Sync initial state when modal opens or onboarding loads
   useEffect(() => {
     if (showCheckInModal) {
-      setCheckInStep(1);
-      setCheckInUnits(checkInAvgDailyUnits);
+      setOverallPerception('normal');
       const initialHours: Record<string, number> = {};
+      const initialPerceptions: Record<string, 'below' | 'normal' | 'above' | 'custom'> = {};
       userAppliances.forEach((app) => {
-        initialHours[app.id] = app.avg_hours_day;
+        initialHours[String(app.id)] = app.avg_hours_day;
+        initialPerceptions[String(app.id)] = 'normal';
       });
       setCheckInApplianceHours(initialHours);
+      setAppliancePerceptions(initialPerceptions);
     }
   }, [showCheckInModal, onboarding]);
 
@@ -60,12 +66,13 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [summary, breakdown, lb, chal, gamestats] = await Promise.all([
+        const [summary, breakdown, lb, chal, gamestats, cssRes] = await Promise.all([
           apiService.getDashboardSummary(),
           apiService.getApplianceBreakdown(),
           apiService.getLeaderboard(onboarding?.household_type || 'family'),
           apiService.getGamificationChallenge(),
-          apiService.getGamificationStats()
+          apiService.getGamificationStats(),
+          apiService.getCSSRecommendations()
         ]);
 
         if (summary) {
@@ -101,6 +108,14 @@ export default function Dashboard() {
 
         if (chal?.challenge) {
           setActiveChallenge(chal.challenge);
+        }
+
+        if (cssRes && cssRes.recommendations) {
+          setRecommendations(cssRes.recommendations);
+          setCssTotals({
+            potential: cssRes.total_potential_savings_rs || 1020,
+            annual: cssRes.total_annual_savings_rs || 12240
+          });
         }
       } catch (err) {
         console.error('Failed to load dashboard data', err);
@@ -228,6 +243,45 @@ export default function Dashboard() {
     }
   };
 
+  const handleApplyRecommendation = async (recId: string, appliance: string, setting: string) => {
+    try {
+      const res = await apiService.applyCSSRecommendation({
+        recommendation_id: recId,
+        appliance,
+        setting_applied: setting
+      });
+      if (res.success) {
+        toast.success(`Applied! Earned ${res.coins_earned || 80} coins! Expected savings: ₹${res.expected_monthly_savings || 240}/mo.`);
+        
+        // Update local state to show applied status
+        setRecommendations(prev => 
+          prev.map(r => r.id === recId ? { ...r, already_applied: true } : r)
+        );
+
+        // Add coins to store
+        addCoins(res.coins_earned || 80);
+
+        // Also refresh dashboard stats to reflect the updated projected bill!
+        const summary = await apiService.getDashboardSummary();
+        if (summary) setDashboardStats(summary);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to apply optimization target");
+    }
+  };
+
+  const getApplianceEmoji = (appliance: string) => {
+    switch (appliance?.toUpperCase()) {
+      case 'AC': return '❄️';
+      case 'GEYSER': return '♨️';
+      case 'FRIDGE':
+      case 'REFRIGERATOR': return '🧊';
+      case 'TV': return '📺';
+      case 'FAN': return '🌀';
+      default: return '🔌';
+    }
+  };
+
   // Live telemetry alerts list
   const activeAlerts = generateRuleBasedAlerts(dailyHistory, baseMonthlyBill, dynamicProjectedBill);
 
@@ -243,10 +297,18 @@ export default function Dashboard() {
             Region: <span className="font-mono font-semibold text-primary">{onboarding?.location || 'Chennai'}</span> | Utility Rate: <span className="font-mono text-primary">₹{tariff}/kWh</span>
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-surface border border-outline px-4 py-2 rounded-xl text-xs shadow-sm">
-          <BadgeAlert className="size-4 text-primary" />
-          <span className="text-on-surface-variant">Estimated Disaggregation Accuracy:</span>
-          <span className="font-mono font-semibold text-primary">{onboarding?.accuracy_pct || 94}%</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowCheckInModal(true)}
+            className="px-4 py-2 bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary transition-all rounded-xl text-xs font-semibold cursor-pointer"
+          >
+            📊 Log Telemetry
+          </button>
+          <div className="flex items-center gap-2 bg-surface border border-outline px-4 py-2 rounded-xl text-xs shadow-sm">
+            <BadgeAlert className="size-4 text-primary" />
+            <span className="text-on-surface-variant">Estimated Disaggregation Accuracy:</span>
+            <span className="font-mono font-semibold text-primary">{onboarding?.accuracy_pct || 94}%</span>
+          </div>
         </div>
       </div>
 
@@ -447,99 +509,75 @@ export default function Dashboard() {
 
       {/* Grid: BEE Comfort Sliders & Gamification */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* BEE Sliders panel */}
+        {/* Comfort-Safe Savings (CSS) Recommendations */}
         <GlassCard className="col-span-1 lg:col-span-2 space-y-6">
-          <div>
-            <h3 className="font-display font-semibold text-lg text-on-surface">
-              ⚡ Appliance Targets & Guidelines
-            </h3>
-            <p className="text-xs text-on-surface-variant mt-0.5">
-              Set standard thresholds recommended by public bodies to lower your monthly statement expenses.
-            </p>
+          <div className="flex items-center justify-between border-b border-white/5 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="size-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <CheckCircle2 className="size-4 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="font-display font-semibold text-sm text-white">Comfort-Safe Savings (CSS)</h3>
+                <p className="text-[10px] text-gray-400">BEE & Comfort-standard optimization targets</p>
+              </div>
+            </div>
+
+            <div className="text-right">
+              <span className="text-xs font-mono text-emerald-400 font-bold block">₹{cssTotals.potential}/mo</span>
+              <span className="text-[9px] text-gray-400 block font-mono">Potential Savings</span>
+            </div>
           </div>
 
-          <div className="space-y-6">
-            {/* AC Temp Slider */}
-            <div className="bg-surface border border-outline p-5 rounded-xl space-y-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg">❄️</span>
-                  <div>
-                    <h4 className="text-sm font-semibold text-on-surface">Air Conditioner Temp Settings</h4>
-                    <p className="text-xs text-on-surface-variant font-medium">BEE Optimal Standard: <span className="text-primary font-semibold">24°C</span></p>
+          {/* List of Recommendations */}
+          <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
+            {recommendations && recommendations.length > 0 ? (
+              recommendations.map((tip) => (
+                <div key={tip.id} className="p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-all space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 font-bold text-white text-xs">
+                      <span>{getApplianceEmoji(tip.appliance)}</span> {tip.title || `${tip.appliance} Optimization`}
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
+                      Save ₹{tip.monthly_savings_rs || tip.monthly_savings || 240}/mo
+                    </span>
+                  </div>
+                  
+                  <p className="text-gray-400 leading-relaxed text-[11px] font-sans">
+                    {tip.explanation || tip.why_safe || 'BEE & WHO environmental comfort guidelines for appliance energy reduction.'}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-white/[0.03] text-[10px]">
+                    <div className="flex items-center gap-3">
+                      <span className="text-gray-500 font-sans">
+                        Target: <span className="font-semibold text-white font-mono">{tip.recommended_setting || tip.target_setting || 'ECO'}</span>
+                      </span>
+                      {tip.comfort_pct && (
+                        <span className="text-gray-500 font-sans">
+                          Comfort: <span className="text-primary font-semibold font-mono">{tip.comfort_pct}%</span>
+                        </span>
+                      )}
+                    </div>
+                    
+                    {tip.already_applied ? (
+                      <span className="font-mono text-emerald-400 flex items-center gap-1 font-semibold">
+                        <CheckCircle2 className="size-3" /> Target Applied
+                      </span>
+                    ) : (
+                      <button 
+                        onClick={() => handleApplyRecommendation(tip.id, tip.appliance, tip.recommended_setting || tip.target_setting || 'ECO')}
+                        className="inline-flex items-center gap-1 text-[9px] text-slate-950 bg-primary px-3 py-1.5 rounded-lg hover:opacity-90 transition-all font-semibold uppercase tracking-wider cursor-pointer"
+                      >
+                        <Coins className="size-3" /> Apply & Earn
+                      </button>
+                    )}
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className={`font-semibold text-lg ${acTemp >= 24 ? 'text-primary' : 'text-error'}`}>{acTemp}°C</span>
-                </div>
+              ))
+            ) : (
+              <div className="h-40 flex items-center justify-center border border-white/5 rounded-2xl bg-white/[0.01]">
+                <span className="text-xs text-gray-500">Loading energy targets...</span>
               </div>
-
-              <div className="flex gap-4 items-center">
-                <span className="text-xs text-on-surface-variant">18°C</span>
-                <input
-                  type="range"
-                  min={18}
-                  max={26}
-                  step={1}
-                  value={acTemp}
-                  onChange={(e) => handleAcSlide(parseInt(e.target.value))}
-                  className="flex-1 accent-primary h-1.5 bg-outline rounded-lg cursor-pointer outline-none"
-                />
-                <span className="text-xs text-on-surface-variant">26°C</span>
-              </div>
-
-              {acTemp >= 24 ? (
-                <div className="bg-primary/10 border border-primary/20 p-3 rounded-lg text-xs text-primary flex gap-2.5 items-center">
-                  <CheckCircle className="size-4 flex-shrink-0" />
-                  <p>BEE standard active! Saving <span className="font-semibold">~36% AC energy</span> with zero healthy comfort loss.</p>
-                </div>
-              ) : (
-                <p className="text-xs text-on-surface-variant italic">
-                  Tip: Raising temperature from 18°C to 24°C will immediately save you <span className="text-primary font-semibold">₹900/month</span>!
-                </p>
-              )}
-            </div>
-
-            {/* Refrigerator Temp Slider */}
-            <div className="bg-surface border border-outline p-5 rounded-xl space-y-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg">🧊</span>
-                  <div>
-                    <h4 className="text-sm font-semibold text-on-surface">Refrigerator Temp Settings</h4>
-                    <p className="text-xs text-on-surface-variant font-medium">WHO Safety Standard: <span className="text-primary font-semibold">4°C</span></p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className={`font-semibold text-lg ${fridgeTemp >= 4 ? 'text-primary' : 'text-error'}`}>{fridgeTemp}°C</span>
-                </div>
-              </div>
-
-              <div className="flex gap-4 items-center">
-                <span className="text-xs text-on-surface-variant">1°C</span>
-                <input
-                  type="range"
-                  min={1}
-                  max={6}
-                  step={1}
-                  value={fridgeTemp}
-                  onChange={(e) => handleFridgeSlide(parseInt(e.target.value))}
-                  className="flex-1 accent-primary h-1.5 bg-outline rounded-lg cursor-pointer outline-none"
-                />
-                <span className="text-xs text-on-surface-variant">6°C</span>
-              </div>
-
-              {fridgeTemp >= 4 ? (
-                <div className="bg-primary/10 border border-primary/20 p-3 rounded-lg text-xs text-primary flex gap-2.5 items-center">
-                  <CheckCircle className="size-4 flex-shrink-0" />
-                  <p>Optimal compressor cycle active! Reduced consumption by <span className="font-semibold">~8%</span>.</p>
-                </div>
-              ) : (
-                <p className="text-xs text-on-surface-variant italic">
-                  Tip: Raising from 2°C to 4°C reduces motor cycles with absolute food safety.
-                </p>
-              )}
-            </div>
+            )}
           </div>
         </GlassCard>
 
@@ -672,93 +710,119 @@ export default function Dashboard() {
                 </div>
                 <h3 className="font-display font-bold text-xl text-white tracking-tight">Daily Telemetry Log</h3>
                 <p className="text-[11px] text-on-surface-variant leading-relaxed">
-                  {checkInStep === 1
-                    ? "Log your total power consumption for today to calculate today's actual cost and claim your daily reward."
-                    : "Log today's hours run for each of your active appliances."
-                  }
+                  Log your appliance use today. Adjust overall usage to pre-fill all run times instantly!
                 </p>
               </div>
 
-              {/* Progress Tracker */}
-              <div className="flex items-center justify-center gap-2">
-                <div className={`h-1.5 rounded-full transition-all duration-300 ${checkInStep === 1 ? 'w-8 bg-volt-pink' : 'w-2 bg-white/20'}`} />
-                <div className={`h-1.5 rounded-full transition-all duration-300 ${checkInStep === 2 ? 'w-8 bg-volt-pink' : 'w-2 bg-white/20'}`} />
-              </div>
-
-              {checkInStep === 1 ? (
-                /* STEP 1: Total Units (kWh) counter and slider */
-                <div className="space-y-6">
-                  <div className="space-y-4 text-center">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Total Electricity Today</span>
-                    
-                    <div className="flex items-center justify-center gap-4">
-                      <button
-                        type="button"
-                        onClick={() => setCheckInUnits(prev => Math.max(0, parseFloat((prev - 0.5).toFixed(1))))}
-                        className="size-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 text-white font-bold transition-all active:scale-95 cursor-pointer"
-                      >
-                        <Minus className="size-4" />
-                      </button>
-
-                      <div className="font-mono text-4xl font-black text-white flex items-baseline gap-1 select-none">
-                        <span>{checkInUnits.toFixed(1)}</span>
-                        <span className="text-sm font-sans text-volt-pink font-bold">kWh</span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => setCheckInUnits(prev => parseFloat((prev + 0.5).toFixed(1)))}
-                        className="size-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 text-white font-bold transition-all active:scale-95 cursor-pointer"
-                      >
-                        <Plus className="size-4" />
-                      </button>
-                    </div>
-
-                    <div className="px-2">
-                      <input
-                        type="range"
-                        min="0"
-                        max="50"
-                        step="0.1"
-                        value={checkInUnits}
-                        onChange={(e) => setCheckInUnits(parseFloat(parseFloat(e.target.value).toFixed(1)))}
-                        className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-volt-pink"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-white/5 border border-white/[0.04] rounded-xl text-center space-y-1">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Personalized Recommendation</span>
-                    <p className="text-on-surface-variant font-medium text-[11px]">
-                      Your average daily consumption is <span className="text-primary font-bold">{checkInAvgDailyUnits} kWh</span>. Drag or click above to adjust today's actual value.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setCheckInStep(2)}
-                    className="w-full py-3.5 bg-gradient-to-r from-volt-pink to-rose-500 hover:from-volt-pink/90 hover:to-rose-500/90 text-white rounded-xl font-bold tracking-tight shadow-[0_0_20px_rgba(236,72,153,0.35)] transition-all flex items-center justify-center gap-2 text-xs cursor-pointer"
-                  >
-                    <span>Proceed to Appliances</span>
-                    <ArrowRight className="size-4 animate-pulse" />
-                  </button>
-                </div>
-              ) : (
-                /* STEP 2: Appliance hours run today sliders list */
-                <div className="space-y-6">
-                  <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
-                    {userAppliances.map((app) => {
-                      const currentHours = checkInApplianceHours[app.id] !== undefined ? checkInApplianceHours[app.id] : app.avg_hours_day;
+              {/* Telemetry Input Form */}
+              <div className="space-y-6">
+                
+                {/* Overall Usage perception selector card (Very obvious and user friendly!) */}
+                <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl space-y-3">
+                  <label className="block text-[10px] text-slate-400 uppercase tracking-widest font-black font-sans text-center">
+                    ⚡ Did you use more or less energy today overall?
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['below', 'normal', 'above'] as const).map((p) => {
+                      const labels = {
+                        below: '🔋 Less Than Avg',
+                        normal: '🏠 Normal / Avg',
+                        above: '📈 More Than Avg'
+                      };
+                      const activeColors = {
+                        below: 'border-emerald-500 bg-emerald-500/15 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]',
+                        normal: 'border-primary bg-primary/15 text-primary shadow-[0_0_15px_rgba(0,229,255,0.15)]',
+                        above: 'border-volt-pink bg-volt-pink/15 text-volt-pink shadow-[0_0_15px_rgba(236,72,153,0.15)]'
+                      };
+                      const isSelected = overallPerception === p;
                       return (
-                        <div key={app.id} className="p-3 bg-white/5 border border-white/[0.04] rounded-xl space-y-2.5">
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => {
+                            setOverallPerception(p);
+                            // Automatically pre-fill all individual appliances in one click!
+                            const multipliers = { below: 0.7, normal: 1.0, above: 1.3 };
+                            const updatedHours: Record<string, number> = {};
+                            const updatedPerceptions: Record<string, 'below' | 'normal' | 'above' | 'custom'> = {};
+                            userAppliances.forEach((app) => {
+                              const newHrs = Math.max(0, Math.min(24, parseFloat((app.avg_hours_day * multipliers[p]).toFixed(1))));
+                              updatedHours[String(app.id)] = newHrs;
+                              updatedPerceptions[String(app.id)] = p;
+                            });
+                            setCheckInApplianceHours(updatedHours);
+                            setAppliancePerceptions(updatedPerceptions);
+                          }}
+                          className={`py-3 px-1.5 border rounded-xl text-[9px] font-bold text-center tracking-tight transition-all active:scale-95 cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                            isSelected
+                              ? activeColors[p]
+                              : 'border-white/10 hover:border-white/20 text-slate-400 hover:text-white bg-transparent'
+                          }`}
+                        >
+                          <span>{labels[p]}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Appliance Sliders and Obvious Per-Appliance Quick Selector Badges */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[10px] text-slate-400 uppercase tracking-widest font-bold font-sans">
+                      Fine-Tune Hours Per Device
+                    </label>
+                    {overallPerception === 'custom' && (
+                      <span className="text-[9px] text-volt-pink font-mono uppercase font-bold animate-pulse">Custom Tuned</span>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
+                    {userAppliances.map((app) => {
+                      const currentHours = checkInApplianceHours[String(app.id)] !== undefined ? checkInApplianceHours[String(app.id)] : app.avg_hours_day;
+                      return (
+                        <div key={app.id} className="p-3 bg-white/5 border border-white/[0.04] rounded-xl space-y-2.5 hover:bg-white/[0.07] hover:border-white/[0.08] transition-all">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">{app.icon}</span>
-                              <span className="text-xs font-semibold text-white">{app.name}</span>
+                            <div className="flex items-center gap-2.5">
+                              <span className="text-xl">{app.icon}</span>
+                              <div>
+                                <span className="text-xs font-semibold text-white block leading-tight">{app.name}</span>
+                                <span className="text-[9px] text-gray-500 font-sans block">Avg: {app.avg_hours_day} hrs</span>
+                              </div>
                             </div>
-                            <span className="font-mono text-xs font-bold text-volt-pink">
-                              {currentHours.toFixed(1)} hrs
-                            </span>
+                            
+                            {/* Larger, obvious, and highly user-friendly per-appliance buttons */}
+                            <div className="flex items-center gap-1 bg-[#1a1a1a] p-1 rounded-xl border border-white/[0.05]">
+                              {(['below', 'normal', 'above'] as const).map((p) => {
+                                const labels = { below: 'Less', normal: 'Avg', above: 'More' };
+                                const activeStyles = {
+                                  below: 'bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)] font-extrabold scale-105',
+                                  normal: 'bg-primary/25 text-primary border border-primary/30 shadow-[0_0_8px_rgba(0,229,255,0.1)] font-extrabold scale-105',
+                                  above: 'bg-volt-pink/25 text-volt-pink border border-volt-pink/30 shadow-[0_0_8px_rgba(236,72,153,0.1)] font-extrabold scale-105'
+                                };
+                                const isSelected = appliancePerceptions[String(app.id)] === p;
+                                return (
+                                  <button
+                                    key={p}
+                                    type="button"
+                                    onClick={() => {
+                                      const multipliers = { below: 0.7, normal: 1.0, above: 1.3 };
+                                      const newHrs = Math.max(0, Math.min(24, parseFloat((app.avg_hours_day * multipliers[p]).toFixed(1))));
+                                      setCheckInApplianceHours(prev => ({ ...prev, [String(app.id)]: newHrs }));
+                                      setAppliancePerceptions(prev => ({ ...prev, [String(app.id)]: p }));
+                                      setOverallPerception('custom'); // Flag that overall has been customized
+                                    }}
+                                    className={`px-3 py-1 rounded-lg text-[10px] cursor-pointer transition-all duration-200 ${
+                                      isSelected 
+                                        ? activeStyles[p] 
+                                        : 'text-gray-500 hover:text-white border border-transparent bg-transparent hover:bg-white/5'
+                                    }`}
+                                  >
+                                    {labels[p]}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
 
                           <div className="flex items-center gap-3">
@@ -773,46 +837,55 @@ export default function Dashboard() {
                                 const val = parseFloat(e.target.value);
                                 setCheckInApplianceHours(prev => ({
                                   ...prev,
-                                  [app.id]: val
+                                  [String(app.id)]: val
                                 }));
+                                setAppliancePerceptions(prev => ({
+                                  ...prev,
+                                  [String(app.id)]: 'custom'
+                                }));
+                                setOverallPerception('custom'); // Flag overall customized
                               }}
                               className="flex-1 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
                             />
-                            <span className="text-[10px] text-slate-500">24h</span>
+                            <span className="text-[10px] text-volt-pink font-semibold font-mono whitespace-nowrap min-w-[32px] text-right">
+                              {currentHours.toFixed(1)}h
+                            </span>
                           </div>
                         </div>
                       );
                     })}
                   </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setCheckInStep(1)}
-                      className="flex-1 py-3 border border-white/10 hover:border-white/20 text-white rounded-xl font-bold transition-all text-xs flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <ArrowLeft className="size-4" />
-                      <span>Back</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleClaimDailyCheckIn(checkInUnits, checkInApplianceHours)}
-                      disabled={claimingCheckIn}
-                      className="flex-[2] py-3 bg-gradient-to-r from-volt-pink to-rose-500 hover:from-volt-pink/90 hover:to-rose-500/90 text-white rounded-xl font-bold tracking-tight shadow-[0_0_20px_rgba(236,72,153,0.35)] transition-all flex items-center justify-center gap-2 text-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                      {claimingCheckIn ? (
-                        <span>Logging...</span>
-                      ) : (
-                        <>
-                          <Check className="size-4" />
-                          <span>Submit Telemetry</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
                 </div>
-              )}
+
+                {/* Submission button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const totalSelectedLoad = userAppliances.reduce((sum, app) => {
+                      const hrs = checkInApplianceHours[String(app.id)] !== undefined ? checkInApplianceHours[String(app.id)] : app.avg_hours_day;
+                      return sum + (Number(app.power_kw) * hrs);
+                    }, 0);
+                    const totalBaseLoad = userAppliances.reduce((sum, app) => {
+                      return sum + (Number(app.power_kw) * app.avg_hours_day);
+                    }, 0);
+                    const ratio = totalBaseLoad > 0 ? totalSelectedLoad / totalBaseLoad : 1.0;
+                    const calculatedUnits = parseFloat((checkInAvgDailyUnits * ratio).toFixed(1));
+
+                    handleClaimDailyCheckIn(calculatedUnits, checkInApplianceHours);
+                  }}
+                  disabled={claimingCheckIn}
+                  className="w-full py-3.5 bg-gradient-to-r from-volt-pink to-rose-500 hover:from-volt-pink/90 hover:to-rose-500/90 text-white rounded-xl font-bold tracking-tight shadow-[0_0_20px_rgba(236,72,153,0.35)] transition-all flex items-center justify-center gap-2 text-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {claimingCheckIn ? (
+                    <span>Logging...</span>
+                  ) : (
+                    <>
+                      <Check className="size-4" />
+                      <span>Submit Telemetry</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </GlassCard>
           </div>
         );

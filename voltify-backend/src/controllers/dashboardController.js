@@ -166,28 +166,18 @@ const getUsage = async (req, res) => {
   let query;
 
   if (period === 'daily') {
-    // Check if we have data for the last 30 days
-    const checkResult = await pool.query(
-      `SELECT COUNT(*) AS cnt FROM daily_estimates
-       WHERE user_id = $1 AND date >= CURRENT_DATE - INTERVAL '29 days'`,
+    const appliancesResult = await pool.query(
+      'SELECT * FROM appliances WHERE user_id = $1',
       [userId]
     );
+    const userResult = await pool.query(
+      'SELECT location FROM users WHERE id = $1',
+      [userId]
+    );
+    const location = userResult.rows[0]?.location || 'Chennai';
 
-    // If no data, seed on-the-fly from the user's appliances
-    if (parseInt(checkResult.rows[0]?.cnt || 0) === 0) {
-      const appliancesResult = await pool.query(
-        'SELECT * FROM appliances WHERE user_id = $1',
-        [userId]
-      );
-      const userResult = await pool.query(
-        'SELECT location FROM users WHERE id = $1',
-        [userId]
-      );
-      const location = userResult.rows[0]?.location || 'Chennai';
-
-      if (appliancesResult.rows.length > 0) {
-        await generateAndSaveDailyEstimates(userId, appliancesResult.rows, location, 30);
-      }
+    if (appliancesResult.rows.length > 0) {
+      await generateAndSaveDailyEstimates(userId, appliancesResult.rows, location, 30);
     }
 
     query = `

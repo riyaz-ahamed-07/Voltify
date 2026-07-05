@@ -26,8 +26,8 @@ interface GamificationState {
 export const useGamificationStore = create<GamificationState>()(
   persist(
     (set, get) => ({
-      coins: 250,
-      streak_days: 7,
+      coins: 0,
+      streak_days: 0,
       rank: 47,
       active_challenge: {
         id: 'c1',
@@ -71,7 +71,7 @@ export const useGamificationStore = create<GamificationState>()(
       removeCss: (id) => set((s) => ({
         css_applied: s.css_applied.filter(item => item !== id),
       })),
-      resetGamification: () => set({ coins: 250, streak_days: 7, rank: 47, active_challenge: null, challenge_history: [], css_applied: [] }),
+      resetGamification: () => set({ coins: 0, streak_days: 0, rank: 47, active_challenge: null, challenge_history: [], css_applied: [] }),
     }),
     { name: 'voltify-gamification' }
   )
