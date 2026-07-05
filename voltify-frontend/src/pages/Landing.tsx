@@ -1,6 +1,6 @@
 // src/pages/Landing.tsx
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, ArrowRight, Play, Check, Globe, Share2, Award, Cpu, ShieldCheck } from 'lucide-react';
+import { Zap, ArrowRight, Play, Check, Globe, Share2, Award, Cpu, ShieldCheck, UserCheck, UploadCloud, TrendingDown } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 export default function Landing() {
@@ -171,7 +171,7 @@ export default function Landing() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Feature 1 */}
-              <div className="glass-card rounded-2xl p-8 transition-all duration-300 group flex flex-col justify-between">
+              <div className="relative rounded-2xl p-8 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
                 <div>
                   <div className="size-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-primary/30 transition-colors duration-200">
                     <Cpu className="size-5 text-primary" />
@@ -253,7 +253,7 @@ export default function Landing() {
               {/* Step 1 */}
               <div className="relative z-10 flex flex-col items-center text-center group">
                 <div className="size-20 rounded-2xl bg-slate-900 border border-white/[0.06] flex items-center justify-center mb-6 group-hover:border-primary/40 group-hover:scale-[1.02] transition-all duration-300">
-                  <Cpu className="size-8 text-gray-400 group-hover:text-primary transition-colors duration-200" />
+                  <UserCheck className="size-8 text-gray-400 group-hover:text-primary transition-colors duration-200" />
                 </div>
                 <div className="bg-primary/10 text-primary font-semibold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono border border-primary/20">
                   Step 01
@@ -267,20 +267,22 @@ export default function Landing() {
               {/* Step 2 */}
               <div className="relative z-10 flex flex-col items-center text-center group">
                 <div className="size-20 rounded-2xl bg-slate-900 border border-white/[0.06] flex items-center justify-center mb-6 group-hover:border-primary/40 group-hover:scale-[1.02] transition-all duration-300">
-                  <Cpu className="size-8 text-gray-400 group-hover:text-primary transition-colors duration-200" />
+                  <UploadCloud className="size-8 text-gray-400 group-hover:text-primary transition-colors duration-200" />
                 </div>
                 <div className="bg-primary/10 text-primary font-semibold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono border border-primary/20">
                   Step 02
                 </div>
                 <h3 className="font-display font-semibold text-lg text-white mb-2">Upload Statements</h3>
                 <p className="text-gray-400 text-xs max-w-xs leading-relaxed font-normal">
-                Simply provide your monthly statements or enter basic bill statistics manually to feed the disaggregation model.
+                  Simply provide your monthly statements or enter basic bill statistics manually to feed the disaggregation model.
                 </p>
               </div>
               
               {/* Step 3 */}
               <div className="relative z-10 flex flex-col items-center text-center group">
-                <img src="/logo.gif" alt="Voltify Logo" className="size-20 object-contain mb-6 group-hover:scale-105 transition-all duration-300" />
+                <div className="size-20 rounded-2xl bg-slate-900 border border-white/[0.06] flex items-center justify-center mb-6 group-hover:border-primary/40 group-hover:scale-[1.02] transition-all duration-300">
+                  <TrendingDown className="size-8 text-gray-400 group-hover:text-primary transition-colors duration-200" />
+                </div>
                 <div className="bg-primary text-slate-950 font-semibold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono">
                   Step 03
                 </div>

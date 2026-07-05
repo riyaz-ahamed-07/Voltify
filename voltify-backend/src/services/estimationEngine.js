@@ -375,9 +375,17 @@ const calculateWhatIf = (appliances, applianceName, changeType, changeValue, loc
       getSeasonalMultiplier(appliance.name, month);
   }
 
-  if (changeType === 'temperature' && applianceName.toLowerCase().includes('ac')) {
-    const tempIncrease = parseFloat(changeValue);
-    newMonthlyKwh = currentMonthlyKwh * (1 - (tempIncrease * 0.06));
+  if (changeType === 'temperature') {
+    if (applianceName.toLowerCase().includes('ac') || applianceName.toLowerCase().includes('conditioner')) {
+      const tempIncrease = parseFloat(changeValue);
+      newMonthlyKwh = currentMonthlyKwh * (1 - (tempIncrease * 0.06));
+    } else if (applianceName.toLowerCase().includes('geyser') || applianceName.toLowerCase().includes('heater')) {
+      const tempDecrease = parseFloat(changeValue);
+      newMonthlyKwh = currentMonthlyKwh * (1 - (tempDecrease * 0.03));
+    } else if (applianceName.toLowerCase().includes('fridge') || applianceName.toLowerCase().includes('refrigerator')) {
+      const tempIncrease = parseFloat(changeValue);
+      newMonthlyKwh = currentMonthlyKwh * (1 - (tempIncrease * 0.04));
+    }
   }
 
   const savedKwh = Math.max(0, currentMonthlyKwh - newMonthlyKwh);

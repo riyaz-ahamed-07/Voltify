@@ -17,9 +17,7 @@ export default function Topbar() {
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/coach', label: 'Coach', icon: BrainCircuit },
     { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-    { to: '/streak', label: 'Streaks', icon: Flame },
     { to: '/shop', label: 'Shop', icon: Coins },
-    { to: '/settings', label: 'Settings', icon: Settings },
   ];
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -146,6 +144,15 @@ export default function Topbar() {
             </div>
           )}
         </div>
+
+        {/* Settings Icon Button */}
+        <NavLink
+          to="/settings"
+          className="p-2 bg-white/5 rounded-full border border-white/5 text-gray-400 hover:text-primary hover:border-primary/50 transition-all shrink-0"
+          title="Settings"
+        >
+          <Settings className="size-4" />
+        </NavLink>
         
         {/* Logout */}
         <button
