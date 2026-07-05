@@ -153,79 +153,87 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ② Value Prop Section */}
+        {/* ② The 3 Infrastructure Tiers Section */}
         <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center bg-surface-container-lowest/40 relative border-t border-white/5" id="features">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="text-center mb-16 space-y-4">
-              <h2 className="font-display font-semibold text-3xl md:text-4xl text-white">
-                Your Monthly Bill, <span className="text-gradient font-semibold">Decoded</span>
+            <div className="text-center mb-10 space-y-2">
+              <h2 className="font-display font-semibold text-3xl text-white">
+                Three Tiers of <span className="text-gradient font-semibold">Energy Inclusion</span>
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base font-light leading-relaxed">
-                Voltify disaggregates your monthly utility parameters against regional baseline estimates, yielding an accurate approximation of your household's heaviest consumption points.
+              <p className="text-gray-400 max-w-2xl mx-auto text-xs sm:text-sm font-light leading-relaxed">
+                Voltify works for every household in India, completely independent of your electrical infrastructure or income level.
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Feature 1 */}
-              <div className="relative rounded-2xl p-8 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
+              {/* Tier 1 */}
+              <div className="relative rounded-2xl p-6 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
                 <div>
-                  <div className="size-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-primary/30 transition-colors duration-200">
-                    <Cpu className="size-5 text-primary" />
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 font-bold">TIER 1 (80% OF INDIA)</span>
+                    <span className="text-[9px] text-gray-500 font-mono">Normal Meter</span>
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-white mb-2">Appliance Disaggregation</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-normal">
-                    Our mathematical model breaks down your billing rate and total consumption to isolate high-drain appliances.
+                  <h3 className="font-display font-semibold text-lg text-white mb-2">Manual Bill Decoupler</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-4 font-normal">
+                    OCR statement ingestion (Tesseract) + basic appliance settings. Calculates a calibrated daily baseline estimate using regional weather indices.
                   </p>
                 </div>
-                {/* Clean data load graphic */}
-                <div className="h-20 w-full flex items-end gap-2 border-b border-white/[0.06] pb-2">
-                  <div className="w-1/5 bg-primary/20 hover:bg-primary/30 rounded-t-lg h-[30%] transition-all duration-200" />
-                  <div className="w-1/5 bg-primary/25 hover:bg-primary/35 rounded-t-lg h-[55%] transition-all duration-200" />
-                  <div className="w-1/5 bg-primary rounded-t-lg h-[95%] transition-all duration-200" />
-                  <div className="w-1/5 bg-primary/50 hover:bg-primary/60 rounded-t-lg h-[75%] transition-all duration-200" />
-                  <div className="w-1/5 bg-primary/20 hover:bg-primary/30 rounded-t-lg h-[45%] transition-all duration-200" />
+                <div className="bg-slate-950/40 rounded-xl p-3.5 border border-white/[0.04] space-y-1">
+                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                    <span>Calibration Factor:</span>
+                    <span className="text-white">Active</span>
+                  </div>
+                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                    <span>Disaggregation:</span>
+                    <span className="text-primary font-bold">Rule-based Math</span>
+                  </div>
                 </div>
               </div>
               
-              {/* Feature 2 */}
-              <div className="relative rounded-2xl p-8 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
+              {/* Tier 2 */}
+              <div className="relative rounded-2xl p-6 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
                 <div>
-                  <div className="size-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-volt-pink/30 transition-colors duration-200">
-                    <Award className="size-5 text-volt-pink" />
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-[10px] font-mono text-volt-pink bg-volt-pink/10 px-2 py-0.5 rounded border border-volt-pink/20 font-bold">TIER 2 (SMART METERS)</span>
+                    <span className="text-[9px] text-gray-500 font-mono">DISCOM Connected</span>
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-white mb-2">Gamified Conservation</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-normal">
-                    Earn points by keeping your consumption below targeted limits. Challenge yourself with saving tasks and compete locally.
+                  <h3 className="font-display font-semibold text-lg text-white mb-2">Automated Ingest Pipeline</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-4 font-normal">
+                    Pulls hourly total household metrics directly from DISCOM Open APIs (OAuth2). Employs advanced LSTM/GRU logic to read appliance fingerprints.
                   </p>
                 </div>
-                <div className="bg-slate-950/40 rounded-xl p-4 border border-white/[0.04] flex items-center justify-between">
-                  <div>
-                    <div className="text-[9px] font-mono text-gray-400 uppercase tracking-wider">Target multiplier</div>
-                    <div className="font-mono font-bold text-base text-white">1.15x Multiplier</div>
+                <div className="bg-slate-950/40 rounded-xl p-3.5 border border-white/[0.04] space-y-1">
+                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                    <span>Ingestion Interval:</span>
+                    <span className="text-white">Hourly / 15-Min</span>
                   </div>
-                  <span className="text-[10px] font-semibold text-volt-pink bg-volt-pink/10 px-2.5 py-1 rounded-full uppercase">Active</span>
+                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                    <span>Disaggregation:</span>
+                    <span className="text-volt-pink font-bold">LSTM AI Models</span>
+                  </div>
                 </div>
               </div>
               
-              {/* Feature 3 */}
-              <div className="relative rounded-2xl p-8 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
+              {/* Tier 3 */}
+              <div className="relative rounded-2xl p-6 border border-white/[0.06] bg-slate-900/60 backdrop-blur-md transition-all duration-300 group flex flex-col justify-between hover:border-white/12">
                 <div>
-                  <div className="size-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-primary/30 transition-colors duration-200">
-                    <ShieldCheck className="size-5 text-primary" />
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">TIER 3 (SMART PLUGS)</span>
+                    <span className="text-[9px] text-gray-500 font-mono">IoT Connected</span>
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-white mb-2">Efficiency Standards</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-6 font-normal">
-                    Establish operating baselines aligned directly with BEE and WHO guidelines to balance safety and consumption.
+                  <h3 className="font-display font-semibold text-lg text-white mb-2">Per-Appliance Monitoring</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-4 font-normal">
+                    Plugs directly into smart home APIs (Tuya IoT Cloud, Tapo SDK). Obtains exact real-time wattage reports for high-drain hardware with zero guesses.
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2.5 bg-slate-950/40 p-2 rounded-lg border border-white/[0.04]">
-                    <span className="size-1.5 rounded-full bg-emerald-500" />
-                    <span className="font-mono text-[11px] text-gray-300">AC calibrated to BEE 24°C</span>
+                <div className="bg-slate-950/40 rounded-xl p-3.5 border border-white/[0.04] space-y-1">
+                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                    <span>Refresh Rate:</span>
+                    <span className="text-white">Real-Time (WebSocket)</span>
                   </div>
-                  <div className="flex items-center gap-2.5 bg-slate-950/40 p-2 rounded-lg border border-white/[0.04]">
-                    <span className="size-1.5 rounded-full bg-emerald-500" />
-                    <span className="font-mono text-[11px] text-gray-305">Refrigerator calibrated to 4°C</span>
+                  <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                    <span>Disaggregation:</span>
+                    <span className="text-emerald-400 font-bold">Direct Readings</span>
                   </div>
                 </div>
               </div>
@@ -233,59 +241,144 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ③ How it Works Section */}
-        <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center relative border-t border-white/[0.06]" id="how-it-works">
+        {/* ③ The 4 Intelligence Layers Section */}
+        <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center relative border-t border-white/[0.06] bg-slate-950" id="how-it-works">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="text-center mb-20">
-              <h2 className="font-display font-semibold text-3xl md:text-4xl text-white">
-                How Voltify <span className="text-gradient">Works</span>
+            <div className="text-center mb-10 space-y-2">
+              <h2 className="font-display font-semibold text-3xl text-white">
+                The 4 Architecture <span className="text-gradient">Layers</span>
               </h2>
+              <p className="text-gray-400 max-w-2xl mx-auto text-xs sm:text-sm font-light leading-relaxed">
+                Voltify's core functionality is organized into four logical stacks to provide stability and explainability.
+              </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
-              {/* Central connection timeline path (desktop) */}
-              <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-[1px] bg-white/[0.06] z-0" />
-              
-              {/* Step 1 */}
-              <div className="relative z-10 flex flex-col items-center text-center group">
-                <div className="size-20 rounded-2xl bg-slate-900 border border-white/[0.06] flex items-center justify-center mb-6 group-hover:border-primary/40 group-hover:scale-[1.02] transition-all duration-300">
-                  <UserCheck className="size-8 text-gray-400 group-hover:text-primary transition-colors duration-200" />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {/* Layer 1 */}
+              <div className="bg-slate-900/40 border border-white/[0.05] p-5 rounded-xl flex flex-col justify-between group">
+                <div>
+                  <div className="text-[10px] font-mono text-primary bg-primary/10 w-fit px-2 py-0.5 rounded border border-primary/25 mb-3 font-bold">01 / FOUNDATION</div>
+                  <h3 className="font-display font-semibold text-base text-white mb-2">Ingestion & Norms</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-4">
+                    Multer ingestion pipelines, Tesseract OCR parsers, and state-specific TNEB tariff slab configs to standardize all inputs.
+                  </p>
                 </div>
-                <div className="bg-primary/10 text-primary font-semibold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono border border-primary/20">
-                  Step 01
-                </div>
-                <h3 className="font-display font-semibold text-lg text-white mb-2">Set Up Profile</h3>
-                <p className="text-gray-400 text-xs max-w-xs leading-relaxed font-normal">
-                  Configure your dashboard parameters. Input your geographic region, power utility provider, and active billing rates.
-                </p>
               </div>
               
-              {/* Step 2 */}
-              <div className="relative z-10 flex flex-col items-center text-center group">
-                <div className="size-20 rounded-2xl bg-slate-900 border border-white/[0.06] flex items-center justify-center mb-6 group-hover:border-primary/40 group-hover:scale-[1.02] transition-all duration-300">
-                  <UploadCloud className="size-8 text-gray-400 group-hover:text-primary transition-colors duration-200" />
+              {/* Layer 2 */}
+              <div className="bg-slate-900/40 border border-white/[0.05] p-5 rounded-xl flex flex-col justify-between group">
+                <div>
+                  <div className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 w-fit px-2 py-0.5 rounded border border-cyan-500/25 mb-3 font-bold">02 / INTELLIGENCE</div>
+                  <h3 className="font-display font-semibold text-base text-white mb-2">Predictive Models</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-4">
+                    ARIMA (24-48 hr) and Facebook Prophet (monthly) models forecast bills, while Isolation Forest detects active load anomalies.
+                  </p>
                 </div>
-                <div className="bg-primary/10 text-primary font-semibold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono border border-primary/20">
-                  Step 02
-                </div>
-                <h3 className="font-display font-semibold text-lg text-white mb-2">Upload Statements</h3>
-                <p className="text-gray-400 text-xs max-w-xs leading-relaxed font-normal">
-                  Simply provide your monthly statements or enter basic bill statistics manually to feed the disaggregation model.
-                </p>
               </div>
               
-              {/* Step 3 */}
-              <div className="relative z-10 flex flex-col items-center text-center group">
-                <div className="size-20 rounded-2xl bg-slate-900 border border-white/[0.06] flex items-center justify-center mb-6 group-hover:border-primary/40 group-hover:scale-[1.02] transition-all duration-300">
-                  <TrendingDown className="size-8 text-gray-400 group-hover:text-primary transition-colors duration-200" />
+              {/* Layer 3 */}
+              <div className="bg-slate-900/40 border border-white/[0.05] p-5 rounded-xl flex flex-col justify-between group">
+                <div>
+                  <div className="text-[10px] font-mono text-volt-pink bg-volt-pink/10 w-fit px-2 py-0.5 rounded border border-volt-pink/25 mb-3 font-bold">03 / ENGAGEMENT</div>
+                  <h3 className="font-display font-semibold text-base text-white mb-2">AI Memory & Play</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-4">
+                    VoltBuddy chatbot (powered by Cognee), segmented leaderboards, streaks, multipliers, and adaptive weekly challenges.
+                  </p>
                 </div>
-                <div className="bg-primary text-slate-950 font-semibold text-[9px] px-3 py-1 rounded-full mb-4 uppercase tracking-widest font-mono">
-                  Step 03
+              </div>
+              
+              {/* Layer 4 */}
+              <div className="bg-slate-900/40 border border-white/[0.05] p-5 rounded-xl flex flex-col justify-between group">
+                <div>
+                  <div className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 w-fit px-2 py-0.5 rounded border border-emerald-500/25 mb-3 font-bold">04 / SAFETY & TRUST</div>
+                  <h3 className="font-display font-semibold text-base text-white mb-2">Comfort-Safe Savings</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-4">
+                    CSS tradeoffs show exact comfort-to-savings ratios. Hardcoded guardrails enforce BEE/WHO thresholds (AC &ge; 24°C, Fridge &ge; 4°C).
+                  </p>
                 </div>
-                <h3 className="font-display font-semibold text-lg text-white mb-2">Optimize Usage</h3>
-                <p className="text-gray-400 text-xs max-w-xs leading-relaxed font-normal">
-                  Explore disaggregated metrics, tune temperature controls to BEE guidelines, and save on electricity.
-                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 🚀 New Cognee Memory Engine Highlight Section */}
+        <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center bg-slate-950/60 relative border-t border-white/5" id="cognee-engine">
+          <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Description Column */}
+            <div className="space-y-6 text-left">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/10 rounded-full px-4 py-1.5 border border-emerald-500/20">
+                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest font-mono">Cognitive Memory Engine</span>
+              </div>
+              <h2 className="font-display font-semibold text-3xl sm:text-4xl text-white leading-tight">
+                Self-Improving Memory Layer <br/>
+                <span className="text-gradient">Powered by Cognee</span>
+              </h2>
+              <p className="text-gray-400 text-sm leading-relaxed font-light">
+                Voltify integrates deeply with Cognee's hybrid graph-vector memory layer. Every user conversation, daily check-in logs, and appliance loads are structured into an ontological knowledge graph unique to their home ID. Volt does not forget what was agreed upon in the last session.
+              </p>
+              
+              {/* API Lifecycle Details */}
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                <div className="p-4 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
+                  <div className="text-primary text-xs font-bold mb-1">remember()</div>
+                  <div className="text-[10px] text-gray-500 leading-normal">Ingests raw text and files into user-specific graph nodes.</div>
+                </div>
+                <div className="p-4 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
+                  <div className="text-cyan-400 text-xs font-bold mb-1">recall()</div>
+                  <div className="text-[10px] text-gray-500 leading-normal">Retrieves deep relationships using semantic similarity checks.</div>
+                </div>
+                <div className="p-4 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
+                  <div className="text-volt-pink text-xs font-bold mb-1">improve()</div>
+                  <div className="text-[10px] text-gray-500 leading-normal">Consolidates short-term sessions into long-term habits.</div>
+                </div>
+                <div className="p-4 bg-slate-900/60 border border-white/[0.04] rounded-xl font-mono">
+                  <div className="text-white text-xs font-bold mb-1">forget()</div>
+                  <div className="text-[10px] text-gray-500 leading-normal">Surgically wipes dataset context upon resetting memories.</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Graph Simulation Graphic Column */}
+            <div className="rounded-2xl border border-white/[0.06] p-6 bg-slate-900/40 backdrop-blur-sm relative overflow-hidden flex flex-col justify-center h-[340px]">
+              <div className="absolute inset-0 bg-radial-gradient from-emerald-500/5 to-transparent pointer-events-none" />
+              <div className="flex flex-col gap-4 relative z-10 text-left font-mono">
+                <div className="text-[9px] text-gray-500 uppercase tracking-widest border-b border-white/[0.06] pb-2 font-bold mb-2">Cognee Knowledge Graph Visualizer</div>
+                
+                {/* Node 1 */}
+                <div className="flex items-center gap-3 bg-[#111111] p-3 rounded-lg border border-white/[0.05] w-fit">
+                  <span className="text-xs">👤</span>
+                  <div>
+                    <div className="text-[10px] font-bold text-white">User c077d2de</div>
+                    <div className="text-[9px] text-gray-500">Node type: UserProfile</div>
+                  </div>
+                </div>
+                {/* Connector Arrow */}
+                <div className="h-6 w-0.5 bg-[#333333] ml-6 relative">
+                  <span className="absolute bottom-0 -left-[3px] text-[8px] text-gray-600">▼</span>
+                </div>
+                
+                {/* Node 2 */}
+                <div className="flex items-center gap-3 bg-[#111111] p-3 rounded-lg border border-white/[0.05] w-fit ml-8">
+                  <span className="text-xs">🎯</span>
+                  <div>
+                    <div className="text-[10px] font-bold text-emerald-400">Monthly target: ₹1,000</div>
+                    <div className="text-[9px] text-gray-500">Relationship: SET_SAVINGS_TARGET</div>
+                  </div>
+                </div>
+                {/* Connector Arrow */}
+                <div className="h-6 w-0.5 bg-[#333333] ml-14 relative">
+                  <span className="absolute bottom-0 -left-[3px] text-[8px] text-gray-600">▼</span>
+                </div>
+                
+                {/* Node 3 */}
+                <div className="flex items-center gap-3 bg-[#111111] p-3 rounded-lg border border-white/[0.05] w-fit ml-16">
+                  <span className="text-xs">❄️</span>
+                  <div>
+                    <div className="text-[10px] font-bold text-cyan-400">AC Temp Preference: 23°C</div>
+                    <div className="text-[9px] text-gray-500">Relationship: OPTIMIZED_BY_COACH</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
