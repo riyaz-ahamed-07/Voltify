@@ -11,7 +11,7 @@ const { validateAppliance, validateBill } = require('../utils/validators');
 const notificationService = require('../services/notificationService');
 const challengeService = require('../services/challengeService');
 const coinService = require('../services/coinService');
-// pdf-parse is lazy-loaded inside parseBillPDF to prevent DOMMatrix crash on Vercel serverless
+// unpdf is used instead of pdf-parse - it is serverless/edge compatible (no DOMMatrix/canvas deps)
 const llmService = require('../services/llmService');
 
 /**
@@ -71,11 +71,9 @@ const parseBillPDF = async (req, res) => {
 
   try {
     const dataBuffer = req.file.buffer;
-    // Lazy-load pdf-parse to avoid DOMMatrix crash on Vercel serverless startup
-    const { PDFParse } = require('pdf-parse');
-    const parser = new PDFParse({ data: dataBuffer });
-    const pdfData = await parser.getText();
-    const pdfText = pdfData.text;
+    // Use unpdf - serverless-safe PDF parser (no DOMMatrix/canvas deps)
+    const { extractText } = await import('unpdf');
+    const pdfText = await extractText(dataBuffer);
 
     // Use Groq LLM service to parse the bill text
     const parsedData = await llmService.parseBillText(pdfText);
