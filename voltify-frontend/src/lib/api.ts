@@ -19,6 +19,10 @@ async function fetchApi(endpoint: string, options: RequestInit = {}, fallbackDat
     ...(options.headers as Record<string, string>),
   };
 
+  if (options.body && options.body instanceof FormData) {
+    delete headers['Content-Type'];
+  }
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
@@ -142,6 +146,22 @@ export const apiService = {
     return fetchApi('/onboarding/bill', { method: 'POST', body: JSON.stringify(data) }, { success: true, data });
   },
 
+  async parseBillPDF(file: File) {
+    const formData = new FormData();
+    formData.append('bill', file);
+    
+    const fallback = {
+      success: true,
+      message: 'Mock OCR data returned (Fallback)',
+      data: {
+        bill_amount: 3200,
+        units: 400
+      }
+    };
+
+    return fetchApi('/onboarding/parse-bill', { method: 'POST', body: formData }, fallback);
+  },
+
   async validateOnboarding(appliances: Appliance[]) {
     // Mock calculation using our local estimation.ts
     const estUnits = estimateMonthlyKwh(appliances);
@@ -228,8 +248,8 @@ export const apiService = {
   async getInsights() {
     const fallback = {
       insights: [
-        { id: '1', type: 'warning', icon: '🔴', title: 'AC dominates your bill', message: 'AC uses 45% of your energy (₹2,100/month)', action: 'Reduce usage', action_url: '/coach' },
-        { id: '2', type: 'tip', icon: '💡', title: 'Comfort-Safe Savings ready', message: 'You have recommendations that could save ₹800+/month', action: 'View', action_url: '/coach' }
+        { id: '1', type: 'warning', icon: '🔴', title: 'AC dominates your bill', message: 'AC uses 45% of your energy (₹2,100/month)', action: 'Reduce usage', action_url: '/predictions' },
+        { id: '2', type: 'tip', icon: '💡', title: 'Comfort-Safe Savings ready', message: 'You have recommendations that could save ₹800+/month', action: 'View', action_url: '/predictions' }
       ]
     };
     return fetchApi('/dashboard/insights', {}, fallback);
@@ -314,6 +334,14 @@ export const apiService = {
       coins_earned: 300
     };
     return fetchApi(`/coach/whatif?appliance=${appliance}&change_type=${change_type}&change_value=${change_value}`, {}, fallback);
+  },
+
+  async chatWithVolt(messages: { role: string; content: string }[]) {
+    const fallback = {
+      success: true,
+      reply: "Volt here! ⚡ I recommend setting your AC to 24°C, which is the most optimal, comfort-safe temperature standard recommended by BEE!"
+    };
+    return fetchApi('/coach/chat', { method: 'POST', body: JSON.stringify({ messages }) }, fallback);
   },
 
   // ── GAMIFICATION & LEADERBOARD ──────────────────────────────────

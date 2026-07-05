@@ -71,7 +71,7 @@ export const MOCK_NOTIFICATIONS = [
     title: '💡 Savings Tip',
     message: 'Reducing AC by 2 hrs saves ₹540/month',
     created_at: new Date(Date.now() - 4 * 24 * 3600000).toISOString(),
-    action_url: '/coach',
+    action_url: '/predictions',
   },
 ];
 

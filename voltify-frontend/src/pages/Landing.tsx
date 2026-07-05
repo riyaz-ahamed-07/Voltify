@@ -25,11 +25,7 @@ export default function Landing() {
             <span className="font-display font-bold text-xl tracking-tight text-white">Voltify</span>
           </Link>
           
-          <div className="hidden md:flex items-center gap-2">
-            <a className="text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 px-4 py-2 rounded-xl text-sm font-medium" href="#features">Features</a>
-            <a className="text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 px-4 py-2 rounded-xl text-sm font-medium" href="#how-it-works">How it Works</a>
-            <a className="text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 px-4 py-2 rounded-xl text-sm font-medium" href="#preview">System Preview</a>
-          </div>
+          {/* Removed features links as requested */}
           
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
@@ -51,7 +47,7 @@ export default function Landing() {
       <main className="flex-1 overflow-y-scroll snap-y snap-mandatory scroll-smooth" style={{ scrollbarWidth: 'none' }}>
         {/* ① Hero Section */}
         <section
-          className="relative h-dvh overflow-y-auto snap-start snap-always flex flex-col justify-center bg-slate-950"
+          className="relative h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center bg-slate-950"
           id="hero-section"
         >
           {/* Atmospheric ambient highlights */}
@@ -60,7 +56,7 @@ export default function Landing() {
 
           <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
             {/* Left Content Column */}
-            <div className="lg:col-span-7 flex flex-col gap-8">
+            <div className="lg:col-span-7 flex flex-col gap-8 text-left">
               <div className="inline-flex w-fit items-center gap-2 bg-white/5 backdrop-blur-md rounded-full px-4 py-1.5 border border-white/10">
                 <span className="size-2 rounded-full bg-emerald-500" />
                 <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest font-mono">Hardware-Free Analytics</span>
@@ -127,7 +123,7 @@ export default function Landing() {
                     
                     <div className="space-y-2">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-gray-350 flex items-center gap-2">
+                        <span className="text-gray-355 flex items-center gap-2">
                           <span className="size-2 rounded-full bg-cyan-400" />
                           Air Conditioner (BEE 24°C)
                         </span>
@@ -140,7 +136,7 @@ export default function Landing() {
                     
                     <div className="space-y-2">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-gray-350 flex items-center gap-2">
+                        <span className="text-gray-355 flex items-center gap-2">
                           <span className="size-2 rounded-full bg-indigo-400" />
                           Refrigerator (WHO 4°C)
                         </span>
@@ -158,7 +154,7 @@ export default function Landing() {
         </section>
 
         {/* ② Value Prop Section */}
-        <section className="h-dvh overflow-y-auto snap-start snap-always flex flex-col justify-center bg-surface-container-lowest/40 relative border-t border-white/5" id="features">
+        <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center bg-surface-container-lowest/40 relative border-t border-white/5" id="features">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
             <div className="text-center mb-16 space-y-4">
               <h2 className="font-display font-semibold text-3xl md:text-4xl text-white">
@@ -238,7 +234,7 @@ export default function Landing() {
         </section>
 
         {/* ③ How it Works Section */}
-        <section className="h-dvh overflow-y-auto snap-start snap-always flex flex-col justify-center relative border-t border-white/[0.06]" id="how-it-works">
+        <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col justify-center relative border-t border-white/[0.06]" id="how-it-works">
           <div className="max-w-7xl mx-auto px-6 md:px-10">
             <div className="text-center mb-20">
               <h2 className="font-display font-semibold text-3xl md:text-4xl text-white">
@@ -296,7 +292,7 @@ export default function Landing() {
         </section>
 
         {/* ④ CTA + Footer snap section */}
-        <section className="h-dvh overflow-y-auto snap-start snap-always flex flex-col relative border-t border-white/[0.06]">
+        <section className="h-[calc(100vh-73px)] overflow-y-auto snap-start snap-always flex flex-col relative border-t border-white/[0.06]">
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
@@ -336,35 +332,35 @@ export default function Landing() {
               <div className="col-span-1 md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="flex flex-col gap-2">
                   <h4 className="font-semibold text-[10px] uppercase tracking-widest text-white mb-1 font-mono">Product</h4>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#features">Features</a>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#how-it-works">How it Works</a>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#preview">System Preview</a>
+                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" href="#features">Features</a>
+                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" href="#how-it-works">How it Works</a>
+                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" href="#preview">System Preview</a>
                 </div>
                 <div className="flex flex-col gap-2">
                   <h4 className="font-semibold text-[10px] uppercase tracking-widest text-white mb-1 font-mono">Guidelines</h4>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">DISCOM Rates</a>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">BEE Standards</a>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">WHO Comfort</a>
+                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" href="https://www.tristarenergy.in/blog/tangedco-electricity-tariff-rates-2026" target="_blank" rel="noopener noreferrer">DISCOM Rates</a>
+                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" href="https://beeindia.in/standards-labeling/" target="_blank" rel="noopener noreferrer">BEE Standards</a>
+                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" href="https://www.who.int/publications/i/item/9789241550376" target="_blank" rel="noopener noreferrer">WHO Comfort</a>
                 </div>
                 <div className="flex flex-col gap-2">
                   <h4 className="font-semibold text-[10px] uppercase tracking-widest text-white mb-1 font-mono">Company</h4>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">About Us</a>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">Blog</a>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">Security Specs</a>
+                  <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" to="/info/about">About Us</Link>
+                  <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" to="/info/blog">Blog</Link>
+                  <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" to="/info/security">Security Specs</Link>
                 </div>
                 <div className="flex flex-col gap-2">
                   <h4 className="font-semibold text-[10px] uppercase tracking-widest text-white mb-1 font-mono">Support</h4>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">User Support</a>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">API Details</a>
-                  <a className="text-gray-400 hover:text-primary transition-colors text-xs font-normal" href="#">Contact Team</a>
+                  <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" to="/info/support">User Support</Link>
+                  <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" to="/info/api">API Details</Link>
+                  <Link className="text-gray-400 hover:text-primary transition-colors text-xs font-normal font-sans" to="/info/contact">Contact Team</Link>
                 </div>
               </div>
 
               <div className="col-span-1 md:col-span-4 pt-5 border-t border-white/[0.06] text-center md:text-left text-gray-500 text-xs flex flex-col md:flex-row justify-between items-center gap-4">
-                <span className="font-normal">&copy; 2026 Voltify Energy Systems. All rights reserved.</span>
+                <span className="font-normal font-sans">&copy; 2026 Voltify Energy Systems. All rights reserved.</span>
                 <div className="flex gap-6 text-gray-400">
-                  <a className="hover:text-primary transition-colors" href="#">Privacy Policy</a>
-                  <a className="hover:text-primary transition-colors" href="#">Terms of Use</a>
+                  <Link className="hover:text-primary transition-colors font-sans" to="/info/privacy">Privacy Policy</Link>
+                  <Link className="hover:text-primary transition-colors font-sans" to="/info/terms">Terms of Use</Link>
                 </div>
               </div>
             </div>

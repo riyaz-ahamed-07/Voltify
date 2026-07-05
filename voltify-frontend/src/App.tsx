@@ -11,13 +11,14 @@ import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import OAuthSuccess from './pages/auth/OAuthSuccess';
 import Dashboard from './pages/Dashboard';
-import Coach from './pages/Coach';
+import Predictions from './pages/Predictions';
 import Leaderboard from './pages/Leaderboard';
 import Streak from './pages/Streak';
 import Shop from './pages/Shop';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import InfoPage from './pages/InfoPage';
 import AppLayout from './components/layout/AppLayout';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -87,6 +88,7 @@ export default function App() {
       <Routes>
         {/* Public Landing */}
         <Route path="/" element={<Landing />} />
+        <Route path="/info/:slug" element={<InfoPage />} />
 
         {/* Guest Auth Screens */}
         <Route 
@@ -168,10 +170,10 @@ export default function App() {
           />
           {/* Sub-features - Guarded by onboarding */}
           <Route 
-            path="coach" 
+            path="predictions" 
             element={
               <OnboardedRoute>
-                <Coach />
+                <Predictions />
               </OnboardedRoute>
             } 
           />

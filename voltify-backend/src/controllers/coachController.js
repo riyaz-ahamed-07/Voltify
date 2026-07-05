@@ -7,6 +7,7 @@ const {
 const { cssRecommendations } = require('../utils/mockData');
 const coinService = require('../services/coinService');
 const notificationService = require('../services/notificationService');
+const llmService = require('../services/llmService');
 
 /**
  * GET /api/coach/predictions
@@ -275,4 +276,26 @@ const whatIf = async (req, res) => {
   return res.status(200).json(result);
 };
 
-module.exports = { getPredictions, getActualVsPredicted, getAlerts, getCSSRecommendations, applyCSSRecommendation, whatIf };
+/**
+ * POST /api/coach/chat
+ * Conversations with personal coach chatbot "Volt"
+ */
+const chatWithVolt = async (req, res) => {
+  const { messages } = req.body;
+  if (!messages || !Array.isArray(messages)) {
+    return res.status(400).json({ error: 'messages array is required' });
+  }
+
+  try {
+    const reply = await llmService.chatWithVolt(messages);
+    return res.status(200).json({
+      success: true,
+      reply
+    });
+  } catch (err) {
+    console.error('[coachController] Chatbot Volt failed:', err);
+    return res.status(500).json({ error: `Failed to prompt Volt: ${err.message}` });
+  }
+};
+
+module.exports = { getPredictions, getActualVsPredicted, getAlerts, getCSSRecommendations, applyCSSRecommendation, whatIf, chatWithVolt };

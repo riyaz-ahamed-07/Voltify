@@ -1,4 +1,4 @@
-// src/pages/Coach.tsx
+// src/pages/Predictions.tsx
 import { useState, useEffect } from 'react';
 import { 
   Zap, Sparkles, BrainCircuit, ArrowRight, Lightbulb, 
@@ -12,7 +12,7 @@ import {
   Tooltip, ResponsiveContainer
 } from 'recharts';
 
-export default function Coach() {
+export default function Predictions() {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [totals, setTotals] = useState<any>({ potential: 1020, annual: 12240 });
   const [chartData, setChartData] = useState<any[]>([]);
@@ -27,7 +27,7 @@ export default function Coach() {
   const [simLoading, setSimLoading] = useState(false);
 
   useEffect(() => {
-    async function loadCoachData() {
+    async function loadPredictionsData() {
       try {
         const [cssRes, chartRes, predRes] = await Promise.all([
           apiService.getCSSRecommendations(),
@@ -52,10 +52,10 @@ export default function Coach() {
           setBillShock(predRes.bill_shock);
         }
       } catch (err) {
-        console.error("Failed to load coach predictions and recommendations", err);
+        console.error("Failed to load energy predictions and recommendations", err);
       }
     }
-    loadCoachData();
+    loadPredictionsData();
   }, []);
 
   // Run initial simulation
@@ -124,7 +124,7 @@ export default function Coach() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-semibold text-3xl tracking-tight text-gradient">
-            AI Energy Coach & Predictions
+            AI Energy Predictions & Simulator
           </h1>
           <p className="text-xs text-gray-400 mt-1 max-w-xl">
             Leverage disaggregation-powered foresight to predict future bills, simulate energy shifts, and activate comfort-safe optimizations.
@@ -433,4 +433,4 @@ export default function Coach() {
     </div>
   );
 }
-export { Coach };
+export { Predictions };

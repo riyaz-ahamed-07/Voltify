@@ -1,6 +1,7 @@
 // src/components/layout/AppLayout.tsx
 import { Outlet } from 'react-router-dom';
 import Topbar from './Topbar';
+import ChatbotVolt from '../ui/ChatbotVolt';
 
 export default function AppLayout() {
   return (
@@ -16,6 +17,9 @@ export default function AppLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Global Coach Chatbot "Volt" */}
+      <ChatbotVolt />
     </div>
   );
 }

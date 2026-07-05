@@ -328,14 +328,22 @@ export default function Onboarding() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'application/pdf': ['.pdf'] },
     maxFiles: 1,
-    onDrop: (acceptedFiles) => {
+    onDrop: async (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
-        toast.info('Analyzing utility document via Voltify AI...');
-        setTimeout(() => {
-          setBillValue('bill_amount', 3200, { shouldValidate: true });
-          setBillValue('units',       400,  { shouldValidate: true });
-          toast.success('Utility bill decoded! ₹3,200 Amount / 400 kWh detected');
-        }, 1200);
+        const file = acceptedFiles[0];
+        const loadingId = toast.info('Analyzing utility statement via Voltify AI...');
+        try {
+          const res = await apiService.parseBillPDF(file);
+          if (res.data) {
+            setBillValue('bill_amount', res.data.bill_amount, { shouldValidate: true });
+            setBillValue('units',       res.data.units,       { shouldValidate: true });
+            toast.dismiss(loadingId);
+            toast.success(`Statement parsed successfully! Detected ₹${res.data.bill_amount.toLocaleString()} net payable & ${res.data.units} kWh units consumed.`);
+          }
+        } catch (err: any) {
+          toast.dismiss(loadingId);
+          toast.error(err.message || 'Failed to parse statement PDF. Please enter manually.');
+        }
       }
     },
   });

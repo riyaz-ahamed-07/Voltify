@@ -7,6 +7,7 @@ const {
   getCSSRecommendations,
   applyCSSRecommendation,
   whatIf,
+  chatWithVolt,
 } = require('../controllers/coachController');
 const { requireAuth } = require('../middleware/auth');
 
@@ -18,5 +19,6 @@ router.get('/alerts',              getAlerts);
 router.get('/css-recommendations', getCSSRecommendations);
 router.post('/css-apply',          applyCSSRecommendation);
 router.get('/whatif',              whatIf);
+router.post('/chat',               chatWithVolt);
 
 module.exports = router;

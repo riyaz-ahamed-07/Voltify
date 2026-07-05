@@ -11,6 +11,8 @@ const { validateAppliance, validateBill } = require('../utils/validators');
 const notificationService = require('../services/notificationService');
 const challengeService = require('../services/challengeService');
 const coinService = require('../services/coinService');
+const { PDFParse } = require('pdf-parse');
+const llmService = require('../services/llmService');
 
 /**
  * POST /api/onboarding/profile
@@ -54,6 +56,37 @@ const saveProfile = async (req, res) => {
     message: 'Profile saved successfully',
     data: { household_type, location, home_type, appliance_count: parseInt(appliance_count) },
   });
+};
+
+/**
+ * POST /api/onboarding/parse-bill
+ * Parse PDF electricity statement with Groq Cloud LLM / Fallback Regex
+ */
+const parseBillPDF = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No PDF file uploaded' });
+  }
+
+  console.log('[onboardingController] Received file:', req.file.originalname, 'size:', req.file.size);
+
+  try {
+    const dataBuffer = req.file.buffer;
+    const parser = new PDFParse({ data: dataBuffer });
+    const pdfData = await parser.getText();
+    const pdfText = pdfData.text;
+
+    // Use Groq LLM service to parse the bill text
+    const parsedData = await llmService.parseBillText(pdfText);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Utility bill statement parsed successfully',
+      data: parsedData
+    });
+  } catch (err) {
+    console.error('[onboardingController] PDF parsing failed:', err);
+    return res.status(500).json({ error: `Failed to parse PDF: ${err.message}` });
+  }
 };
 
 /**
@@ -260,4 +293,4 @@ const validate = async (req, res) => {
   });
 };
 
-module.exports = { saveProfile, saveBill, saveAppliances, validate };
+module.exports = { saveProfile, saveBill, saveAppliances, validate, parseBillPDF };

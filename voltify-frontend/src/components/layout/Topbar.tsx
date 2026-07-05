@@ -1,6 +1,6 @@
 // src/components/layout/Topbar.tsx
 import { useState } from 'react';
-import { Bell, Flame, Coins, Check, Zap, LayoutDashboard, BrainCircuit, Trophy, User, Settings, LogOut } from 'lucide-react';
+import { Bell, Flame, Coins, Check, Zap, LayoutDashboard, BrainCircuit, Trophy, User, Settings, LogOut, Menu, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useGamificationStore } from '../../store/gamificationStore';
@@ -12,10 +12,11 @@ export default function Topbar() {
   const { coins, streak_days } = useGamificationStore();
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const links = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/coach', label: 'Coach', icon: BrainCircuit },
+    { to: '/predictions', label: 'Predictions', icon: BrainCircuit },
     { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
     { to: '/shop', label: 'Shop', icon: Coins },
   ];
@@ -34,12 +35,21 @@ export default function Topbar() {
   };
 
   return (
+    <>
     <header className="bg-slate-950/80 backdrop-blur-xl border-b border-white/[0.06] py-4 px-6 md:px-8 flex items-center justify-between sticky top-0 z-40">
       {/* Brand & Nav */}
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-4 md:gap-8">
+        {/* Mobile Hamburger Toggle */}
+        <button
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+          className="md:hidden p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg border border-transparent hover:border-white/10 transition-all shrink-0 cursor-pointer"
+        >
+          {showMobileMenu ? <X className="size-5" /> : <Menu className="size-5" />}
+        </button>
+
         <div className="flex items-center gap-2">
           <img src="/logo.gif" alt="Voltify Logo" className="size-8 object-contain" />
-          <span className="font-display font-bold text-lg tracking-tight text-white hidden md:block">Voltify</span>
+          <span className="font-display font-bold text-lg tracking-tight text-white hidden sm:block">Voltify</span>
         </div>
         
         <nav className="hidden md:flex items-center gap-2">
@@ -154,7 +164,7 @@ export default function Topbar() {
           <Settings className="size-4" />
         </NavLink>
         
-        {/* Logout */}
+        {/* Sign Out */}
         <button
           onClick={logout}
           className="p-2 bg-white/5 rounded-full border border-white/5 text-gray-400 hover:text-rose-400 hover:bg-[#f43f5e]/10 transition-all shrink-0"
@@ -164,5 +174,32 @@ export default function Topbar() {
         </button>
       </div>
     </header>
+
+    {/* Mobile Dropdown Menu Navigation */}
+    {showMobileMenu && (
+      <div className="md:hidden fixed top-16 left-0 right-0 bg-slate-950/95 border-b border-white/10 p-4 z-30 flex flex-col gap-2 backdrop-blur-2xl animate-slide-up">
+        {links.map((link) => {
+          const Icon = link.icon;
+          return (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              onClick={() => setShowMobileMenu(false)}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
+                  isActive
+                    ? 'bg-white/[0.08] text-white border-l-4 border-primary'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`
+              }
+            >
+              <Icon className="size-4 shrink-0" />
+              <span>{link.label}</span>
+            </NavLink>
+          );
+        })}
+      </div>
+    )}
+    </>
   );
 }
