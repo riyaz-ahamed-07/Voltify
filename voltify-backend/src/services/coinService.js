@@ -59,31 +59,43 @@ const calculateSavingsCoins = (predictedUnits, actualUnits) => {
  * Updates streak and awards streak bonus if applicable
  */
 const updateStreak = async (userId) => {
+  const lastCheckinResult = await pool.query(
+    `SELECT created_at::date AS last_checkin_date 
+     FROM coin_transactions 
+     WHERE user_id = $1 AND type = 'checkin' 
+     ORDER BY created_at DESC LIMIT 1`,
+    [userId]
+  );
+
   const userResult = await pool.query(
-    'SELECT streak_days, last_active FROM users WHERE id = $1',
+    'SELECT streak_days FROM users WHERE id = $1',
     [userId]
   );
   const user = userResult.rows[0];
-  if (!user) return;
+  if (!user) return 0;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const lastActive = user.last_active ? new Date(user.last_active) : null;
-  if (lastActive) lastActive.setHours(0, 0, 0, 0);
-
-  const daysSinceActive = lastActive
-    ? Math.floor((today - lastActive) / (1000 * 60 * 60 * 24))
-    : 999;
-
+  const lastCheckinDateVal = lastCheckinResult.rows[0]?.last_checkin_date;
   let newStreak = user.streak_days;
 
-  if (daysSinceActive === 0) {
-    return user.streak_days;
-  } else if (daysSinceActive === 1) {
-    newStreak = user.streak_days + 1;
-  } else {
+  if (!lastCheckinDateVal) {
+    // First check-in ever!
     newStreak = 1;
+  } else {
+    const lastCheckin = new Date(lastCheckinDateVal);
+    lastCheckin.setHours(0, 0, 0, 0);
+
+    const daysSinceLastCheckin = Math.floor((today - lastCheckin) / (1000 * 60 * 60 * 24));
+
+    if (daysSinceLastCheckin === 0) {
+      return user.streak_days;
+    } else if (daysSinceLastCheckin === 1) {
+      newStreak = user.streak_days + 1;
+    } else {
+      newStreak = 1;
+    }
   }
 
   await pool.query(

@@ -6,9 +6,11 @@ const {
   generateAndSaveDailyEstimates,
   generateAndSaveApplianceEstimates,
 } = require('../services/estimationEngine');
+const { getLiveTemperature } = require('../services/weatherService');
 const { validateAppliance, validateBill } = require('../utils/validators');
 const notificationService = require('../services/notificationService');
 const challengeService = require('../services/challengeService');
+const coinService = require('../services/coinService');
 
 /**
  * POST /api/onboarding/profile
@@ -24,8 +26,11 @@ const saveProfile = async (req, res) => {
     });
   }
 
-  if (!location || location.trim().length === 0) {
-    return res.status(400).json({ error: 'Location is required' });
+  const validLocations = ['Chennai', 'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Kolkata'];
+  if (!location || !validLocations.includes(location.trim())) {
+    return res.status(400).json({
+      error: `location must be one of: ${validLocations.join(', ')}`,
+    });
   }
 
   if (!appliance_count || isNaN(appliance_count) || appliance_count < 1 || appliance_count > 50) {
@@ -142,21 +147,31 @@ const saveAppliances = async (req, res) => {
   }
 
   const month = new Date().getMonth();
-  const withEstimates = calculateMonthlyEstimates(savedAppliances, month, location);
-  const withPercentages = addPercentageBreakdown(withEstimates);
-
-  const estimatedMonthlyUnits = withPercentages.reduce(
-    (sum, a) => sum + a.estimated_monthly_kwh, 0
-  );
-
   const billResult = await pool.query(
     `SELECT units FROM monthly_bills WHERE user_id = $1 ORDER BY month DESC LIMIT 1`,
     [req.user.id]
   );
   const actualUnits = billResult.rows[0]?.units || null;
+
+  // Fetch live temperature for weather-calibrated estimation
+  const temperature = await getLiveTemperature(location);
+
+  // Uncalibrated estimates for input validation match score
+  const uncalibratedEstimates = calculateMonthlyEstimates(savedAppliances, month, location, null, temperature);
+  const uncalibratedMonthlyUnits = uncalibratedEstimates.reduce(
+    (sum, a) => sum + a.estimated_monthly_kwh, 0
+  );
   const matchPct = actualUnits
-    ? calculateMatchPercentage(estimatedMonthlyUnits, actualUnits)
+    ? calculateMatchPercentage(uncalibratedMonthlyUnits, actualUnits)
     : null;
+
+  // Calibrated estimates for saving and dashboard telemetry
+  const withEstimates = calculateMonthlyEstimates(savedAppliances, month, location, actualUnits, temperature);
+  const withPercentages = addPercentageBreakdown(withEstimates);
+
+  const estimatedMonthlyUnits = withPercentages.reduce(
+    (sum, a) => sum + a.estimated_monthly_kwh, 0
+  );
 
   if (actualUnits) {
     await pool.query(
@@ -164,7 +179,7 @@ const saveAppliances = async (req, res) => {
        SET estimated_units = $1, accuracy_pct = $2
        WHERE user_id = $3
        AND month = (SELECT MAX(month) FROM monthly_bills WHERE user_id = $3)`,
-      [parseFloat(estimatedMonthlyUnits.toFixed(3)), matchPct, req.user.id]
+      [parseFloat(uncalibratedMonthlyUnits.toFixed(3)), matchPct, req.user.id]
     );
   }
 
@@ -175,6 +190,9 @@ const saveAppliances = async (req, res) => {
     `UPDATE users SET onboarding_complete = TRUE WHERE id = $1`,
     [req.user.id]
   );
+
+  // Award onboarding complete bonus coins
+  await coinService.awardCoins(req.user.id, 150, 'bonus', 'Onboarding Complete Bonus');
 
   await challengeService.createWeeklyChallenge(req.user.id, estimatedMonthlyUnits);
 
@@ -223,7 +241,8 @@ const validate = async (req, res) => {
   const location = userResult.rows[0]?.location || 'Chennai';
 
   const month = new Date().getMonth();
-  const withEstimates = calculateMonthlyEstimates(appliances, month, location);
+  const temperature = await getLiveTemperature(location);
+  const withEstimates = calculateMonthlyEstimates(appliances, month, location, null, temperature);
   const estimatedUnits = withEstimates.reduce((sum, a) => sum + a.estimated_monthly_kwh, 0);
 
   const billResult = await pool.query(

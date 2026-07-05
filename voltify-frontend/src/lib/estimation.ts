@@ -51,9 +51,10 @@ export function estimateApplianceBreakdown(
 export function generateDailyUsage(
   appliances: Appliance[],
   daysBack: number = 30,
-  location: string = 'Chennai'
+  location: string = 'Chennai',
+  monthlyUnits?: number
 ): DailyUsage[] {
-  const tariff = getTariffRate(location);
+  const tariff = getTariffRate(location, monthlyUnits);
   const baseDaily = estimateMonthlyKwh(appliances) / 30;
   const result: DailyUsage[] = [];
 

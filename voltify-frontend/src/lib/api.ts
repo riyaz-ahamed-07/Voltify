@@ -332,6 +332,17 @@ export const apiService = {
     return fetchApi('/gamification/stats', {}, fallback);
   },
 
+  async dailyCheckin(body: { total_units: number; appliance_hours: Record<string, number> }) {
+    const user = useAuthStore.getState().user;
+    return fetchApi('/gamification/check-in', { method: 'POST', body: JSON.stringify(body) }, {
+      success: true,
+      message: 'Checked in successfully!',
+      coins_earned: 25,
+      new_balance: (user?.coins || 250) + 25,
+      new_streak: (user?.streak_days || 7) + 1,
+    });
+  },
+
   async getGamificationChallenge() {
     const fallback = {
       challenge: useGamificationStore.getState().active_challenge,
@@ -402,5 +413,9 @@ export const apiService = {
 
   async updateProfile(data: any) {
     return fetchApi('/profile/update', { method: 'PUT', body: JSON.stringify(data) }, { success: true, user: { ...useAuthStore.getState().user, ...data } });
-  }
+  },
+
+  async deleteAccount() {
+    return fetchApi('/settings/account', { method: 'DELETE' }, { success: true, message: 'Account deleted' });
+  },
 };

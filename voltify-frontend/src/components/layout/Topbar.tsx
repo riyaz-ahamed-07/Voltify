@@ -17,7 +17,8 @@ export default function Topbar() {
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/coach', label: 'Coach', icon: BrainCircuit },
     { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-    { to: '/profile', label: 'Profile', icon: User },
+    { to: '/streak', label: 'Streaks', icon: Flame },
+    { to: '/shop', label: 'Shop', icon: Coins },
     { to: '/settings', label: 'Settings', icon: Settings },
   ];
 
@@ -68,8 +69,8 @@ export default function Topbar() {
 
       {/* Action panel */}
       <div className="flex items-center gap-2 md:gap-4 shrink-0">
-        {/* Streak indicator */}
-        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-volt-pink/30 transition-colors cursor-help group relative shrink-0">
+        {/* Streak indicator NavLink */}
+        <NavLink to="/streak" className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-volt-pink/30 hover:bg-white/[0.08] transition-all cursor-pointer group relative shrink-0">
           <Flame className="size-3.5 text-volt-pink" />
           <span className="font-mono text-[10px] md:text-xs font-semibold text-volt-pink tracking-wider">
             {streak_days} DAY STREAK
@@ -78,19 +79,19 @@ export default function Topbar() {
           <div className="absolute top-10 right-0 w-48 bg-slate-900 border border-white/10 p-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-gray-300 z-50">
             Keep saving daily energy to increase your streak multiplier! Currently: <span className="text-volt-pink font-bold">1.15x</span>
           </div>
-        </div>
+        </NavLink>
 
-        {/* Coins indicator */}
-        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-primary/30 transition-colors cursor-help group relative shrink-0">
+        {/* Coins indicator NavLink */}
+        <NavLink to="/shop" className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-white/5 hover:border-primary/30 hover:bg-white/[0.08] transition-all cursor-pointer group relative shrink-0">
           <Coins className="size-3.5 text-primary" />
           <span className="font-mono text-[10px] md:text-xs font-semibold text-primary tracking-wider">
             {coins} COINS
           </span>
           
-          <div className="absolute top-10 right-0 w-48 bg-surface-container border border-white/10 p-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-gray-300 z-50">
+          <div className="absolute top-10 right-0 w-48 bg-slate-900 border border-white/10 p-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity text-xs text-gray-300 z-50">
             Earn coins by beating your energy estimate. Redeem for credits & vouchers!
           </div>
-        </div>
+        </NavLink>
 
         {/* Notifications */}
         <div className="relative shrink-0">

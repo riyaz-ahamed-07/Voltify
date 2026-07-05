@@ -1,6 +1,6 @@
 // src/pages/Settings.tsx
-import { useReducer } from 'react';
-import { Settings as SettingsIcon, Shield, Server, RefreshCw, Sliders, DollarSign, Cpu, Trash2, Check, HelpCircle } from 'lucide-react';
+import { useReducer, useState } from 'react';
+import { Settings as SettingsIcon, Shield, Server, RefreshCw, Sliders, DollarSign, Cpu, Trash2, Check, HelpCircle, AlertTriangle, X } from 'lucide-react';
 import { useDashboardStore } from '../store/dashboardStore';
 import { useAuthStore } from '../store/authStore';
 import { useGamificationStore } from '../store/gamificationStore';
@@ -62,19 +62,23 @@ export default function Settings() {
   const { user, updateUser, logout } = useAuthStore();
   const { resetGamification } = useGamificationStore();
   const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const discoms = [
-    { code: 'BESCOM', name: 'Bangalore Electricity Supply (BESCOM)', rate: '₹7.00/kWh' },
-    { code: 'MSEDCL', name: 'Maharashtra State Electricity (MSEDCL)', rate: '₹6.50/kWh' },
-    { code: 'TNEB', name: 'Tamil Nadu Electricity Board (TNEB)', rate: '₹6.00/kWh' },
-    { code: 'BYPL', name: 'BSES Yamuna Power Limited (BYPL Delhi)', rate: '₹5.80/kWh' },
-    { code: 'PGVCL', name: 'Paschim Gujarat Vij (PGVCL)', rate: '₹5.50/kWh' },
+    { code: 'TNEB',    name: 'Chennai - Tamil Nadu Electricity (TNEB)', rate: '8.00', city: 'Chennai' },
+    { code: 'MSEDCL',  name: 'Mumbai - Maharashtra State Electricity (MSEDCL)', rate: '9.50', city: 'Mumbai' },
+    { code: 'BYPL',    name: 'Delhi - BSES Yamuna Power (BYPL)', rate: '7.50', city: 'Delhi' },
+    { code: 'BESCOM',  name: 'Bangalore - Bangalore Electricity (BESCOM)', rate: '7.80', city: 'Bangalore' },
+    { code: 'TSSPDCL', name: 'Hyderabad - Southern Power Discom (TSSPDCL)', rate: '8.20', city: 'Hyderabad' },
+    { code: 'CESC',    name: 'Kolkata - Calcutta Electric Supply (CESC)', rate: '8.00', city: 'Kolkata' },
   ];
 
   // Local config states grouped under a unified state reducer
   const [state, dispatch] = useReducer(settingsReducer, {
-    selectedDiscom: onboarding?.location ? 'BESCOM' : 'MSEDCL',
-    flatRate: '6.50',
+    selectedDiscom: discoms.find(d => d.city === onboarding?.location)?.code || 'TNEB',
+    flatRate: discoms.find(d => d.city === onboarding?.location)?.rate || '8.00',
     acTempThreshold: 24,
     autoSnooze: true,
     telemetryResolution: '5s',
@@ -90,7 +94,7 @@ export default function Settings() {
     // Save location to user profile
     const discom = discoms.find((d) => d.code === state.selectedDiscom);
     if (discom && user) {
-      const newLoc = discom.name.split(' (')[0];
+      const newLoc = discom.city;
       try {
         await apiService.updateProfile({ location: newLoc });
         updateUser({ location: newLoc });
@@ -120,7 +124,26 @@ export default function Settings() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE') return;
+    try {
+      setDeletingAccount(true);
+      await apiService.deleteAccount();
+      resetDashboard();
+      resetGamification();
+      logout();
+      toast.success('Account permanently deleted.');
+      navigate('/');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete account. Please try again.');
+    } finally {
+      setDeletingAccount(false);
+      setShowDeleteModal(false);
+    }
+  };
+
   return (
+    <>
     <div className="space-y-8 font-headline">
       {/* Title Header */}
       <div>
@@ -151,7 +174,7 @@ export default function Settings() {
                     value={state.selectedDiscom}
                     onChange={(e) => {
                       const code = e.target.value;
-                      const rate = discoms.find(d => d.code === code)?.rate.replace('₹', '').split('/')[0] || '6.00';
+                      const rate = discoms.find(d => d.code === code)?.rate || '8.00';
                       dispatch({ type: 'SET_DISCOM', payload: { code, rate } });
                     }}
                   >
@@ -296,7 +319,7 @@ export default function Settings() {
               <Trash2 className="size-4" /> System Maintenance
             </h3>
             <p className="text-[11px] text-on-surface-variant mb-6 leading-relaxed">
-              Modify the underlying database and session configurations. These actions clear persistant storage.
+              Modify the underlying database and session configurations. These actions clear persistent storage.
             </p>
 
             <div className="space-y-3">
@@ -311,9 +334,26 @@ export default function Settings() {
                 onClick={handleFactoryReset}
                 className="w-full bg-rose-500/20 hover:bg-rose-500/30 text-on-surface font-semibold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
               >
-                <Trash2 className="size-3.5 text-rose-400" /> Full Database Purge
+                <Trash2 className="size-3.5 text-rose-400" /> Full Session Purge
               </button>
             </div>
+          </GlassCard>
+
+          {/* DELETE ACCOUNT — permanent action */}
+          <GlassCard className="p-6 border-red-700/40 bg-red-950/30">
+            <h3 className="font-semibold text-sm text-red-400 mb-2 flex items-center gap-1.5">
+              <Trash2 className="size-4" /> Delete Account
+            </h3>
+            <p className="text-[11px] text-on-surface-variant mb-4 leading-relaxed">
+              Permanently erase your account, all energy data, coins, streaks, and check-in history from our servers. <span className="text-red-400 font-semibold">This cannot be undone.</span>
+            </p>
+            <button
+              id="open-delete-account-modal"
+              onClick={() => { setDeleteConfirmText(''); setShowDeleteModal(true); }}
+              className="w-full bg-red-700/30 hover:bg-red-700/50 border border-red-600/40 text-red-300 font-bold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
+            >
+              <Trash2 className="size-3.5" /> Permanently Delete My Account
+            </button>
           </GlassCard>
 
           {/* FAQs */}
@@ -331,6 +371,76 @@ export default function Settings() {
         </div>
       </div>
     </div>
+
+    {/* DELETE ACCOUNT MODAL */}
+    {showDeleteModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="bg-surface-container-high border border-red-700/50 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-red-900/50 border border-red-600/40 flex items-center justify-center">
+                <Trash2 className="size-5 text-red-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-on-surface text-base">Delete Account</h3>
+                <p className="text-[11px] text-red-400">This action is permanent and irreversible</p>
+              </div>
+            </div>
+            <button onClick={() => setShowDeleteModal(false)} className="text-on-surface-variant hover:text-on-surface transition-colors">
+              <X className="size-5" />
+            </button>
+          </div>
+
+          <div className="bg-red-950/40 border border-red-700/30 rounded-xl p-4 mb-5 space-y-1.5">
+            <p className="text-xs text-red-300 font-semibold">The following will be permanently deleted:</p>
+            <ul className="text-[11px] text-on-surface-variant space-y-1 mt-2">
+              <li>• Your account and profile information</li>
+              <li>• All energy data, appliances, and bill history</li>
+              <li>• All Voltify Coins, streaks, and challenges</li>
+              <li>• All daily check-ins and telemetry logs</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label htmlFor="delete-confirm-input" className="text-xs text-on-surface-variant mb-1.5 block">
+                Type <span className="text-red-400 font-bold font-mono">DELETE</span> to confirm:
+              </label>
+              <input
+                id="delete-confirm-input"
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Type DELETE here"
+                className="w-full bg-surface-container border border-outline-variant/50 rounded-lg px-3 py-2.5 text-on-surface text-xs font-mono focus:outline-none focus:border-red-500 transition-colors"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 border border-outline-variant/40 hover:bg-surface-container text-on-surface-variant font-semibold text-xs px-4 py-2.5 rounded-lg transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                id="confirm-delete-account-btn"
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText !== 'DELETE' || deletingAccount}
+                className="flex-1 bg-red-700 hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
+              >
+                {deletingAccount ? (
+                  <><RefreshCw className="size-3.5 animate-spin" /> Deleting...</>
+                ) : (
+                  <><Trash2 className="size-3.5" /> Delete Forever</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 export { Settings };

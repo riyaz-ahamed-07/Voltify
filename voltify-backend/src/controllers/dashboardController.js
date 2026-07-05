@@ -1,6 +1,7 @@
 const pool = require('../config/db');
 const { generatePredictions, detectBillShock } = require('../services/estimationEngine');
 const { generateAndSaveDailyEstimates, calculateMonthlyEstimates, addPercentageBreakdown } = require('../services/estimationEngine');
+const { getLiveTemperature } = require('../services/weatherService');
 const notificationService = require('../services/notificationService');
 
 // Appliance icon map for enriching DB results with icons
@@ -191,13 +192,20 @@ const getUsage = async (req, res) => {
 
     query = `
       SELECT
-        date::text AS date,
-        estimated_units AS units,
-        estimated_cost AS cost
-      FROM daily_estimates
-      WHERE user_id = $1
-        AND date >= CURRENT_DATE - INTERVAL '29 days'
-      ORDER BY date ASC
+        de.date::text AS date,
+        COALESCE(dc.total_units, de.estimated_units) AS units,
+        CASE
+          WHEN dc.total_units IS NOT NULL
+          THEN ROUND((dc.total_units * de.estimated_cost / NULLIF(de.estimated_units, 0))::numeric, 4)
+          ELSE de.estimated_cost
+        END AS cost,
+        (dc.total_units IS NOT NULL) AS is_actual
+      FROM daily_estimates de
+      LEFT JOIN daily_checkins dc
+        ON dc.user_id = de.user_id AND dc.date = de.date
+      WHERE de.user_id = $1
+        AND de.date >= CURRENT_DATE - INTERVAL '29 days'
+      ORDER BY de.date ASC
     `;
   } else if (period === 'weekly') {
     query = `
@@ -236,70 +244,76 @@ const getUsage = async (req, res) => {
  * GET /api/dashboard/appliance-breakdown
  */
 const getApplianceBreakdown = async (req, res) => {
-  const userId = req.user.id;
+  try {
+    const userId = req.user.id;
 
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  const monthStartStr = monthStart.toISOString().split('T')[0];
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    const monthStartStr = monthStart.toISOString().split('T')[0];
 
-  // Try to get pre-computed estimates for this month
-  const result = await pool.query(
-    `SELECT
-       a.name,
-       a.icon,
-       ae.estimated_units,
-       ae.estimated_pct AS percentage,
-       ae.estimated_cost
-     FROM appliance_estimates ae
-     JOIN appliances a ON a.id = ae.appliance_id
-     WHERE ae.user_id = $1
-       AND ae.month = $2
-     ORDER BY ae.estimated_units DESC`,
-    [userId, monthStartStr]
-  );
+    // Try to get pre-computed estimates for this month
+    const result = await pool.query(
+      `SELECT
+         a.name,
+         a.icon,
+         ae.estimated_units,
+         ae.estimated_pct AS percentage,
+         ae.estimated_cost
+       FROM appliance_estimates ae
+       JOIN appliances a ON a.id = ae.appliance_id
+       WHERE ae.user_id = $1
+         AND ae.month = $2
+       ORDER BY ae.estimated_units DESC`,
+      [userId, monthStartStr]
+    );
 
-  if (result.rows.length > 0) {
+    if (result.rows.length > 0) {
+      return res.status(200).json({
+        data: result.rows.map((row, idx) => ({
+          name: row.name,
+          icon: row.icon || getApplianceIcon(row.name),
+          units: parseFloat(row.estimated_units),
+          percentage: parseFloat(row.percentage),
+          cost: parseFloat(row.estimated_cost),
+          color: NEON_COLORS[idx % NEON_COLORS.length],
+        })),
+      });
+    }
+
+    // Fallback: compute on-the-fly from appliances table
+    const appliancesResult = await pool.query(
+      'SELECT * FROM appliances WHERE user_id = $1',
+      [userId]
+    );
+
+    if (appliancesResult.rows.length === 0) {
+      return res.status(200).json({ data: [] });
+    }
+
+    const userResult = await pool.query('SELECT location FROM users WHERE id = $1', [userId]);
+    const location = userResult.rows[0]?.location || 'Chennai';
+
+    const month = new Date().getMonth();
+    const temperature = await getLiveTemperature(location);
+    const withEstimates = calculateMonthlyEstimates(appliancesResult.rows, month, location, null, temperature);
+    const withPercentages = addPercentageBreakdown(withEstimates);
+
     return res.status(200).json({
-      data: result.rows.map((row, idx) => ({
-        name: row.name,
-        icon: row.icon || getApplianceIcon(row.name),
-        units: parseFloat(row.estimated_units),
-        percentage: parseFloat(row.percentage),
-        cost: parseFloat(row.estimated_cost),
-        color: NEON_COLORS[idx % NEON_COLORS.length],
-      })),
+      data: withPercentages
+        .filter(a => a.estimated_monthly_kwh > 0)
+        .map((a, idx) => ({
+          name: a.name,
+          icon: a.icon || getApplianceIcon(a.name),
+          units: a.estimated_monthly_kwh,
+          percentage: a.percentage,
+          cost: a.estimated_cost,
+          color: NEON_COLORS[idx % NEON_COLORS.length],
+        })),
     });
+  } catch (err) {
+    console.error("Error in getApplianceBreakdown:", err);
+    return res.status(500).json({ error: err.message });
   }
-
-  // Fallback: compute on-the-fly from appliances table
-  const appliancesResult = await pool.query(
-    'SELECT * FROM appliances WHERE user_id = $1',
-    [userId]
-  );
-
-  if (appliancesResult.rows.length === 0) {
-    return res.status(200).json({ data: [] });
-  }
-
-  const userResult = await pool.query('SELECT location FROM users WHERE id = $1', [userId]);
-  const location = userResult.rows[0]?.location || 'Chennai';
-
-  const month = new Date().getMonth();
-  const withEstimates = calculateMonthlyEstimates(appliancesResult.rows, month, location);
-  const withPercentages = addPercentageBreakdown(withEstimates);
-
-  return res.status(200).json({
-    data: withPercentages
-      .filter(a => a.estimated_monthly_kwh > 0)
-      .map((a, idx) => ({
-        name: a.name,
-        icon: a.icon || getApplianceIcon(a.name),
-        units: a.estimated_monthly_kwh,
-        percentage: a.percentage,
-        cost: a.estimated_cost,
-        color: NEON_COLORS[idx % NEON_COLORS.length],
-      })),
-  });
 };
 
 /**

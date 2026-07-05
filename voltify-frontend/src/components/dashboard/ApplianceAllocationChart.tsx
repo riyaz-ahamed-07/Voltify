@@ -35,20 +35,6 @@ const CustomTooltip = ({ active, payload }: any) => {
   );
 };
 
-/** Render label inside/beside each slice — only if segment > 10% */
-const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percentage }: any) => {
-  if (percentage < 8) return null;
-  const RADIAN = Math.PI / 180;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.55;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  return (
-    <text x={x} y={y} fill="#fff" textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={600}>
-      {`${Math.round(percentage)}%`}
-    </text>
-  );
-};
-
 export default function ApplianceAllocationChart({ applianceBreakdown }: ApplianceAllocationChartProps) {
   // Filter out zero-unit entries so the pie has visible slices
   const data = applianceBreakdown.filter(a => a.units > 0);
@@ -74,7 +60,7 @@ export default function ApplianceAllocationChart({ applianceBreakdown }: Applian
           paddingAngle={3}
           dataKey="units"
           labelLine={false}
-          label={renderCustomLabel}
+          label={false}
           strokeWidth={0}
         >
           {data.map((entry, index) => (

@@ -24,7 +24,9 @@ const profileSchema = z.object({
   household_type: z.enum(['bachelor', 'family', 'large_family', 'organization'], {
     message: 'Please select household size'
   }),
-  location:        z.string().min(2, 'Please enter your location'),
+  location:        z.enum(['Chennai', 'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Kolkata'], {
+    message: 'Please select a supported city'
+  }),
   home_type:       z.enum(['apartment', 'house', 'villa'], {
     message: 'Please select dwelling type'
   }),
@@ -310,11 +312,12 @@ export default function Onboarding() {
     formState: { errors: profileErrors }
   } = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { household_type: '' as any, location: '', home_type: '' as any },
+    defaultValues: { household_type: '' as any, location: '' as any, home_type: '' as any },
   });
 
   const watchedHomeType      = watchProfile('home_type');
   const watchedHouseholdType = watchProfile('household_type');
+  const watchedLocation      = watchProfile('location');
 
   const {
     register: regBill, handleSubmit: handleBillSubmit,
@@ -341,7 +344,7 @@ export default function Onboarding() {
   const getReviewCalculations = () => {
     if (!state.profileData || !state.billData) return null;
     const estKwh    = estimateMonthlyKwh(state.appliances);
-    const rate      = getTariffRate(state.profileData.location);
+    const rate      = getTariffRate(state.profileData.location, state.billData.units);
     const accuracy  = Math.round(100 - Math.min(100, Math.abs((estKwh - state.billData.units) / state.billData.units) * 100));
     return { appliances: state.appliances, estKwh, rate, accuracy };
   };
@@ -416,7 +419,7 @@ export default function Onboarding() {
         })
       : estimateApplianceBreakdown(currentCalc.appliances, state.billData.bill_amount, state.billData.units, currentCalc.rate);
 
-    const history = generateDailyUsage(currentCalc.appliances, 30, state.profileData.location);
+    const history = generateDailyUsage(currentCalc.appliances, 30, state.profileData.location, state.billData.units);
 
     const newInsights = [
       {
@@ -485,6 +488,15 @@ export default function Onboarding() {
     { value: 'organization', label: 'Office / Institution',       description: 'Commercial use',  icon: '🏢' },
   ];
 
+  const locationOptions: DropdownOption[] = [
+    { value: 'Chennai',   label: 'Chennai',   description: 'Tamil Nadu (Tariff: ₹8.0/kWh)',   icon: '🏖️' },
+    { value: 'Mumbai',    label: 'Mumbai',    description: 'Maharashtra (Tariff: ₹9.5/kWh)',  icon: '🌆' },
+    { value: 'Delhi',     label: 'Delhi',     description: 'National Capital (Tariff: ₹7.5/kWh)', icon: '🏛️' },
+    { value: 'Bangalore', label: 'Bangalore', description: 'Karnataka (Tariff: ₹7.8/kWh)',     icon: '💻' },
+    { value: 'Hyderabad', label: 'Hyderabad', description: 'Telangana (Tariff: ₹8.2/kWh)',     icon: '🏰' },
+    { value: 'Kolkata',   label: 'Kolkata',   description: 'West Bengal (Tariff: ₹8.0/kWh)',   icon: '🛕' },
+  ];
+
   // ─── Render ────────────────────────────────────────────────────────────
   return (
     <LazyMotion features={domAnimation}>
@@ -524,10 +536,10 @@ export default function Onboarding() {
           </div>
         </div>
 
-        {/* ── Card: scrollable inside, not the page ── */}
-        <div className="flex-1 overflow-hidden px-4 pb-4 flex justify-center">
+        {/* ── Card: fit content, scrollable if needed ── */}
+        <div className="flex-1 overflow-y-auto p-4 flex justify-center items-center">
           <div className="w-full max-w-2xl bg-surface-container rounded-2xl border border-outline shadow-xl flex flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto p-6 md:p-8">
+            <div className="p-6 md:p-8">
               <AnimatePresence mode="wait">
 
                 {/* ───────── STEP 1: Profile ───────── */}
@@ -571,22 +583,17 @@ export default function Onboarding() {
                           />
                         </div>
 
-                        {/* Location */}
+                        {/* Location Dropdown Selection */}
                         <div className="md:col-span-2">
-                          <label htmlFor="location" className="block text-xs font-semibold text-on-surface mb-2">Location / City</label>
-                          <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant group-focus-within:text-primary transition-colors">
-                              <MapPin className="size-4" />
-                            </div>
-                            <input
-                              {...regProfile('location')}
-                              id="location"
-                              type="text"
-                              placeholder="e.g. Bangalore, Chennai, Mumbai"
-                              className="w-full pl-10 pr-4 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 group-hover:border-outline-variant"
-                            />
-                          </div>
-                          {profileErrors.location && <p className="text-error text-xs mt-1">{profileErrors.location.message}</p>}
+                          <label className="block text-xs font-semibold text-on-surface mb-2">Location / City</label>
+                          <CustomDropdown
+                            id="location"
+                            value={watchedLocation || ''}
+                            onChange={(val) => setProfileValue('location', val as any, { shouldValidate: true })}
+                            options={locationOptions}
+                            placeholder="Select your city..."
+                            error={profileErrors.location?.message}
+                          />
                         </div>
                       </div>
 

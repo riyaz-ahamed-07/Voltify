@@ -13,6 +13,8 @@ import OAuthSuccess from './pages/auth/OAuthSuccess';
 import Dashboard from './pages/Dashboard';
 import Coach from './pages/Coach';
 import Leaderboard from './pages/Leaderboard';
+import Streak from './pages/Streak';
+import Shop from './pages/Shop';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
@@ -186,6 +188,22 @@ export default function App() {
             element={
               <OnboardedRoute>
                 <Notifications />
+              </OnboardedRoute>
+            } 
+          />
+          <Route 
+            path="streak" 
+            element={
+              <OnboardedRoute>
+                <Streak />
+              </OnboardedRoute>
+            } 
+          />
+          <Route 
+            path="shop" 
+            element={
+              <OnboardedRoute>
+                <Shop />
               </OnboardedRoute>
             } 
           />

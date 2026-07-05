@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { getLiveTemperature } = require('./weatherService');
 
 // Tamil Nadu TANGEDCO tariff rates (₹ per unit)
 const TARIFF_RATES = {
@@ -7,6 +8,7 @@ const TARIFF_RATES = {
   'Delhi':     7.5,
   'Bangalore': 7.8,
   'Hyderabad': 8.2,
+  'Kolkata':   8.0,
   'default':   8.0,
 };
 
@@ -15,6 +17,109 @@ const TARIFF_RATES = {
  */
 const getTariffRate = (location) => {
   return TARIFF_RATES[location] || TARIFF_RATES['default'];
+};
+
+/**
+ * Calculates the exact bi-monthly subsidized TANGEDCO Chennai household electricity bill.
+ * Returns the equivalent monthly cost (bi-monthly bill / 2).
+ */
+const calculateChennaiTNEBBill = (monthlyUnits) => {
+  const biMonthlyUnits = parseFloat(monthlyUnits) * 2;
+  let remaining = biMonthlyUnits;
+  let cost = 0;
+
+  // 1. First 100 units: Free
+  const slab1 = Math.min(100, remaining);
+  remaining -= slab1;
+
+  // 2. 101 to 200 units: ₹2.25
+  if (remaining > 0) {
+    const slab2 = Math.min(100, remaining);
+    cost += slab2 * 2.25;
+    remaining -= slab2;
+  }
+
+  // 3. 201 to 400 units: ₹4.50
+  if (remaining > 0) {
+    const slab3 = Math.min(200, remaining);
+    cost += slab3 * 4.50;
+    remaining -= slab3;
+  }
+
+  // 4. 401 to 500 units: ₹6.00
+  if (remaining > 0) {
+    const slab4 = Math.min(100, remaining);
+    cost += slab4 * 6.00;
+    remaining -= slab4;
+  }
+
+  // 5. 501 to 600 units: ₹8.00
+  if (remaining > 0) {
+    const slab5 = Math.min(100, remaining);
+    cost += slab5 * 8.00;
+    remaining -= slab5;
+  }
+
+  // 6. 601 to 800 units: ₹9.00
+  if (remaining > 0) {
+    const slab6 = Math.min(200, remaining);
+    cost += slab6 * 9.00;
+    remaining -= slab6;
+  }
+
+  // 7. 801 to 1000 units: ₹10.00
+  if (remaining > 0) {
+    const slab7 = Math.min(200, remaining);
+    cost += slab7 * 10.00;
+    remaining -= slab7;
+  }
+
+  // 8. Above 1000 units: ₹11.00
+  if (remaining > 0) {
+    cost += remaining * 11.00;
+  }
+
+  // Monthly share is bi-monthly bill / 2
+  return cost / 2;
+};
+
+/**
+ * Returns the effective rate per unit (kWh) under tiered billing schemes.
+ */
+const getEffectiveTariffRate = (location, monthlyUnits) => {
+  const defaultRate = getTariffRate(location);
+  if (location !== 'Chennai' || !monthlyUnits || monthlyUnits <= 0) return defaultRate;
+  return calculateChennaiTNEBBill(monthlyUnits) / monthlyUnits;
+};
+
+/**
+ * Calculates a dynamic multiplier based on temperature.
+ * Baseline temperature is 24°C.
+ * For AC: Higher temperature increases cooling load by +5% per °C over 24°C.
+ * For Geyser/Heater: Lower temperature increases heating load by +4% per °C below 24°C.
+ */
+const getTemperatureMultiplier = (applianceName, temperature) => {
+  if (temperature === null || temperature === undefined) return 1.0;
+  const temp = parseFloat(temperature);
+  const name = (applianceName || '').toLowerCase();
+
+  if (name.includes('ac') || name.includes('air conditioner') || name.includes('cooling')) {
+    if (temp > 24) {
+      return 1 + (temp - 24) * 0.05;
+    }
+    if (temp < 20) {
+      return 0.2; // AC is barely turned on below 20°C!
+    }
+  }
+  if (name.includes('geyser') || name.includes('water heater') || name.includes('heater') || name.includes('heating')) {
+    if (temp < 24) {
+      return 1 + (24 - temp) * 0.04;
+    }
+    if (temp > 30) {
+      return 0.1; // Geyser is barely used in hot climate!
+    }
+  }
+  return 1.0;
 };
 
 /**
@@ -69,13 +174,12 @@ const getDayOfWeekMultiplier = (date) => {
 /**
  * CORE FUNCTION: Calculates estimated monthly kWh per appliance
  */
-const calculateMonthlyEstimates = (appliances, month, location = 'Chennai') => {
-  const tariff = getTariffRate(location);
-
-  return appliances.map((appliance) => {
+const calculateMonthlyEstimates = (appliances, month, location = 'Chennai', actualUnits = null, temperature = null) => {
+  const baseEstimates = appliances.map((appliance) => {
     if (!isApplianceActiveInMonth(appliance.seasonality, month)) {
       return {
         ...appliance,
+        uncalibrated_monthly_kwh: 0,
         estimated_monthly_kwh: 0,
         estimated_cost: 0,
         percentage: 0,
@@ -83,17 +187,38 @@ const calculateMonthlyEstimates = (appliances, month, location = 'Chennai') => {
     }
 
     const seasonalMultiplier = getSeasonalMultiplier(appliance.name, month);
+    const tempMultiplier = getTemperatureMultiplier(appliance.name, temperature);
 
-    const estimatedMonthlyKwh =
+    const uncalibratedMonthlyKwh =
       parseFloat(appliance.power_kw) *
       parseFloat(appliance.avg_hours_day) *
       30 *
-      seasonalMultiplier;
-
-    const estimatedCost = estimatedMonthlyKwh * tariff;
+      seasonalMultiplier *
+      tempMultiplier;
 
     return {
       ...appliance,
+      uncalibrated_monthly_kwh: parseFloat(uncalibratedMonthlyKwh.toFixed(3)),
+      estimated_monthly_kwh: parseFloat(uncalibratedMonthlyKwh.toFixed(3)),
+    };
+  });
+
+  const totalUncalibrated = baseEstimates.reduce((sum, a) => sum + (a.uncalibrated_monthly_kwh || 0), 0);
+
+  let calibrationFactor = 1.0;
+  if (actualUnits !== null && parseFloat(actualUnits) > 0 && totalUncalibrated > 0) {
+    calibrationFactor = parseFloat(actualUnits) / totalUncalibrated;
+  }
+
+  const totalCalibratedUnits = baseEstimates.reduce((sum, a) => sum + (a.uncalibrated_monthly_kwh * calibrationFactor), 0);
+  const effectiveTariff = getEffectiveTariffRate(location, actualUnits || totalCalibratedUnits);
+
+  return baseEstimates.map((app) => {
+    const estimatedMonthlyKwh = app.uncalibrated_monthly_kwh * calibrationFactor;
+    const estimatedCost = estimatedMonthlyKwh * effectiveTariff;
+
+    return {
+      ...app,
       estimated_monthly_kwh: parseFloat(estimatedMonthlyKwh.toFixed(3)),
       estimated_cost: parseFloat(estimatedCost.toFixed(2)),
       percentage: 0,
@@ -120,20 +245,22 @@ const addPercentageBreakdown = (appliancesWithEstimates) => {
 /**
  * CORE FUNCTION: Estimates daily usage for a given date
  */
-const estimateDailyUsage = (appliances, date, location = 'Chennai') => {
+const estimateDailyUsage = (appliances, date, location = 'Chennai', calibrationFactor = 1.0, temperature = null, customTariff = null) => {
   const dateObj = new Date(date);
   const month = dateObj.getMonth();
-  const tariff = getTariffRate(location);
+  const tariff = customTariff || getTariffRate(location);
 
   const baseDaily = appliances.reduce((sum, appliance) => {
     if (!isApplianceActiveInMonth(appliance.seasonality, month)) return sum;
 
     const seasonalMultiplier = getSeasonalMultiplier(appliance.name, month);
-    const dailyKwh = parseFloat(appliance.power_kw) * parseFloat(appliance.avg_hours_day) * seasonalMultiplier;
+    const tempMultiplier = getTemperatureMultiplier(appliance.name, temperature);
+    const dailyKwh = parseFloat(appliance.power_kw) * parseFloat(appliance.avg_hours_day) * seasonalMultiplier * tempMultiplier;
     return sum + dailyKwh;
   }, 0);
 
-  const withNoise = addDailyNoise(baseDaily, date);
+  const calibratedDaily = baseDaily * calibrationFactor;
+  const withNoise = addDailyNoise(calibratedDaily, date);
   const withWeekend = withNoise * getDayOfWeekMultiplier(date);
   const dailyUnits = parseFloat(withWeekend.toFixed(3));
   const dailyCost = parseFloat((dailyUnits * tariff).toFixed(2));
@@ -275,6 +402,29 @@ const calculateWhatIf = (appliances, applianceName, changeType, changeValue, loc
 const generateAndSaveDailyEstimates = async (userId, appliances, location, daysBack = 30) => {
   const client = await pool.connect();
   try {
+    const billResult = await client.query(
+      `SELECT units FROM monthly_bills WHERE user_id = $1 ORDER BY month DESC LIMIT 1`,
+      [userId]
+    );
+    const actualUnits = billResult.rows[0]?.units ? parseFloat(billResult.rows[0].units) : null;
+
+    const temperature = await getLiveTemperature(location);
+
+    const monthIndex = new Date().getMonth();
+    const uncalibratedMonthlyUnits = appliances.reduce((sum, app) => {
+      if (!isApplianceActiveInMonth(app.seasonality, monthIndex)) return sum;
+      const seasonalMultiplier = getSeasonalMultiplier(app.name, monthIndex);
+      const tempMultiplier = getTemperatureMultiplier(app.name, temperature);
+      return sum + (parseFloat(app.power_kw) * parseFloat(app.avg_hours_day) * 30 * seasonalMultiplier * tempMultiplier);
+    }, 0);
+
+    let calibrationFactor = 1.0;
+    if (actualUnits !== null && actualUnits > 0 && uncalibratedMonthlyUnits > 0) {
+      calibrationFactor = actualUnits / uncalibratedMonthlyUnits;
+    }
+
+    const effectiveTariff = getEffectiveTariffRate(location, actualUnits || uncalibratedMonthlyUnits);
+
     await client.query('BEGIN');
 
     const estimates = [];
@@ -283,7 +433,7 @@ const generateAndSaveDailyEstimates = async (userId, appliances, location, daysB
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
 
-      const { units, cost } = estimateDailyUsage(appliances, dateStr, location);
+      const { units, cost } = estimateDailyUsage(appliances, dateStr, location, calibrationFactor, temperature, effectiveTariff);
 
       await client.query(
         `INSERT INTO daily_estimates (user_id, date, estimated_units, estimated_cost)
@@ -315,12 +465,20 @@ const generateAndSaveApplianceEstimates = async (userId, appliances, location) =
   month.setDate(1);
   const monthStr = month.toISOString().split('T')[0];
 
-  const monthIndex = new Date().getMonth();
-  const withEstimates = calculateMonthlyEstimates(appliances, monthIndex, location);
-  const withPercentages = addPercentageBreakdown(withEstimates);
-
   const client = await pool.connect();
   try {
+    const billResult = await client.query(
+      `SELECT units FROM monthly_bills WHERE user_id = $1 ORDER BY month DESC LIMIT 1`,
+      [userId]
+    );
+    const actualUnits = billResult.rows[0]?.units ? parseFloat(billResult.rows[0].units) : null;
+
+    const temperature = await getLiveTemperature(location);
+
+    const monthIndex = new Date().getMonth();
+    const withEstimates = calculateMonthlyEstimates(appliances, monthIndex, location, actualUnits, temperature);
+    const withPercentages = addPercentageBreakdown(withEstimates);
+
     await client.query('BEGIN');
 
     for (const appliance of withPercentages) {
@@ -347,6 +505,9 @@ const generateAndSaveApplianceEstimates = async (userId, appliances, location) =
 
 module.exports = {
   getTariffRate,
+  getTemperatureMultiplier,
+  calculateChennaiTNEBBill,
+  getEffectiveTariffRate,
   calculateMonthlyEstimates,
   addPercentageBreakdown,
   estimateDailyUsage,

@@ -108,7 +108,14 @@ const updateProfile = async (req, res) => {
   let i = 1;
 
   if (name) { updates.push(`name = $${i++}`); values.push(name.trim()); }
-  if (location) { updates.push(`location = $${i++}`); values.push(location.trim()); }
+  if (location) {
+    const validLocations = ['Chennai', 'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Kolkata'];
+    if (!validLocations.includes(location.trim())) {
+      return res.status(400).json({ error: `location must be one of: ${validLocations.join(', ')}` });
+    }
+    updates.push(`location = $${i++}`);
+    values.push(location.trim());
+  }
   if (home_type) {
     const validTypes = ['apartment', 'house', 'villa'];
     if (!validTypes.includes(home_type)) {

@@ -157,6 +157,10 @@ const uploadBill = async (req, res) => {
     [req.user.id, billMonthStr, parseFloat(bill_amount), parseFloat(units), parseFloat(estimatedUnits.toFixed(3)), accuracy]
   );
 
+  // Recalibrate daily and appliance estimates with the newly uploaded bill!
+  await generateAndSaveDailyEstimates(req.user.id, appliancesResult.rows, location, 30);
+  await generateAndSaveApplianceEstimates(req.user.id, appliancesResult.rows, location);
+
   return res.status(200).json({
     success: true,
     message: 'Bill uploaded and estimates recalibrated',

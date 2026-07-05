@@ -12,6 +12,8 @@ interface GamificationState {
   css_applied: string[];
   
   addCoins: (amount: number) => void;
+  setCoins: (amount: number) => void;
+  setStreak: (days: number) => void;
   incrementStreak: () => void;
   setRank: (rank: number) => void;
   setChallenge: (challenge: Challenge) => void;
@@ -47,6 +49,8 @@ export const useGamificationStore = create<GamificationState>()(
       css_applied: [],
 
       addCoins: (amount) => set((s) => ({ coins: s.coins + amount })),
+      setCoins: (coins) => set({ coins }),
+      setStreak: (streak_days) => set({ streak_days }),
       incrementStreak: () => set((s) => ({ streak_days: s.streak_days + 1 })),
       setRank: (rank) => set({ rank }),
       setChallenge: (challenge) => set({ active_challenge: challenge }),

@@ -30,6 +30,13 @@ async function run() {
     `);
     console.log('✅ appliances.type — ok');
 
+    // 2b. Add icon column to appliances (if not exists)
+    await client.query(`
+      ALTER TABLE appliances
+      ADD COLUMN IF NOT EXISTS icon VARCHAR(20) DEFAULT '⚡'
+    `);
+    console.log('✅ appliances.icon — ok');
+
     // 3. Add UNIQUE constraint to daily_estimates (user_id, date)
     //    We use a DO block to skip if constraint already exists
     await client.query(`
@@ -111,6 +118,28 @@ async function run() {
       )
     `);
     console.log('✅ coin_transactions table — ok');
+
+    // 8. Update check constraint on coin_transactions type to include 'checkin'
+    await client.query(`
+      ALTER TABLE coin_transactions DROP CONSTRAINT IF EXISTS coin_transactions_type_check;
+      ALTER TABLE coin_transactions ADD CONSTRAINT coin_transactions_type_check 
+        CHECK (type IN ('earned', 'redeemed', 'bonus', 'streak', 'challenge', 'checkin'));
+    `);
+    console.log('✅ coin_transactions check constraint updated — ok');
+
+    // 9. Create daily_checkins table if not exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS daily_checkins (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        date DATE NOT NULL,
+        total_units DECIMAL(10,2) NOT NULL,
+        appliance_hours JSONB NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT daily_checkins_user_id_date_key UNIQUE (user_id, date)
+      )
+    `);
+    console.log('✅ daily_checkins table — ok');
 
     console.log('\n🎉 Migration complete! All schema changes applied.');
   } catch (err) {

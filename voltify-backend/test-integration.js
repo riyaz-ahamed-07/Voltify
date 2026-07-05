@@ -523,6 +523,53 @@ async function runTests() {
     logError(`What-If failed: ${err.message}`);
   }
 
+  // ==========================================
+  // PHASE 7: GAMIFICATION CHECK-IN TELEMETRY
+  // ==========================================
+  logHeader('PHASE 7: GAMIFICATION CHECK-IN TELEMETRY');
+
+  // Test Case 7.1: Check-in telemetry Happy Path
+  try {
+    const res = await request('/gamification/check-in', {
+      method: 'POST',
+      body: {
+        total_units: 12.5,
+        appliance_hours: {
+          'AC': 6.0,
+          'Fridge': 24.0
+        }
+      }
+    });
+    if (res.status === 200 && res.body.success) {
+      logSuccess(`Gamification Check-in telemetry accepted successfully! Coins earned: ${res.body.coins_earned}. New balance: ${res.body.new_balance}`);
+    } else {
+      logError(`Expected successful check-in telemetry, got status ${res.status}: ${JSON.stringify(res.body)}`);
+    }
+  } catch (err) {
+    logError(`Telemetry check-in failed: ${err.message}`);
+  }
+
+  // Test Case 7.2: Double check-in Negative Path
+  try {
+    const res = await request('/gamification/check-in', {
+      method: 'POST',
+      body: {
+        total_units: 12.5,
+        appliance_hours: {
+          'AC': 6.0,
+          'Fridge': 24.0
+        }
+      }
+    });
+    if (res.status === 400) {
+      logSuccess('Double check-in caught correctly: [400] "You have already checked in today!"');
+    } else {
+      logError(`Expected 400 for double check-in, got status: ${res.status}`);
+    }
+  } catch (err) {
+    logError(`Double check-in test failed: ${err.message}`);
+  }
+
   logHeader('TESTING COMPLETE — ALL SYSTEM ENDPOINTS STABLE AND ROUTING COMPLETED');
 }
 
