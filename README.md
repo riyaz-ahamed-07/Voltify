@@ -1,236 +1,139 @@
 # ⚡ Voltify
-### *Track it. Predict it. Save it.*
+### *The Cognee-Powered Home Energy Memory Platform*
 
-> An AI-powered smart energy monitoring and conservation platform that helps households understand, predict, and reduce their electricity consumption — with gamification to keep you motivated.
-
----
-
-## 🧠 What is Voltify?
-
-Most households have no idea where their electricity goes. Voltify changes that.
-
-It takes your electricity bill and appliance details, disaggregates your consumption per appliance, predicts your future usage, detects when something looks off, and rewards you for making smarter energy choices — all in one clean dashboard.
-
-No smart meter required. Works with just your monthly bill.
+🏆 **Built for the WeMakeDevs x Cognee "The Hangover Part AI" Hackathon**
 
 ---
 
-## ✨ Features
+## 🧠 The Vision: We Gave a Home a Memory
 
-### 📊 Energy Dashboard
-- Daily, weekly, and monthly consumption trends with interactive charts
-- Per-appliance usage breakdown with cost estimates
-- Projected monthly bill with real-time recalculation as you adjust settings
-- BEE (Bureau of Energy Efficiency) standard sliders for AC and refrigerator — earn coins when you hit recommended targets
+Most energy apps are static dashboards operating in feature silos. **Voltify** is different. We wrapped the **entire backend architecture around Cognee Cloud** to establish a unified, long-term cognitive memory layer. 
 
-### 🔮 AI Predictions & Simulator
-- Forecast tomorrow's, next week's, and next month's energy usage
-- Bill shock detection — alerts you if you're on track to exceed last month's bill
-- What-If simulator — pick an appliance, simulate reducing hours or adjusting temperature, and instantly see projected savings in ₹ and kWh
-- Actual vs. predicted consumption chart once you've entered multiple bills
-
-### 🤖 Volt — Your AI Energy Coach
-- In-app chatbot powered by Groq (Llama 3.3 70B)
-- Gives personalized energy-saving advice for AC, geyser, fridge, lights, etc.
-- Falls back to a smart rule-based NLP engine if the AI is unavailable
-- Comfort-Safe Savings (CSS) recommendations — apply a BEE/WHO standard setting, earn coins, and see your projected monthly savings
-
-### 🎮 Gamification
-- Daily check-in: log today's kWh usage and appliance hours to earn **25 coins**
-- Weekly challenges: auto-generated targets (e.g., "Use under X units this week") with **100 coin rewards**
-- Streaks: longer consecutive check-ins unlock coin multipliers (1.15x → 1.35x → 1.60x)
-- Leaderboard: compete with others in your household category (family, student, etc.)
-- Coin shop: redeem earned coins for real rewards
-
-### 🔔 Notifications
-- Challenge completion / failure alerts
-- Daily check-in reminders
-- CSS application confirmations
-- Coin redemption status
-
-### 🛂 Multi-Tier Onboarding
-Users are categorized into three tiers based on their setup:
-
-| Tier | Type | How it works |
-|------|------|--------------|
-| **Tier 1** | Smart Plugs | Enter plug IDs per appliance — direct device-level data |
-| **Tier 2** | Smart Meter | Connect via DISCOM API — reads meter data directly |
-| **Tier 3** | Manual Meter | Upload your electricity bill (PDF/image) — AI extracts bill amount and units automatically, then you describe your appliances |
-
-### 👤 Profile & Settings
-- Edit name, location, household type
-- Change password, manage account
-- Reset calibration to re-run onboarding with updated appliance or bill data
+Every utility bill parsed, every temperature fluctuation, every daily occupancy check-in, and every chat interaction becomes part of that household’s evolving knowledge graph. The result isn't just a smarter chatbot—it’s a platform where the Dashboard, Home DNA, Evolution Timeline, and AI Coach (**Volt**) share the same memory context to learn, adapt, and explain energy decisions over time.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ How We Integrated Cognee Cloud
 
-**Frontend**
-- React 19 + TypeScript
-- Vite
-- Tailwind CSS v4
-- Recharts (graphs)
-- Framer Motion (animations)
-- Zustand (state management)
-- React Hook Form + Zod (form validation)
-- React Router v6
-
-**Backend**
-- Node.js + Express
-- PostgreSQL (via Supabase)
-- Passport.js (Google OAuth 2.0)
-- JWT authentication
-- Nodemailer (OTP emails, password reset)
-- Multer + unpdf (bill file upload and PDF text extraction)
-- Groq API — Llama 3.3 70B (AI chatbot + bill parsing)
-- WeatherAPI.com + Open-Meteo (live temperature for consumption adjustments)
-
----
-
-## 🗂️ Project Structure
+Voltify leverages Cognee's hosted graph-vector database endpoints end-to-end to manage the cognitive memory lifecycle of the household:
 
 ```
-Voltify/
-├── voltify-frontend/          # React + TypeScript frontend
-│   └── src/
-│       ├── pages/             # Dashboard, Predictions, Leaderboard, Streak, Shop, Profile, Settings
-│       │   ├── auth/          # Login, Signup, OTP, Forgot/Reset Password, OAuth
-│       │   └── onboarding/    # Tier 1/2/3 onboarding wizard
-│       ├── components/
-│       │   ├── dashboard/     # Energy and appliance charts
-│       │   ├── layout/        # App shell, Topbar
-│       │   └── ui/            # GlassCard, ChatbotVolt
-│       ├── store/             # Zustand stores (auth, dashboard, gamification)
-│       └── lib/               # API client, estimation utils, mock data
-│
-└── voltify-backend/           # Node.js + Express backend
-    └── src/
-        ├── controllers/       # Auth, Dashboard, Coach, Gamification, Onboarding, etc.
-        ├── routes/            # REST API route definitions
-        ├── services/          # Estimation engine, LLM, coins, challenges, weather, email
-        ├── config/            # DB connection, Passport config, SQL schema
-        ├── middleware/        # JWT auth, error handler
-        └── utils/             # JWT helpers, validators, mock data
+                  ┌─────────────────────────────────┐
+                  │          Cognee Cloud           │
+                  └────────────────┬────────────────┘
+                                   │
+         ┌─────────────────────────┼─────────────────────────┐
+         ▼                         ▼                         ▼
+   remember()                  recall()                  improve()
+ Ingests check-ins,         Retrieves graph context   Consolidates sessions
+ utility bill OCR details,  to ground Volt buddy      into long-term habits
+ & chat messages.           and dashboard insights.   via background /cognify.
+```
+
+### 1. `remember()` – Ingesting Context
+Whenever a user interacts with the app (daily check-ins, utility uploads, or chat dialogues), the backend registers these facts using the Cognee remember endpoint, mapping them to the user's specific dataset:
+```javascript
+// Ingesting user check-ins or preferences into Cognee Cloud
+await callCogneeAPI('POST', '/remember', {
+  datasetName: `user_${userId}`,
+  session_id: sessionId,
+  data: [ { text: `Occupancy: ${occupancyDetails}, AC state: ${acTempPreference}°C` } ]
+});
+```
+
+### 2. `recall()` – Grounding the Chatbot and Dashboard
+When the user queries the AI coach (**Volt**) or checks dashboard insights, Voltify uses `recall()` with `GRAPH_COMPLETION` search to retrieve semantically matching node connections:
+```javascript
+// Querying graph memory restricted strictly to the user's dataset
+const res = await callCogneeAPI('POST', '/recall', {
+  query: userQuery,
+  datasets: [`user_${userId}`],
+  searchType: 'GRAPH_COMPLETION'
+});
+```
+
+### 3. `improve()` – Consolidating Long-Term Habits
+After chat exchanges, Voltify runs the `/cognify` engine in the background to structure short-term context into high-confidence permanent habits:
+```javascript
+// Restructuring the graph schema based on cumulative actions
+await callCogneeAPI('POST', '/cognify', {
+  datasets: [`user_${userId}`],
+  run_in_background: false
+});
+```
+
+### 4. `forget()` – Surgical Profile Reset
+Under Settings, if the user wishes to clear their profile, Voltify deletes their dataset permanently from Cognee Cloud:
+```javascript
+// Surgical user memory deletion
+await callCogneeAPI('DELETE', '/datasets', {
+  dataset_name: `user_${userId}`
+});
 ```
 
 ---
 
-## ⚙️ Getting Started
+## 📐 Ontological Graph Architecture
 
-### Prerequisites
-- Node.js 18+
-- PostgreSQL database (or a [Supabase](https://supabase.com) project)
-- A [Groq API key](https://console.groq.com) (free tier works)
-- A Gmail account for OTP emails (App Password required)
-- Optional: Google OAuth credentials, WeatherAPI key
+Voltify maps the household parameters using an ontological node structure:
+
+```mermaid
+graph TD
+  User[👤 User Profile] -->|SET_SAVINGS_TARGET| Target[🎯 Monthly Savings Target]
+  User -->|MONITORS| Appliance[🔌 High-Drain Appliance]
+  Appliance -->|Calibrated_To| BEE[🌿 BEE Safety Standard]
+  User -->|LOGGED_IN| Checkin[📅 Daily Occupancy check-in]
+  Checkin -->|AFFECTED_BY| Weather[🌤️ Daily Weather Index]
+```
+
+*   **Nodes:** `UserProfile`, `SavingsTarget`, `ApplianceDetails`, `CheckInLogs`, `WeatherIndex`.
+*   **Relationships:** `SET_SAVINGS_TARGET`, `MONITORS`, `Calibrated_To`, `AFFECTED_BY`.
+*   **Behavior Synthesis:** Over time, repetitive actions (e.g. ignoring a 24°C suggestion 6 times, accepting 23°C 4 times) consolidate into a high-confidence relation (`User prefers 23°C for sleep comfort`).
 
 ---
 
-### Backend Setup
+## ⚡ Key Voltify Features
 
-```bash
-cd voltify-backend
-npm install
-```
+### 📊 Dashboard & Estimated Savings
+*   **Weather-Calibrated Disaggregation:** Calibrates daily baseline curves using local weather indices (e.g., AC +5% consumption per 1°C temperature increase above 24°C).
+*   **BEE/WHO Safety Guardrails:** Restricts Comfort-Safe Savings (CSS) sliders within healthy thresholds (AC $\ge$ 24°C, Refrigerator $\ge$ 4°C) to prevent compromising household health.
+*   **"Why?" Explainable AI:** Explainable widgets pull facts from Cognee memory to tell the user *why* specific schedules reduce bills.
 
-Create a `.env` file (copy from `.env.example`):
+### 🎮 Gamification & Streaks
+*   **175 Coins Seeded Baseline:** Users earn coins by beating estimations and completing weekly challenges.
+*   **Streak Multipliers:** Maintain consecutive daily check-ins to increase multiplier bonuses (1.15x → 1.60x).
+*   **Fair Leaderboards:** Ranks families and bachelors separately based on savings ratios rather than total units saved, ensuring fairness.
 
+---
+
+## 🛠️ Tech Stack & Services
+
+*   **Frontend:** React 19, TypeScript, Tailwind CSS, Zustand, Recharts, Framer Motion.
+*   **Backend:** Node.js, Express, JWT, PostgreSQL (Supabase Connection Pooler).
+*   **AI Models:** Groq API (Llama 3.3 70B), Cognee Cloud (Graph-Vector Memory Engine).
+*   **APIs:** WeatherAPI (live weather calibration), unpdf (Tesseract bill OCR statement ingestion).
+
+---
+
+## ⚙️ Getting Started & Testing
+
+### 1. Clone & Set Up Backend env
+Navigate to the `voltify-backend` directory, run `npm install`, and configure `.env`:
 ```env
 PORT=5000
-NODE_ENV=development
-DATABASE_URL=postgresql://...
+DATABASE_URL=postgresql://...  # Supabase connection pooler string (Port 6543)
 JWT_SECRET=your_jwt_secret
-JWT_EXPIRES_IN=7d
-CORS_ORIGIN=http://localhost:5173
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
-FRONTEND_URL=http://localhost:5173
-GMAIL_USER=your@gmail.com
-GMAIL_APP_PASSWORD=your_app_password
-EMAIL_FROM=Voltify <your@gmail.com>
+CORS_ORIGIN=https://vltify.vercel.app  # Or local frontend URL
 GROQ_API_KEY=your_groq_key
-WEATHER_API_KEY=your_weatherapi_key   # optional
+COGNEE_API_KEY=your_groq_key # if sharing key, or tenant API key
 ```
 
-Apply the database schema:
-
-```bash
-node apply_schema.js
-```
-
-Start the server:
-
-```bash
-npm run dev
-```
-
----
-
-### Frontend Setup
-
-```bash
-cd voltify-frontend
-npm install
-```
-
-Create a `.env` file:
-
+### 2. Set Up Frontend env
+Navigate to the `voltify-frontend` directory, run `npm install`, and configure `.env`:
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=http://localhost:5000/api
 ```
 
-Start the dev server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173)
-
----
-
-## 🔌 API Overview
-
-| Prefix | Description |
-|--------|-------------|
-| `/api/auth` | Signup, login, OTP, Google OAuth, password reset |
-| `/api/onboarding` | Save tier/appliance/bill data, trigger estimation |
-| `/api/dashboard` | Daily/weekly/monthly usage, appliance breakdown, summary |
-| `/api/coach` | Predictions, bill shock, what-if simulator, CSS recommendations, Volt chatbot |
-| `/api/gamification` | Stats, daily check-in, weekly challenge, shop, redeem |
-| `/api/leaderboard` | Household-grouped rankings |
-| `/api/notifications` | In-app notification list |
-| `/api/profile` | Get/update user profile |
-| `/api/settings` | Account settings, password change |
-
----
-
-## 🧮 How the Estimation Engine Works
-
-Voltify doesn't need a smart meter. It estimates your appliance-level consumption using:
-
-1. **Your appliance list** — power (kW) × daily hours × 30 days
-2. **Seasonal multipliers** — AC usage goes up in summer (April–June), geyser usage goes up in winter
-3. **Live temperature** — fetched from WeatherAPI or Open-Meteo; affects AC and geyser load calculations dynamically
-4. **Calibration** — total estimated units are scaled to match your actual bill units
-5. **Daily noise** — seeded date-based ±10% variation makes charts look realistic without being random
-
-Tariff rates are city-specific. Chennai uses TANGEDCO's tiered slab system (first 100 units free, then stepped rates). Other cities use flat per-unit rates.
-
----
-
-## 🌍 Supported Cities
-
-Chennai · Mumbai · Delhi · Bangalore · Hyderabad · Kolkata
-
----
-
-## 📝 License
-
-This project was built for a hackathon. Feel free to fork, extend, and build on top of it.
-
----
-
-*Built by Ramitha Chowdary*
+### 3. Verify Live Demo Account
+*   **Email:** `demo@voltify.com`
+*   **Access:** Dynamically seeds the 8-month historical story. Open the AI Coach to test long-term memory recall live!
