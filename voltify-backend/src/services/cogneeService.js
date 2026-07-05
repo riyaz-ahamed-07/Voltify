@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const http = require('https');
+const pool = require('../config/db');
 
 // Local storage path for fallback mode to survive restarts
 const MEMORY_FILE_PATH = path.join(__dirname, '../utils/localMemory.json');
@@ -78,6 +79,36 @@ function getDefaultSeededMemories() {
       reasoning: 'Geyser running hours shifted to 6–9 AM in 12 consecutive logs.'
     }
   ];
+}
+
+/**
+ * Helper to check if a user is explicitly seeded or represents the demo account
+ */
+async function checkIfSeeded(userId) {
+  const db = readLocalMemory();
+  const userMem = db[userId];
+  if (userMem && userMem.has_learned_seeded) return true;
+
+  try {
+    const userRes = await pool.query('SELECT email FROM users WHERE id = $1', [userId]);
+    const email = userRes.rows[0]?.email || '';
+    if (email.toLowerCase() === 'demo@voltify.com') {
+      if (!db[userId]) {
+        db[userId] = {
+          has_learned_seeded: true,
+          custom_memories: [],
+          timeline_history: []
+        };
+      } else {
+        db[userId].has_learned_seeded = true;
+      }
+      writeLocalMemory(db);
+      return true;
+    }
+  } catch (err) {
+    console.error('[cogneeService] Error checking demo account email:', err);
+  }
+  return false;
 }
 
 /**
@@ -195,7 +226,7 @@ module.exports = {
       const db = readLocalMemory();
       if (!db[userId]) {
         db[userId] = {
-          has_learned_seeded: true, // Default to true for the seeded dashboard demo flow
+          has_learned_seeded: false, // Default to false for new users
           custom_memories: [],
           timeline_history: []
         };
@@ -263,7 +294,6 @@ module.exports = {
         query: query,
         datasets: [`user_${userId}`],
         searchType: 'GRAPH_COMPLETION',
-        scope: 'all',
         ...(sessionId ? { session_id: sessionId } : {})
       });
       if (Array.isArray(res)) {
@@ -280,7 +310,8 @@ module.exports = {
       const db = readLocalMemory();
       const userMem = db[userId];
       const customMems = userMem?.custom_memories || [];
-      const seededMems = userMem?.has_learned_seeded ? getDefaultSeededMemories() : [];
+      const hasSeeded = await checkIfSeeded(userId);
+      const seededMems = hasSeeded ? getDefaultSeededMemories() : [];
       const allMems = [...customMems, ...seededMems];
 
       // Simple keyword matching for recall fallback
@@ -343,9 +374,7 @@ module.exports = {
    * GET HOME DNA DATA (Spotify-Wrapped scores)
    */
   async getHomeDNA(userId) {
-    const db = readLocalMemory();
-    const userMem = db[userId];
-    const hasSeeded = userMem ? userMem.has_learned_seeded : true;
+    const hasSeeded = await checkIfSeeded(userId);
 
     if (!hasSeeded) {
       return {
@@ -374,9 +403,7 @@ module.exports = {
    * GET HOME EVOLUTION TIMELINE
    */
   async getHomeEvolution(userId) {
-    const db = readLocalMemory();
-    const userMem = db[userId];
-    const hasSeeded = userMem ? userMem.has_learned_seeded : true;
+    const hasSeeded = await checkIfSeeded(userId);
 
     if (!hasSeeded) {
       return [];
@@ -399,7 +426,7 @@ module.exports = {
     const db = readLocalMemory();
     const userMem = db[userId];
     const customMems = userMem?.custom_memories || [];
-    const hasSeeded = userMem ? userMem.has_learned_seeded : true;
+    const hasSeeded = await checkIfSeeded(userId);
     const seededMems = hasSeeded ? getDefaultSeededMemories() : [];
 
     const allMemories = [...customMems, ...seededMems];
@@ -418,9 +445,7 @@ module.exports = {
    * GET TEMPORAL REPLAY STATE
    */
   async getReplayedState(userId, month) {
-    const db = readLocalMemory();
-    const userMem = db[userId];
-    const hasSeeded = userMem ? userMem.has_learned_seeded : true;
+    const hasSeeded = await checkIfSeeded(userId);
 
     if (!hasSeeded) {
       return {
