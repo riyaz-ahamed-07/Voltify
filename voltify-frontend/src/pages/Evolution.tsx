@@ -154,13 +154,13 @@ export default function Evolution() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+              <table className="w-full text-left border-collapse text-xs table-fixed">
                 <thead>
-                  <tr className="border-b border-zinc-800 text-zinc-500">
-                    <th className="pb-3 font-semibold uppercase tracking-wider w-[35%] font-sans">Learned Memory</th>
-                    <th className="pb-3 font-semibold uppercase tracking-wider font-sans">Source</th>
-                    <th className="pb-3 font-semibold uppercase tracking-wider font-sans">Confidence</th>
-                    <th className="pb-3 font-semibold uppercase tracking-wider w-[45%] font-sans">Reasoning / Evidence</th>
+                  <tr className="border-b border-zinc-800 text-zinc-500 text-[10px] tracking-wider uppercase font-mono">
+                    <th className="pb-3 font-semibold w-[35%]">Learned Memory</th>
+                    <th className="pb-3 font-semibold w-[18%]">Source</th>
+                    <th className="pb-3 font-semibold w-[12%]">Confidence</th>
+                    <th className="pb-3 font-semibold w-[35%]">Reasoning / Evidence</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/50">
@@ -175,19 +175,19 @@ export default function Evolution() {
 
                     return (
                       <tr key={m.id} className="group hover:bg-zinc-800/10 transition-colors">
-                        <td className="py-4 pr-4 font-semibold text-white flex items-start gap-2.5 font-sans">
+                        <td className="py-4 pr-4 font-semibold text-white flex items-start gap-2.5 font-sans break-words w-[35%]">
                           <CheckCircle2 className="size-4 text-emerald-500 shrink-0 mt-0.5" />
                           {m.learned_memory}
                         </td>
-                        <td className="py-4">
+                        <td className="py-4 w-[18%]">
                           <span className={`px-2 py-0.5 rounded-full border text-[9px] font-mono font-semibold uppercase tracking-wide ${color}`}>
                             {m.source}
                           </span>
                         </td>
-                        <td className="py-4 font-mono font-bold text-zinc-300">
+                        <td className="py-4 font-mono font-bold text-zinc-300 w-[12%]">
                           {m.confidence}%
                         </td>
-                        <td className="py-4 pl-4 text-zinc-405 leading-relaxed italic font-sans">
+                        <td className="py-4 pl-4 text-zinc-400 leading-relaxed italic font-sans break-words w-[35%]">
                           {m.reasoning}
                         </td>
                       </tr>
